@@ -1,14 +1,6 @@
-<nav class="navbar">
-    <div class="logo">ProLink</div>
-
-    <ul class="nav-links">
-    <li><a href="<?= $baseUrl ?>/FrontOffice/home.php">Accueil</a></li>
-        <li><a href="#">Réseau</a></li>
-        <li><a href="#">Projets</a></li>
-        <li><a href="#">Événements</a></li>
-    </ul>
-
 <?php
+// Ensure session is started before any output. This prevents "headers already sent" warnings
+// and makes session data available to the navbar.
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -23,6 +15,19 @@ $host = $_SERVER['HTTP_HOST'] ?? '';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 ?>
+
+<nav class="navbar">
+    <div class="logo">ProLink</div>
+
+    <ul class="nav-links">
+    <li><a href="<?= $baseUrl ?>/FrontOffice/home.php">Accueil</a></li>
+        <li><a href="#">Réseau</a></li>
+        <li><a href="#">Projets</a></li>
+        <li><a href="#">Événements</a></li>
+    </ul>
+
+<!-- global stylesheet -->
+<link rel="stylesheet" href="<?= $baseUrl ?>/assets/style.css">
 
      <div class="auth">
         <?php if ($__nav_user): ?>
