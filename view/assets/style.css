@@ -1,0 +1,61 @@
+/* Global modern styles for ProLink FrontOffice */
+:root{
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#0073b1;
+  --accent-600:#005f8d;
+  --radius:12px;
+  --shadow: 0 8px 24px rgba(18,38,63,0.08);
+}
+
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:var(--bg); color:#0f1724}
+
+/* Navbar */
+.navbar{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85)); padding:14px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 2px 8px rgba(15,23,42,0.04)}
+.logo{font-weight:700; color:var(--accent); font-size:20px}
+.nav-links{display:flex; gap:18px; list-style:none; margin:0; padding:0}
+.nav-links a{color:#0f1724; text-decoration:none; font-weight:600}
+.nav-links a:hover{color:var(--accent)}
+
+.auth .btn{padding:8px 12px; border-radius:10px; text-decoration:none; font-weight:600}
+.auth .login{border:1px solid var(--accent); color:var(--accent); background:transparent}
+.auth .register{background:var(--accent); color:white}
+
+/* Layout helpers */
+.container{max-width:980px; margin:36px auto; padding:0 20px}
+.card{background:var(--card); padding:20px; border-radius:var(--radius); box-shadow:var(--shadow)}
+
+/* Forms */
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], select{width:100%; padding:12px 14px; border-radius:10px; border:1px solid #e6e9ef; background:white; outline:none; transition:box-shadow .12s, border-color .12s}
+input:focus, select:focus{box-shadow:0 6px 18px rgba(3,102,214,0.06); border-color:var(--accent)}
+button{background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer}
+button.secondary{background:#f0f2f5; color:#111}
+
+/* Footer */
+.footer{background:#0f1724; color:white; padding:20px; text-align:center}
+
+/* Responsive */
+@media (max-width:720px){
+  .nav-links{display:none}
+  .container{margin:20px auto}
+}
+
+/* Small utilities */
+.text-muted{color:var(--muted)}
+.hint{font-size:13px; color:var(--muted)}
+
+/* Improve forms in register/login boxes specifically */
+.login-box, .register-box{width:100%; max-width:420px; margin:24px auto}
+.login-box input, .register-box input, .register-box select{margin:10px 0}
+
+/* Tables modern */
+.table-modern{width:100%; border-collapse:collapse}
+.table-modern thead th{background:#eef6fb; padding:10px 12px; text-align:left}
+.table-modern tbody td{padding:12px}
+.table-modern tbody tr:nth-child(even){background:#fbfdff}
+
+/* small animations */
+.fade-in{animation: fade .18s ease both}
+@keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
