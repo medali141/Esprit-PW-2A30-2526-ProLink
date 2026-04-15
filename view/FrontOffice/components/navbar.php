@@ -2,15 +2,36 @@
     <div class="logo">ProLink</div>
 
     <ul class="nav-links">
-        <li><a href="/prolink/View/home.php">Accueil</a></li>
+    <li><a href="<?= $baseUrl ?>/FrontOffice/home.php">Accueil</a></li>
         <li><a href="#">Réseau</a></li>
         <li><a href="#">Projets</a></li>
         <li><a href="#">Événements</a></li>
     </ul>
 
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$__nav_user = $_SESSION['user'] ?? null;
+
+// Try to compute project root (folder inside htdocs). Falls back to empty string.
+$projectFolder = basename(dirname(__DIR__, 3));
+$root = $projectFolder ? '/' . $projectFolder : '';
+$viewRoot = $root . '/view';
+// Build absolute base URL (http(s)://host{projectFolder}/view) to avoid wrong root-relative links
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
+?>
+
      <div class="auth">
-        <a href="/prolink/View/login.php" class="btn login">Login</a>
-        <a href="/prolink/View/register.php" class="btn register">Register</a>
+        <?php if ($__nav_user): ?>
+            <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
+            <a href="<?= $baseUrl ?>/FrontOffice/profile.php?action=logout" class="btn register">Se déconnecter</a>
+        <?php else: ?>
+            <a href="<?= $baseUrl ?>/login.php" class="btn login">Login</a>
+            <a href="<?= $baseUrl ?>/register.php" class="btn register">Register</a>
+        <?php endif; ?>
     </div>
 </nav>
 
