@@ -1,4 +1,6 @@
 <?php /* Sidebar partial - styles are in sidebar.css (same directory) */ ?>
+<!-- Global modern stylesheet (shared with FrontOffice) -->
+<link rel="stylesheet" href="../assets/style.css">
 <link rel="stylesheet" href="sidebar.css">
 
 <div class="sidebar">
@@ -10,6 +12,8 @@
             <li><a href="listUsers.php"><span class="icon">👤</span> <span>Gestion Users</span></a></li>
              <li><a href="#"><span class="icon">📁</span> <span>Gestion Projets</span></a></li>
             <li><a href="#"><span class="icon">📅</span> <span>Gestion Events</span></a></li>
+            <li><a href="#"><span class="icon">🛒</span> <span>Gestion vente / achat</span></a></li>
+            <li><a href="#"><span class="icon">🎓</span> <span>Gestion des formation</span></a></li>
             <li><a href="profile_admin.php"><span class="icon">👤</span> <span>Mon profil (admin)</span></a></li>
             <li><a href="../logout.php"><span class="icon">🔓</span> <span>Se déconnecter</span></a></li>
            
