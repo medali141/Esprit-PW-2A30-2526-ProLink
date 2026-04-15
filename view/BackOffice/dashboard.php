@@ -1,3 +1,23 @@
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/../../controller/AuthController.php';
+$__dashUser = (new AuthController())->profile();
+if (!$__dashUser || strtolower($__dashUser['type'] ?? '') !== 'admin') {
+    header('Location: ../login.php');
+    exit;
+}
+$nu = $np = $nc = 0;
+try {
+    require_once __DIR__ . '/../../config.php';
+    $__db = Config::getConnexion();
+    $nu = (int) $__db->query('SELECT COUNT(*) FROM user')->fetchColumn();
+    $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
+    $nc = (int) $__db->query('SELECT COUNT(*) FROM commande')->fetchColumn();
+} catch (Throwable $e) {
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -53,7 +73,8 @@
             <div class="subtitle">Vue d'ensemble rapide — statistiques et actions</div>
         </div>
         <div class="actions">
-            <a class="btn btn-primary" href="listUsers.php">Gérer les utilisateurs</a>
+            <a class="btn btn-primary" href="commerceHub.php">Achat / vente</a>
+            <a class="btn btn-secondary" href="listUsers.php">Utilisateurs</a>
         </div>
     </div>
 
@@ -61,24 +82,24 @@
         <div class="stat-card">
             <div class="icon">👥</div>
             <div>
-                <h3>1,248</h3>
-                <p>Utilisateurs actifs</p>
+                <h3><?= (int) $nu ?></h3>
+                <p>Utilisateurs</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#ff7a18,#ff3d67);">
-            <div class="icon">📁</div>
+            <div class="icon">📦</div>
             <div>
-                <h3>312</h3>
-                <p>Projets publiés</p>
+                <h3><?= (int) $np ?></h3>
+                <p>Produits actifs (catalogue)</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#8e2de2,#4a00e0);">
-            <div class="icon">📅</div>
+            <div class="icon">🛒</div>
             <div>
-                <h3>24</h3>
-                <p>Événements à venir</p>
+                <h3><?= (int) $nc ?></h3>
+                <p>Commandes</p>
             </div>
         </div>
     </section>
@@ -91,8 +112,9 @@
             <p style="margin-top:8px; color:#5b6b72">Dernières actions réalisées par les utilisateurs et changements système.</p>
         </div>
         <div class="card-light">
-            <h4>Ressources</h4>
-            <p style="margin-top:8px; color:#5b6b72">Liens rapides: import/export, sauvegarde, paramètres.(todo)</p>
+            <h4>Commerce</h4>
+            <p style="margin-top:8px; color:#5b6b72">Produits, stocks, commandes et livraison.</p>
+            <p style="margin-top:10px"><a href="commerceHub.php">Ouvrir le hub achat / vente</a></p>
         </div>
         <div class="card-light">
             <h4>Support</h4>
