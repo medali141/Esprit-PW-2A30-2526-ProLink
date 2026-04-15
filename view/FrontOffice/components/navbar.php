@@ -24,6 +24,9 @@ $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' :
 $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 ?>
 
+<!-- global stylesheet -->
+<link rel="stylesheet" href="<?= $baseUrl ?>/assets/style.css">
+
      <div class="auth">
         <?php if ($__nav_user): ?>
             <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
