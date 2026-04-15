@@ -30,31 +30,45 @@ if (
 <head>
     <title>Modifier utilisateur</title>
     <style>
-        form { width: 300px; margin: auto; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; }
-        button { background: orange; color: white; padding: 10px; border: none; }
+        /* local fallbacks; shared styles live in sidebar.css */
+        body{ margin:0; font-family: Arial, sans-serif; }
     </style>
 </head>
 
 <body>
 
-<h2 align="center">Modifier utilisateur</h2>
+<?php include 'sidebar.php'; ?>
 
-<form method="POST">
-    <input type="text" name="nom" value="<?= $user['nom'] ?>">
-    <input type="text" name="prenom" value="<?= $user['prenom'] ?>">
-    <input type="email" name="email" value="<?= $user['email'] ?>">
+<div class="content">
+    <div class="topbar">
+        <div class="page-title">Modifier utilisateur</div>
+        <div class="actions">
+            <a href="listUsers.php" class="btn btn-secondary">← Retour</a>
+        </div>
+    </div>
 
-    <select name="type">
-        <option value="admin" <?= $user['type']=="admin"?"selected":"" ?>>Admin</option>
-        <option value="candidat" <?= $user['type']=="candidat"?"selected":"" ?>>Candidat</option>
-        <option value="entrepreneur" <?= $user['type']=="entrepreneur"?"selected":"" ?>>Entrepreneur</option>
-    </select>
+    <div class="card" style="max-width:760px; margin:0 auto;">
+        <form method="POST">
+            <div class="form-grid">
+                <input type="text" name="nom" value="<?= htmlspecialchars($user['nom']) ?>">
+                <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>">
+                <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>">
 
-    <input type="number" name="age" value="<?= $user['age'] ?>">
+                <select name="type">
+                    <option value="admin" <?= $user['type']=="admin"?"selected":"" ?>>Admin</option>
+                    <option value="candidat" <?= $user['type']=="candidat"?"selected":"" ?>>Candidat</option>
+                    <option value="entrepreneur" <?= $user['type']=="entrepreneur"?"selected":"" ?>>Entrepreneur</option>
+                </select>
 
-    <button type="submit">Modifier</button>
-</form>
+                <input type="number" name="age" value="<?= htmlspecialchars($user['age']) ?>">
+            </div>
+
+            <div style="text-align:right; margin-top:12px;">
+                <button type="submit" class="btn btn-primary">Modifier</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>

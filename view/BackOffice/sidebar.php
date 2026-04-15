@@ -1,46 +1,15 @@
+<?php /* Sidebar partial - styles are in sidebar.css (same directory) */ ?>
+<link rel="stylesheet" href="sidebar.css">
+
 <div class="sidebar">
-    <h2>ProLink</h2>
+    <div class="brand">ProLink</div>
 
-    <ul>
-        <li><a href="dashboard.php">🏠 Dashboard</a></li>
-        <li><a href="listUsers.php">👤 Gestion User</a></li>
-        <li><a href="#">📁 Gestion Projet</a></li>
-        <li><a href="#">📅 Gestion Event</a></li>
-    </ul>
+    <nav>
+        <ul>
+            <li><a href="dashboard.php"><span class="icon">🏠</span> <span>Dashboard</span></a></li>
+            <li><a href="listUsers.php"><span class="icon">👤</span> <span>Gestion Users</span></a></li>
+            <li><a href="#"><span class="icon">📁</span> <span>Gestion Projets</span></a></li>
+            <li><a href="#"><span class="icon">📅</span> <span>Gestion Events</span></a></li>
+        </ul>
+    </nav>
 </div>
-
-<style>
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #2c3e50;
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding-top: 20px;
-}
-
-.sidebar h2 {
-    color: white;
-    text-align: center;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    padding: 15px;
-}
-
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    display: block;
-}
-
-.sidebar ul li:hover {
-    background: #34495e;
-}
-</style>
