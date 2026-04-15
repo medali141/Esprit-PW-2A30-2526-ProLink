@@ -1,4 +1,37 @@
 <?php
+require_once __DIR__ . '/../controller/AuthController.php';
+require_once __DIR__ . '/../model/User.php';
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $mdp = trim($_POST['mdp'] ?? '');
+    $type = trim($_POST['type'] ?? '');
+    $age = intval($_POST['age'] ?? 0);
+
+    // Server-side validation
+    if (!$nom || !$prenom || !$email || !$mdp || !$type || !$age) {
+        $error = 'Veuillez remplir tous les champs correctement.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Adresse email invalide.';
+    } elseif (strlen($mdp) < 6) {
+        $error = 'Le mot de passe doit contenir au moins 6 caractères.';
+    } else {
+        // Prevent creating an admin via the public form
+        if ($type === 'admin') {
+            $type = 'candidat';
+        }
+
+        $userObj = new User($nom, $prenom, $email, $mdp, $type, $age);
+        $auth = new AuthController();
+        $auth->register($userObj);
+        header('Location: login.php?registered=1');
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -61,20 +94,24 @@
     <div class="register-box">
         <h2>Inscription</h2>
 
-        <form>
-            <input type="text" placeholder="Nom" required>
-            <input type="text" placeholder="Prénom" required>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Mot de passe" required>
+        <?php if ($error): ?>
+            <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
 
-            <select required>
+        <form method="POST" onsubmit="return validateRegister()">
+            <input type="text" name="nom" placeholder="Nom" required value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
+            <input type="text" name="prenom" placeholder="Prénom" required value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
+            <input type="email" name="email" placeholder="Email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+            <input type="password" name="mdp" placeholder="Mot de passe" required>
+
+            <select name="type" required>
                 <option value="">Type utilisateur</option>
-                <option value="admin">Admin</option>
-                <option value="candidat">Candidat</option>
-                <option value="entrepreneur">Entrepreneur</option>
+                <!-- Admin is intentionally hidden from public registration -->
+                <option value="candidat" <?= (($_POST['type'] ?? '') === 'candidat') ? 'selected' : '' ?>>Candidat</option>
+                <option value="entrepreneur" <?= (($_POST['type'] ?? '') === 'entrepreneur') ? 'selected' : '' ?>>Entrepreneur</option>
             </select>
 
-            <input type="number" placeholder="Age" required>
+            <input type="number" name="age" placeholder="Age" required value="<?= htmlspecialchars($_POST['age'] ?? '') ?>">
 
             <button type="submit">S'inscrire</button>
         </form>
@@ -85,6 +122,35 @@
 
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
+
+<script>
+    function validateRegister() {
+        const nom = document.querySelector('input[name="nom"]').value.trim();
+        const prenom = document.querySelector('input[name="prenom"]').value.trim();
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const mdp = document.querySelector('input[name="mdp"]').value;
+        const type = document.querySelector('select[name="type"]').value;
+        const age = document.querySelector('input[name="age"]').value;
+
+        if (!nom || !prenom || !email || !mdp || !type || !age) {
+            alert('Veuillez remplir tous les champs.');
+            return false;
+        }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+            alert('Email invalide.');
+            return false;
+        }
+        if (mdp.length < 6) {
+            alert('Le mot de passe doit faire au moins 6 caractères.');
+            return false;
+        }
+        if (Number(age) < 13) {
+            alert('Vous devez avoir au moins 13 ans.');
+            return false;
+        }
+        return true;
+    }
+</script>
 
 </body>
 </html>

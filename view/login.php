@@ -1,5 +1,51 @@
 <?php
+require_once __DIR__ . '/../controller/AuthController.php';
+
+error_reporting(E_ALL);
+$error = '';
+$success = '';
+// Handle POST login
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $mdp = trim($_POST['mdp'] ?? '');
+
+    if (empty($email) || empty($mdp)) {
+        $error = 'Veuillez remplir tous les champs.';
+    } else {
+        $auth = new AuthController();
+        $user = $auth->login($email, $mdp);
+        if ($user) {
+            // user found — continue to session/redirect handling below
+        } else {
+            $error = 'Email ou mot de passe incorrect.';
+        }
+        // ensure session stores the logged user (AuthController::login already does this,
+        // but be defensive in case it's changed)
+        if ($user) {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['user'] = $user;
+
+            // redirect admin to backoffice, others to frontoffice
+            $role = strtolower($user['type'] ?? '');
+            if ($role === 'admin') {
+                header('Location: BackOffice/dashboard.php');
+                exit;
+            } else {
+                header('Location: FrontOffice/home.php');
+                exit;
+            }
+        }
+    }
+}
+
+// show message after successful registration
+if (isset($_GET['registered']) && $_GET['registered'] == '1') {
+    $success = 'Inscription réussie. Vous pouvez vous connecter.';
+}
 ?>
+
 
 
 
@@ -88,7 +134,11 @@
     <div class="login-box">
         <h2>Connexion</h2>
 
-        <form method="POST">
+        <?php if ($error): ?>
+            <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form method="POST" onsubmit="return validateLogin()">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="mdp" placeholder="Mot de passe" required>
 
@@ -102,8 +152,29 @@
             <!-- 🔹 Register -->
             <a href="register.php">Créer un compte</a>
         </div>
+        </div>
     </div>
 </div>
+
+<?php if ($success): ?>
+    <div style="text-align:center; margin-top:10px; color: #0a7f2a;"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+
+<script>
+    function validateLogin() {
+        const email = document.querySelector('input[name="email"]').value.trim();
+        const mdp = document.querySelector('input[name="mdp"]').value;
+        if (!email || !mdp) {
+            alert('Veuillez remplir tous les champs.');
+            return false;
+        }
+        if (mdp.length < 6) {
+            alert('Le mot de passe doit contenir au moins 6 caractères.');
+            return false;
+        }
+        return true;
+    }
+</script>
 
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
