@@ -48,19 +48,29 @@ if (
     </div>
 
     <div class="card" style="max-width:760px; margin:0 auto;">
-        <form method="POST">
+        <form method="POST" novalidate data-validate="user-form">
             <div class="form-grid">
-                <input type="text" name="nom" value="<?= htmlspecialchars($user['nom']) ?>">
-                <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>">
-                <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+                <div>
+                    <input type="text" name="nom" value="<?= htmlspecialchars($user['nom']) ?>">
+                </div>
+                <div>
+                    <input type="text" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>">
+                </div>
+                <div>
+                    <input type="text" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+                </div>
 
-                <select name="type">
-                    <option value="admin" <?= $user['type']=="admin"?"selected":"" ?>>Admin</option>
-                    <option value="candidat" <?= $user['type']=="candidat"?"selected":"" ?>>Candidat</option>
-                    <option value="entrepreneur" <?= $user['type']=="entrepreneur"?"selected":"" ?>>Entrepreneur</option>
-                </select>
+                <div>
+                    <select name="type">
+                        <option value="admin" <?= $user['type']=="admin"?"selected":"" ?>>Admin</option>
+                        <option value="candidat" <?= $user['type']=="candidat"?"selected":"" ?>>Candidat</option>
+                        <option value="entrepreneur" <?= $user['type']=="entrepreneur"?"selected":"" ?>>Entrepreneur</option>
+                    </select>
+                </div>
 
-                <input type="number" name="age" value="<?= htmlspecialchars($user['age']) ?>">
+                <div>
+                    <input type="text" name="age" value="<?= htmlspecialchars($user['age']) ?>">
+                </div>
             </div>
 
             <div style="text-align:right; margin-top:12px;">
@@ -68,6 +78,7 @@ if (
             </div>
         </form>
     </div>
+
 </div>
 
 </body>

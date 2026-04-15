@@ -13,3 +13,16 @@
         </ul>
     </nav>
 </div>
+<!-- Delete confirmation modal (global) -->
+<div id="confirmModal" class="confirm-modal" aria-hidden="true">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <h3 id="confirmTitle">Confirmer la suppression</h3>
+        <p id="confirmMessage">Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible.</p>
+        <div class="confirm-actions">
+            <button class="btn btn-secondary" id="confirmCancel">Annuler</button>
+            <button class="btn btn-danger" id="confirmOk">Supprimer</button>
+        </div>
+    </div>
+</div>
+<script src="backoffice.js"></script>

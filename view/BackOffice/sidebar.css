@@ -123,3 +123,16 @@ body {
     .actions { flex-wrap: wrap; }
 }
 
+/* field error display for JS validation */
+.field-error{ color:#e74c3c; font-size:13px; margin-top:6px; }
+
+/* confirmation modal */
+.confirm-modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; z-index:2000; }
+.confirm-modal[aria-hidden="false"]{ display:flex; }
+.confirm-modal-backdrop{ position:absolute; inset:0; background:rgba(11,22,38,0.55); }
+.confirm-modal-card{ position:relative; background:#fff; padding:18px; border-radius:10px; width: 420px; max-width:92%; box-shadow:0 10px 30px rgba(11,22,38,0.25); z-index:2; }
+.confirm-modal-card h3{ margin:0 0 8px 0; }
+.confirm-modal-card p{ margin:0 0 16px 0; color:#444; }
+.confirm-actions{ display:flex; justify-content:flex-end; gap:10px; }
+
+
