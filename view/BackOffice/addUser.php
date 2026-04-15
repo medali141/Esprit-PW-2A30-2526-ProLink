@@ -60,18 +60,30 @@ if (
         </div>
 
         <div class="card" style="max-width:760px; margin:0 auto;">
-            <form method="POST">
+            <form method="POST" novalidate data-validate="user-form">
                 <div class="form-grid">
-                    <input type="text" name="nom" placeholder="Nom">
-                    <input type="text" name="prenom" placeholder="Prénom">
-                    <input type="email" name="email" placeholder="Email">
-                    <input type="password" name="mdp" placeholder="Mot de passe">
-                    <select name="type">
-                        <option value="admin">Admin</option>
-                        <option value="candidat">Candidat</option>
-                        <option value="entrepreneur">Entrepreneur</option>
-                    </select>
-                    <input type="number" name="age" placeholder="Age">
+                    <div>
+                        <input type="text" name="nom" placeholder="Nom">
+                    </div>
+                    <div>
+                        <input type="text" name="prenom" placeholder="Prénom">
+                    </div>
+                    <div>
+                        <input type="text" name="email" placeholder="Email">
+                    </div>
+                    <div>
+                        <input type="password" name="mdp" placeholder="Mot de passe">
+                    </div>
+                    <div>
+                        <select name="type">
+                            <option value="admin">Admin</option>
+                            <option value="candidat">Candidat</option>
+                            <option value="entrepreneur">Entrepreneur</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" name="age" placeholder="Age">
+                    </div>
                 </div>
 
                 <div style="text-align:right; margin-top:12px;">
@@ -79,8 +91,9 @@ if (
                 </div>
             </form>
 
-            <p style="color:red; text-align:center; margin-top:10px;"><?= $error ?></p>
+            <p style="color:red; text-align:center; margin-top:10px;\"><?= $error ?></p>
         </div>
+
     </div>
 
 </body>
