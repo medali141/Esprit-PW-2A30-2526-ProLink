@@ -14,7 +14,9 @@ class AuthController {
             $user = $query->fetch();
 
             if ($user && password_verify($mdp, $user['mdp'])) {
-                session_start();
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
                 $_SESSION['user'] = $user;
                 return $user;
             } else {
@@ -49,7 +51,9 @@ class AuthController {
 
     // 🔹 PROFILE
     public function profile() {
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         return $_SESSION['user'] ?? null;
     }
 
