@@ -10,6 +10,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ProLink - Accueil</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -95,7 +96,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 <section class="hero">
     <h1>Bienvenue sur ProLink</h1>
     <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
-    <a href="../register.php" class="cta">Commencer</a>
+    <a href="catalogue.php" class="cta">Découvrir la boutique</a>
 </section>
 
 <!-- FEATURES -->
@@ -114,9 +115,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         </div>
 
         <div class="feature-card">
-            <div style="font-size:28px">📅</div>
-            <h3>Événements</h3>
-            <p class="hint">Participez à des événements professionnels et développez vos opportunités.</p>
+            <div style="font-size:28px">🛒</div>
+            <h3>Achat / Vente</h3>
+            <p class="hint">Catalogue produits, panier, commandes et suivi livraison (module Pro).</p>
+            <a href="catalogue.php" class="cta" style="margin-top:12px;display:inline-block;font-size:14px;padding:10px 16px">Voir la boutique</a>
         </div>
     </div>
 
