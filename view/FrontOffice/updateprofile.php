@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../../controller/AuthController.php';
+// Load model and helper controller classes used below
+require_once __DIR__ . '/../../model/User.php';
+require_once __DIR__ . '/../../controller/UserP.php';
 
 
 $auth = new AuthController();
@@ -52,7 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Modifier le profil - ProLink</title>
     <style>
         body { font-family: Arial; background:#f3f2ef; margin:0 }
-        .container{ max-width:700px; margin:40px auto; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);} 
+        body { font-family: Arial; background:#f3f2ef; margin:0; display:flex; flex-direction:column; min-height:100vh }
+        .main{ flex:1 }
+        .container{ max-width:700px; margin:40px auto; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
         input, select { width:100%; padding:10px; margin:8px 0 }
         button{ background:#0073b1; color:white; border:none; padding:10px 14px; border-radius:6px }
     </style>
@@ -61,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include __DIR__ . '/components/navbar.php'; ?>
 
+<main class="main">
 <div class="container">
     <h2>Modifier mon profil</h2>
 

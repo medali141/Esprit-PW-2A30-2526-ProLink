@@ -8,6 +8,7 @@
     color: white;
     text-align: center;
     padding: 15px;
-    margin-top: 50px;
+    margin-top: 0;
 }
+.footer p{ margin:0 }
 </style>
