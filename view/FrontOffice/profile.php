@@ -23,7 +23,8 @@ if (!$user) {
     <meta charset="UTF-8">
     <title>Profil - ProLink</title>
     <style>
-        body { font-family: Arial; background:#f3f2ef; margin:0; }
+        body { font-family: Arial; background:#f3f2ef; margin:0; display:flex; flex-direction:column; min-height:100vh }
+        .main{ flex:1 }
         .container{ max-width:900px; margin:40px auto; background:white; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.05);} 
         .profile-header{ display:flex; gap:20px; align-items:center }
         .avatar{ width:90px; height:90px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:32px; color:#666 }
@@ -39,6 +40,8 @@ if (!$user) {
 <body>
 
 <?php include __DIR__ . '/components/navbar.php'; ?>
+
+<main class="main">
 
 <div class="container">
     <div class="profile-header">
@@ -70,6 +73,8 @@ if (!$user) {
         <dd><?= htmlspecialchars($user['age']) ?></dd>
     </dl>
 </div>
+
+</main>
 
 <?php include __DIR__ . '/components/footer.php'; ?>
 
