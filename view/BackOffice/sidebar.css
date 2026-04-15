@@ -1,0 +1,125 @@
+/* Sidebar styles for BackOffice pages */
+:root{
+    --sidebar-width: 240px;
+    --sidebar-bg: #2c3e50;
+    --sidebar-bg-hover: #34495e;
+    --accent: #007BFF;
+    --text: #ffffff;
+}
+
+.sidebar{
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 24px 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.sidebar .brand{
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar nav{ flex: 1; overflow:auto; margin-top: 6px; }
+
+.sidebar ul{ list-style: none; padding: 0; margin: 0; }
+
+.sidebar li{ margin: 6px 0; }
+
+.sidebar a{
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: background .15s, transform .06s;
+}
+
+.sidebar a:hover{ background: var(--sidebar-bg-hover); transform: translateX(2px); }
+
+.sidebar a .icon{ font-size: 16px; }
+
+/* content wrapper to push page contents beside the sidebar */
+.content{ margin-left: var(--sidebar-width); padding: 20px; box-sizing: border-box; }
+
+/* responsive - collapse sidebar on small screens */
+@media (max-width: 720px){
+    .sidebar{ position: relative; width: 100%; height: auto; }
+    .content{ margin-left: 0; }
+}
+
+/* Shared layout & UI elements for BackOffice pages */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f5f7fa;
+    color: #222;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 24px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.8));
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+    margin-bottom: 18px;
+}
+
+.page-title { font-size: 28px; font-weight: 700; color: #222; }
+
+.actions { display:flex; align-items:center; gap:10px; }
+
+.btn {
+    display:inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: #f0f2f5; color: #333; border: 1px solid rgba(0,0,0,0.06); }
+.btn-danger { background: #e74c3c; color: white; }
+
+.card {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(35,47,86,0.06);
+}
+
+.form-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+
+.table-modern { width: 100%; border-collapse: collapse; background: white; overflow: hidden; border-radius: 8px; box-shadow: 0 6px 18px rgba(35,47,86,0.06); }
+.table-modern th, .table-modern td { padding: 14px 12px; text-align: left; }
+.table-modern thead th { background: var(--accent); color: white; font-weight: 700; }
+.table-modern tbody tr:nth-child(even){ background: #fbfdff; }
+.table-modern tbody tr:hover{ background: #f1f6ff; }
+
+.search-input { padding:8px 10px; border-radius:6px; border:1px solid rgba(0,0,0,0.08); min-width:200px; }
+
+/* responsive tweaks */
+@media (max-width: 900px){
+    .page-title{ font-size: 22px; }
+    .actions { flex-wrap: wrap; }
+}
+
