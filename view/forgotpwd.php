@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Mot de passe oublié - ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
+    <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
@@ -65,6 +67,13 @@
             color: #555;
             margin-bottom: 10px;
         }
+
+        html.dark-mode body { background: #0b1017 !important; }
+        html.dark-mode .box { background: #151b26 !important; color: #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+        html.dark-mode .box h2 { color: #38bdf8; }
+        html.dark-mode .box input { background: #1e293b; border-color: rgba(148,163,184,0.25); color: #f8fafc; }
+        html.dark-mode .box a { color: #7dd3fc; }
+        html.dark-mode .info { color: #94a3b8; }
     </style>
 </head>
 
@@ -81,10 +90,10 @@
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
-        <form>
-            <input type="email" placeholder="Votre email" required>
+        <form method="post" action="#" novalidate data-validate="forgot-form">
+            <input type="email" name="email" placeholder="Votre email" autocomplete="email">
 
-            <input type="password" placeholder="Nouveau mot de passe" required>
+            <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">
 
             <button type="submit">Réinitialiser</button>
         </form>
@@ -95,6 +104,7 @@
 
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
+<script src="assets/forms-validation.js"></script>
 
 </body>
 </html>
