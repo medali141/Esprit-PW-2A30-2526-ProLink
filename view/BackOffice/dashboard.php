@@ -1,3 +1,22 @@
+<?php
+// Start session early in case sidebar or other includes depend on it
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+// Get real counts from database
+require_once __DIR__ . '/../../config.php';
+$userCount = 0;
+try {
+    $db = Config::getConnexion();
+    $stmt = $db->query('SELECT COUNT(*) AS c FROM user');
+    $row = $stmt->fetch();
+    $userCount = isset($row['c']) ? (int)$row['c'] : 0;
+} catch (Exception $e) {
+    // keep $userCount = 0 on error
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -61,24 +80,24 @@
         <div class="stat-card">
             <div class="icon">👥</div>
             <div>
-                <h3>1,248</h3>
-                <p>Utilisateurs actifs</p>
+                <h3><?= number_format($userCount) ?></h3>
+                <p>Utilisateurs enregistrés</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#ff7a18,#ff3d67);">
             <div class="icon">📁</div>
             <div>
-                <h3>312</h3>
-                <p>Projets publiés</p>
+                <h3>À développer</h3>
+                <p>Projets publiés (à implémenter)</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#8e2de2,#4a00e0);">
             <div class="icon">📅</div>
             <div>
-                <h3>24</h3>
-                <p>Événements à venir</p>
+                <h3>À développer</h3>
+                <p>Événements (à implémenter)</p>
             </div>
         </div>
     </section>
