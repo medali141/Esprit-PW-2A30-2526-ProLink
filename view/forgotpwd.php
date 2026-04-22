@@ -97,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #555;
             margin-bottom: 10px;
         }
-<<<<<<< HEAD
         /* Toast / inline notification */
         .toast {
             position: fixed;
@@ -123,15 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .toast .actions { display:flex; gap:8px }
         .toast a, .toast button { background: #065f46; color: white; border: none; padding: 8px 10px; border-radius:6px; text-decoration:none; cursor:pointer }
         .toast button.secondary { background: transparent; color: inherit; border: 1px solid rgba(0,0,0,0.06) }
-=======
-
-        html.dark-mode body { background: #0b1017 !important; }
-        html.dark-mode .box { background: #151b26 !important; color: #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
-        html.dark-mode .box h2 { color: #38bdf8; }
-        html.dark-mode .box input { background: #1e293b; border-color: rgba(148,163,184,0.25); color: #f8fafc; }
-        html.dark-mode .box a { color: #7dd3fc; }
-        html.dark-mode .info { color: #94a3b8; }
->>>>>>> origin/main
     </style>
 </head>
 
@@ -148,21 +138,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
-<<<<<<< HEAD
-        <?php if ($error): ?>
-            <div style="color:#b00020; margin-bottom:10px"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-
-        <form method="POST">
-            <input type="email" name="email" placeholder="Votre email" required>
-
-            <input type="password" name="newpwd" placeholder="Nouveau mot de passe" required>
-=======
         <form method="post" action="#" novalidate data-validate="forgot-form">
             <input type="email" name="email" placeholder="Votre email" autocomplete="email">
 
             <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">
->>>>>>> origin/main
 
             <button type="submit">Réinitialiser</button>
         </form>
