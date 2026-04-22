@@ -82,24 +82,24 @@ try {
         <div class="stat-card">
             <div class="icon">👥</div>
             <div>
-                <h3><?= number_format($userCount) ?></h3>
-                <p>Utilisateurs enregistrés</p>
+                <h3><?= (int) $nu ?></h3>
+                <p>Utilisateurs</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#ff7a18,#ff3d67);">
             <div class="icon">📦</div>
             <div>
-                <h3>À développer</h3>
-                <p>Projets publiés (à implémenter)</p>
+                <h3><?= (int) $np ?></h3>
+                <p>Produits actifs (catalogue)</p>
             </div>
         </div>
 
         <div class="stat-card" style="background: linear-gradient(135deg,#8e2de2,#4a00e0);">
             <div class="icon">🛒</div>
             <div>
-                <h3>À développer</h3>
-                <p>Événements (à implémenter)</p>
+                <h3><?= (int) $nc ?></h3>
+                <p>Commandes</p>
             </div>
         </div>
     </section>

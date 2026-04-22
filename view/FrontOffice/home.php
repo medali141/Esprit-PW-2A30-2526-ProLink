@@ -1,7 +1,12 @@
+<?php require_once __DIR__ . '/../../init.php'; ?>
 <?php
-// Ensure session is started before any output from this page or included components
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
+// Require authentication for FrontOffice pages: redirect to login when user is not authenticated.
+require_once __DIR__ . '/../../controller/AuthController.php';
+$auth = new AuthController();
+$u = $auth->profile();
+if (!$u) {
+    header('Location: ../login.php');
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -96,7 +101,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 <section class="hero">
     <h1>Bienvenue sur ProLink</h1>
     <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
-    <a href="catalogue.php" class="cta">Découvrir la boutique</a>
+    <a href="../login.php" class="cta">commencer</a>
 </section>
 
 <!-- FEATURES -->
