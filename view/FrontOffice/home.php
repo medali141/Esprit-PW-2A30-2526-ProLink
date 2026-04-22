@@ -1,7 +1,12 @@
+<?php require_once __DIR__ . '/../../init.php'; ?>
 <?php
-// Ensure session is started before any output from this page or included components
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
+// Require authentication for FrontOffice pages: redirect to login when user is not authenticated.
+require_once __DIR__ . '/../../controller/AuthController.php';
+$auth = new AuthController();
+$u = $auth->profile();
+if (!$u) {
+    header('Location: ../login.php');
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -68,8 +73,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         .feature-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,12,27,0.6) }
 
         .feature-icon{ width:64px; height:64px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; background: linear-gradient(135deg,var(--accent-1),var(--accent-2)); color:#00151b; box-shadow: 0 8px 20px rgba(2,12,27,0.5) }
-        .feature-card h3{ color:#e6f0f6; margin:0 0 6px; font-size:18px }
-        .feature-card p{ margin:0; color:var(--muted) }
+    .feature-card h3{ color:#000; margin:0 0 6px; font-size:18px }
+    .feature-card p{ margin:0; color:#000 }
 
         /* subtle entrance animation */
         .feature-card, .stat, .glass-card{ opacity:0; transform: translateY(8px); animation: fadeUp .48s ease forwards; }
@@ -96,7 +101,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 <section class="hero">
     <h1>Bienvenue sur ProLink</h1>
     <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
-    <a href="catalogue.php" class="cta">Découvrir la boutique</a>
+    <a href="../login.php" class="cta">commencer</a>
 </section>
 
 <!-- FEATURES -->
