@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Register - ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
+    <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
@@ -82,6 +84,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #0073b1;
             text-decoration: none;
         }
+
+        html.dark-mode body { background: #0b1017 !important; }
+        html.dark-mode .register-box { background: #151b26 !important; color: #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+        html.dark-mode .register-box h2 { color: #38bdf8; }
+        html.dark-mode .register-box input, html.dark-mode .register-box select { background: #1e293b; border: 1px solid rgba(148,163,184,0.25); color: #f8fafc; }
+        html.dark-mode .register-box a { color: #7dd3fc; }
     </style>
 </head>
 
@@ -98,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" onsubmit="return validateRegister()">
+        <form method="POST" novalidate data-validate="user-form">
             <input type="text" name="nom" placeholder="Nom" required value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
             <input type="text" name="prenom" placeholder="Prénom" required value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
             <input type="email" name="email" placeholder="Email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
@@ -123,34 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
 
-<script>
-    function validateRegister() {
-        const nom = document.querySelector('input[name="nom"]').value.trim();
-        const prenom = document.querySelector('input[name="prenom"]').value.trim();
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const mdp = document.querySelector('input[name="mdp"]').value;
-        const type = document.querySelector('select[name="type"]').value;
-        const age = document.querySelector('input[name="age"]').value;
-
-        if (!nom || !prenom || !email || !mdp || !type || !age) {
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            alert('Email invalide.');
-            return false;
-        }
-        if (mdp.length < 6) {
-            alert('Le mot de passe doit faire au moins 6 caractères.');
-            return false;
-        }
-        if (Number(age) < 13) {
-            alert('Vous devez avoir au moins 13 ans.');
-            return false;
-        }
-        return true;
-    }
-</script>
+<script src="assets/forms-validation.js"></script>
 
 </body>
 </html>

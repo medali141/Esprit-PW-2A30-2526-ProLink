@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div style="color:#b00020"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form method="POST" onsubmit="return validateUpdate()">
+    <form method="POST" novalidate data-validate="user-form">
         <input type="text" name="nom" placeholder="Nom" value="<?= htmlspecialchars($_POST['nom'] ?? $user['nom']) ?>" required>
         <input type="text" name="prenom" placeholder="Prénom" value="<?= htmlspecialchars($_POST['prenom'] ?? $user['prenom']) ?>" required>
         <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($_POST['email'] ?? $user['email']) ?>" required>
@@ -95,24 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include __DIR__ . '/components/footer.php'; ?>
 
-<script>
-    function validateUpdate(){
-        const nom = document.querySelector('input[name="nom"]').value.trim();
-        const prenom = document.querySelector('input[name="prenom"]').value.trim();
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const type = document.querySelector('select[name="type"]').value;
-        const age = document.querySelector('input[name="age"]').value;
-        if(!nom || !prenom || !email || !type || !age){
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-            alert('Email invalide.');
-            return false;
-        }
-        return true;
-    }
-</script>
+<script src="../assets/forms-validation.js"></script>
 
 </body>
 </html>

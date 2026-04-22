@@ -20,7 +20,7 @@ if (strtolower($user['type'] ?? '') !== 'admin') {
     <title>Profil Admin - BackOffice</title>
     <link rel="stylesheet" href="sidebar.css">
     <style>
-        .content{ margin-left:220px; padding:20px }
+        .content{ margin-left:var(--sidebar-width,288px); padding:20px }
         .card{ background:white; padding:20px; border-radius:8px; max-width:900px }
     </style>
 </head>

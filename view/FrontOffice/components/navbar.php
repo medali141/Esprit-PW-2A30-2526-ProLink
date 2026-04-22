@@ -5,6 +5,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 $__nav_user = $_SESSION['user'] ?? null;
+$__nav_type = strtolower($__nav_user['type'] ?? '');
+$__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
 
 // Try to compute project root (folder inside htdocs). Falls back to empty string.
 $projectFolder = basename(dirname(__DIR__, 3));
@@ -15,12 +17,22 @@ $host = $_SERVER['HTTP_HOST'] ?? '';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 ?>
+<script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
 <nav class="navbar">
     <div class="logo">ProLink</div>
 
     <ul class="nav-links">
     <li><a href="<?= $baseUrl ?>/FrontOffice/home.php">Accueil</a></li>
+        <li><a href="<?= $baseUrl ?>/FrontOffice/catalogue.php">Boutique</a></li>
+        <li><a href="<?= $baseUrl ?>/FrontOffice/panier.php">Panier<?= $__cart > 0 ? ' (' . (int) $__cart . ')' : '' ?></a></li>
+        <?php if ($__nav_user): ?>
+            <li><a href="<?= $baseUrl ?>/FrontOffice/mesCommandes.php">Mes commandes</a></li>
+            <?php if ($__nav_type === 'entrepreneur'): ?>
+                <li><a href="<?= $baseUrl ?>/FrontOffice/mesProduits.php">Mes produits</a></li>
+                <li><a href="<?= $baseUrl ?>/FrontOffice/mesVentes.php">Mes ventes</a></li>
+            <?php endif; ?>
+        <?php endif; ?>
         <li><a href="#">Réseau</a></li>
         <li><a href="#">Projets</a></li>
         <li><a href="#">Événements</a></li>
@@ -30,6 +42,7 @@ $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 <link rel="stylesheet" href="<?= $baseUrl ?>/assets/style.css">
 
      <div class="auth">
+        <button type="button" class="theme-toggle js-theme-toggle" aria-label="Activer le mode sombre" aria-pressed="false">🌙</button>
         <?php if ($__nav_user): ?>
             <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
             <a href="<?= $baseUrl ?>/FrontOffice/profile.php?action=logout" class="btn register">Se déconnecter</a>
@@ -88,4 +101,28 @@ $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
     background: #0073b1;
     color: white;
 }
+
+.auth {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+html.dark-mode .navbar {
+    background: #121826 !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35) !important;
+}
+html.dark-mode .logo { color: #38bdf8 !important; }
+html.dark-mode .nav-links a { color: #e2e8f0 !important; }
+html.dark-mode .nav-links a:hover { color: #38bdf8 !important; }
+html.dark-mode .login {
+    border-color: rgba(56,189,248,0.45) !important;
+    color: #38bdf8 !important;
+}
+html.dark-mode .register {
+    background: #38bdf8 !important;
+    color: #0f1724 !important;
+}
 </style>
+<script src="<?= $baseUrl ?>/assets/theme.js" defer></script>
