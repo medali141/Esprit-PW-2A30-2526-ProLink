@@ -51,7 +51,7 @@ $list = $userP->listUsers();
                     <td>
                         <a class="btn btn-secondary" href="detailUser.php?id=<?= $user['iduser']; ?>">Voir</a>
                         <a class="btn btn-secondary" href="updateUser.php?id=<?= $user['iduser']; ?>">Modifier</a>
-                        <a class="btn btn-danger js-delete" href="#" data-href="deleteUser.php?id=<?= $user['iduser']; ?>">Supprimer</a>
+                        <a class="btn btn-danger js-delete" href="#" data-confirm="Voulez-vous vraiment supprimer cet utilisateur ?" data-href="deleteUser.php?id=<?= $user['iduser']; ?>">Supprimer</a>
                     </td>
                 </tr>
             <?php } ?>

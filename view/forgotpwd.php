@@ -33,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Mot de passe oublié - ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
+    <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
@@ -136,14 +138,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
-        <?php if ($error): ?>
-            <div style="color:#b00020; margin-bottom:10px"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
+        <form method="post" action="#" novalidate data-validate="forgot-form">
+            <input type="email" name="email" placeholder="Votre email" autocomplete="email">
 
-        <form method="POST">
-            <input type="email" name="email" placeholder="Votre email" required>
-
-            <input type="password" name="newpwd" placeholder="Nouveau mot de passe" required>
+            <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">
 
             <button type="submit">Réinitialiser</button>
         </form>
@@ -154,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
+<script src="assets/forms-validation.js"></script>
 
 </body>
 </html>
