@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Modifier mon profil (admin)</title>
     <link rel="stylesheet" href="sidebar.css">
     <style>
-        .content{ margin-left:220px; padding:20px }
+        .content{ margin-left:var(--sidebar-width,288px); padding:20px }
         .card{ background:white; padding:20px; border-radius:8px; max-width:900px }
         input{ width:100%; padding:8px; margin:6px 0 }
     </style>
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color:#b00020"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST">
+        <form method="POST" novalidate data-validate="user-form">
             <label>Nom</label>
             <input type="text" name="nom" value="<?= htmlspecialchars($_POST['nom'] ?? $user['nom']) ?>">
 

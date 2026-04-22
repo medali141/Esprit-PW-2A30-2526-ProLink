@@ -57,6 +57,8 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
 <head>
     <meta charset="UTF-8">
     <title>Login - ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
+    <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
@@ -122,6 +124,12 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
         .links a:hover {
             text-decoration: underline;
         }
+
+        html.dark-mode body { background: #0b1017 !important; }
+        html.dark-mode .login-box { background: #151b26 !important; color: #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+        html.dark-mode .login-box h2 { color: #38bdf8; }
+        html.dark-mode .login-box input { background: #1e293b; border: 1px solid rgba(148,163,184,0.25); color: #f8fafc; }
+        html.dark-mode .links a { color: #7dd3fc; }
     </style>
 </head>
 
@@ -138,9 +146,9 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" onsubmit="return validateLogin()">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="mdp" placeholder="Mot de passe" required>
+        <form method="POST" novalidate data-validate="login-form">
+            <input type="email" name="email" placeholder="Email" autocomplete="username">
+            <input type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password">
 
             <button type="submit">Se connecter</button>
         </form>
@@ -160,24 +168,9 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     <div style="text-align:center; margin-top:10px; color: #0a7f2a;"><?= htmlspecialchars($success) ?></div>
 <?php endif; ?>
 
-<script>
-    function validateLogin() {
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const mdp = document.querySelector('input[name="mdp"]').value;
-        if (!email || !mdp) {
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if (mdp.length < 6) {
-            alert('Le mot de passe doit contenir au moins 6 caractères.');
-            return false;
-        }
-        return true;
-    }
-</script>
-
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
+<script src="assets/forms-validation.js"></script>
 
 </body>
 </html>
