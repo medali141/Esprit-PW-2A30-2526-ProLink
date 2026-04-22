@@ -67,8 +67,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         .feature-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,12,27,0.6) }
 
         .feature-icon{ width:64px; height:64px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; background: linear-gradient(135deg,var(--accent-1),var(--accent-2)); color:#00151b; box-shadow: 0 8px 20px rgba(2,12,27,0.5) }
-        .feature-card h3{ color:#e6f0f6; margin:0 0 6px; font-size:18px }
-        .feature-card p{ margin:0; color:var(--muted) }
+    .feature-card h3{ color:#000; margin:0 0 6px; font-size:18px }
+    .feature-card p{ margin:0; color:#000 }
 
         /* subtle entrance animation */
         .feature-card, .stat, .glass-card{ opacity:0; transform: translateY(8px); animation: fadeUp .48s ease forwards; }
