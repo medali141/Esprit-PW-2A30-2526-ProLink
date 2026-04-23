@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/paths.php';
 $__vb = view_web_base();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    @session_start();
+}
+$__bo_admin = strtolower((string) (($_SESSION['user'] ?? [])['type'] ?? '')) === 'admin';
+$__fo_accueil = $__vb . 'FrontOffice/home.php';
 ?>
 <?php /* Sidebar — chemins via bo_url() pour compatibilité sous-dossiers */ ?>
 <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
@@ -16,6 +21,9 @@ $__vb = view_web_base();
     <nav class="sidebar-nav" aria-label="Menu principal">
         <ul>
             <li><a href="<?= htmlspecialchars(bo_url('dashboard/dashboard.php')) ?>"><span class="icon">🏠</span> <span>Dashboard</span></a></li>
+            <?php if ($__bo_admin): ?>
+            <li><a href="<?= htmlspecialchars($__fo_accueil) ?>" class="sidebar-nav-fo"><span class="icon">🌐</span> <span>Accueil (site)</span></a></li>
+            <?php endif; ?>
             <li><a href="<?= htmlspecialchars(bo_url('user/listUsers.php')) ?>"><span class="icon">👤</span> <span>Gestion Users</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=projets')) ?>"><span class="icon">📁</span> <span>Gestion Projets</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=evenements')) ?>"><span class="icon">📅</span> <span>Gestion Events</span></a></li>
