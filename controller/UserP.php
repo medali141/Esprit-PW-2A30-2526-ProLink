@@ -50,6 +50,21 @@ class UserP {
         }
     }
 
+    // 🔹 CHECK IF USER HAS COMMANDES (orders)
+    public function hasCommandes($id) {
+        $sql = "SELECT COUNT(*) as cnt FROM commande WHERE id_acheteur = :id";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id]);
+            $row = $query->fetch();
+            return ((int) ($row['cnt'] ?? 0)) > 0;
+        } catch (Exception $e) {
+            // On error, be conservative and return true to prevent accidental deletion
+            return true;
+        }
+    }
+
     // 🔹 UPDATE
     public function updateUser($user, $id) {
         $db = config::getConnexion();
