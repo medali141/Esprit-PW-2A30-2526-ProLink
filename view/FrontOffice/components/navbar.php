@@ -35,8 +35,8 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
      <div class="auth">
         <button type="button" class="theme-toggle js-theme-toggle" aria-label="Activer le mode sombre" aria-pressed="false">🌙</button>
         <?php if ($__nav_user): ?>
-            <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
-            <a href="<?= $baseUrl ?>/FrontOffice/profile.php?action=logout" class="btn register">Se déconnecter</a>
+            <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
+            <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php?action=logout" class="btn register">Se déconnecter</a>
         <?php else: ?>
             <a href="<?= $baseUrl ?>/login.php" class="btn login">Login</a>
             <a href="<?= $baseUrl ?>/register.php" class="btn register">Register</a>
