@@ -1,13 +1,13 @@
 <?php
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../Model/User.php';
+require_once __DIR__ . '/../model/User.php';
 
 class UserP {
 
     // 🔹 LIST USERS
     public function listUsers() {
         $sql = "SELECT * FROM user";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
         try {
             return $db->query($sql);
         } catch (Exception $e) {
@@ -19,7 +19,7 @@ class UserP {
     public function addUser($user) {
         $sql = "INSERT INTO user (nom, prenom, email, mdp, type, age)
                 VALUES (:nom, :prenom, :email, :mdp, :type, :age)";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);
@@ -39,7 +39,7 @@ class UserP {
     // 🔹 DELETE
     public function deleteUser($id) {
         $sql = "DELETE FROM user WHERE iduser = :id";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
         $req = $db->prepare($sql);
         $req->bindValue(':id', $id);
 
@@ -52,7 +52,7 @@ class UserP {
 
     // 🔹 UPDATE
     public function updateUser($user, $id) {
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare(
@@ -81,12 +81,12 @@ class UserP {
 
     // 🔹 SHOW USER
     public function showUser($id) {
-        $sql = "SELECT * FROM user WHERE iduser = $id";
-        $db = config::getConnexion();
+        $sql = "SELECT * FROM user WHERE iduser = :id";
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);
-            $query->execute();
+            $query->execute(['id' => $id]);
             return $query->fetch();
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());

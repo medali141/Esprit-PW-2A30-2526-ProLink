@@ -1,110 +1,88 @@
 <?php
 /**
- * Modèle métier / accès données — table `produit` (gestion achats & catalogue).
+ * Entité domaine — table `produit` (référence, prix, stock, vendeur).
+ * La persistance et les requêtes sont dans {@see ProduitController}.
  */
-require_once __DIR__ . '/../config.php';
-
 class Produit {
+    private ?int $idproduit;
+    private string $reference;
+    private string $designation;
+    private ?string $description;
+    private float $prix_unitaire;
+    private int $stock;
+    private int $id_vendeur;
+    private int $actif;
+    private ?string $created_at;
 
-    public function listAllAdmin(): array {
-        $sql = "SELECT p.*, u.nom AS vendeur_nom, u.prenom AS vendeur_prenom, u.email AS vendeur_email
-                FROM produit p
-                INNER JOIN user u ON u.iduser = p.id_vendeur
-                ORDER BY p.created_at DESC";
-        $db = Config::getConnexion();
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    public function __construct(
+        string $reference,
+        string $designation,
+        ?string $description,
+        float $prix_unitaire,
+        int $stock,
+        int $id_vendeur,
+        int $actif = 1,
+        ?int $idproduit = null,
+        ?string $created_at = null
+    ) {
+        $this->reference = $reference;
+        $this->designation = $designation;
+        $this->description = $description;
+        $this->prix_unitaire = $prix_unitaire;
+        $this->stock = $stock;
+        $this->id_vendeur = $id_vendeur;
+        $this->actif = $actif;
+        $this->idproduit = $idproduit;
+        $this->created_at = $created_at;
     }
 
-    public function listCatalogueActifs(): array {
-        $sql = "SELECT p.*, u.prenom AS vendeur_prenom, u.nom AS vendeur_nom
-                FROM produit p
-                INNER JOIN user u ON u.iduser = p.id_vendeur
-                WHERE p.actif = 1
-                ORDER BY p.designation ASC";
-        $db = Config::getConnexion();
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    public static function fromRow(array $r): self {
+        return new self(
+            (string) ($r['reference'] ?? ''),
+            (string) ($r['designation'] ?? ''),
+            isset($r['description']) ? (string) $r['description'] : null,
+            (float) ($r['prix_unitaire'] ?? 0),
+            (int) ($r['stock'] ?? 0),
+            (int) ($r['id_vendeur'] ?? 0),
+            (int) ($r['actif'] ?? 1),
+            isset($r['idproduit']) ? (int) $r['idproduit'] : null,
+            isset($r['created_at']) ? (string) $r['created_at'] : null
+        );
     }
 
-    public function listByVendeur(int $idVendeur): array {
-        $sql = "SELECT * FROM produit WHERE id_vendeur = :v ORDER BY created_at DESC";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['v' => $idVendeur]);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+    public function getIdproduit(): ?int {
+        return $this->idproduit;
     }
 
-    public function getById(int $id): ?array {
-        $sql = "SELECT * FROM produit WHERE idproduit = :id LIMIT 1";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['id' => $id]);
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
+    public function getReference(): string {
+        return $this->reference;
     }
 
-    public function add(array $data): void {
-        $sql = "INSERT INTO produit (reference, designation, description, prix_unitaire, stock, id_vendeur, actif)
-                VALUES (:reference, :designation, :description, :prix_unitaire, :stock, :id_vendeur, :actif)";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute([
-            'reference' => $data['reference'],
-            'designation' => $data['designation'],
-            'description' => $data['description'] ?? null,
-            'prix_unitaire' => $data['prix_unitaire'],
-            'stock' => (int) $data['stock'],
-            'id_vendeur' => (int) $data['id_vendeur'],
-            'actif' => isset($data['actif']) ? (int) (bool) $data['actif'] : 1,
-        ]);
+    public function getDesignation(): string {
+        return $this->designation;
     }
 
-    public function update(int $id, array $data): void {
-        $sql = "UPDATE produit SET
-                reference = :reference,
-                designation = :designation,
-                description = :description,
-                prix_unitaire = :prix_unitaire,
-                stock = :stock,
-                id_vendeur = :id_vendeur,
-                actif = :actif
-                WHERE idproduit = :id";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute([
-            'id' => $id,
-            'reference' => $data['reference'],
-            'designation' => $data['designation'],
-            'description' => $data['description'] ?? null,
-            'prix_unitaire' => $data['prix_unitaire'],
-            'stock' => (int) $data['stock'],
-            'id_vendeur' => (int) $data['id_vendeur'],
-            'actif' => (int) (bool) ($data['actif'] ?? 1),
-        ]);
+    public function getDescription(): ?string {
+        return $this->description;
     }
 
-    public function setActif(int $id, int $actif): void {
-        $db = Config::getConnexion();
-        $st = $db->prepare("UPDATE produit SET actif = :a WHERE idproduit = :id");
-        $st->execute(['a' => $actif ? 1 : 0, 'id' => $id]);
+    public function getPrixUnitaire(): float {
+        return $this->prix_unitaire;
     }
 
-    public function countOrdered(int $idProduit): int {
-        $db = Config::getConnexion();
-        $st = $db->prepare("SELECT COUNT(*) FROM commande_produit WHERE idproduit = :id");
-        $st->execute(['id' => $idProduit]);
-        return (int) $st->fetchColumn();
+    public function getStock(): int {
+        return $this->stock;
     }
 
-    public function deleteHard(int $id): void {
-        $db = Config::getConnexion();
-        $st = $db->prepare("DELETE FROM produit WHERE idproduit = :id");
-        $st->execute(['id' => $id]);
+    public function getIdVendeur(): int {
+        return $this->id_vendeur;
     }
 
-    /** Comptes pouvant être vendeurs (FK user) — priorité entrepreneurs. */
-    public function listVendeursForSelect(): array {
-        $sql = "SELECT iduser, nom, prenom, email, type FROM user ORDER BY FIELD(type,'entrepreneur','admin','candidat'), nom, prenom";
-        $db = Config::getConnexion();
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    public function getActif(): int {
+        return $this->actif;
+    }
+
+    public function getCreatedAt(): ?string {
+        return $this->created_at;
     }
 }

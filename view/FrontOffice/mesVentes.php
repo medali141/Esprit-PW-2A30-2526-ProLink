@@ -3,7 +3,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
-require_once __DIR__ . '/../../controller/CommandeP.php';
+require_once __DIR__ . '/../../controller/CommandeController.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -16,7 +16,7 @@ if (strtolower($u['type'] ?? '') !== 'entrepreneur') {
     exit;
 }
 
-$cp = new CommandeP();
+$cp = new CommandeController();
 $list = $cp->listByVendeur((int) $u['iduser']);
 $labels = [
     'brouillon' => 'Brouillon',
@@ -34,31 +34,43 @@ $labels = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mes ventes — ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
     <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/storefront.css">
 </head>
 <body>
 <?php include __DIR__ . '/components/navbar.php'; ?>
-<main class="container">
-    <h1>Commandes contenant mes produits</h1>
-    <p class="hint">Vue vendeur : suivi global géré par l’administrateur (statut, numéro de suivi).</p>
+<main class="container fo-page">
+    <header class="fo-hero">
+        <h1>Commandes contenant mes produits</h1>
+        <p class="fo-lead">Vue vendeur : le suivi détaillé (statut, numéro de suivi) est géré par l’administrateur.</p>
+    </header>
     <?php if (empty($list)): ?>
-        <p class="hint">Aucune commande pour vos références.</p>
+        <div class="fo-empty">
+            <p class="hint" style="margin:0 0 12px">Aucune commande pour vos références.</p>
+            <a href="mesProduits.php">Gérer mes produits</a>
+        </div>
     <?php else: ?>
-        <table class="table-modern card" style="margin-top:16px;padding:0">
-            <thead><tr><th>#</th><th>Date</th><th>Acheteur</th><th>Montant TTC</th><th>Statut</th><th>Suivi</th></tr></thead>
+        <div class="fo-table-wrap">
+        <table class="table-modern">
+            <thead><tr><th>#</th><th>Date</th><th>Acheteur</th><th>Montant</th><th>Statut</th><th>Suivi</th></tr></thead>
             <tbody>
-            <?php foreach ($list as $c): ?>
+            <?php foreach ($list as $c):
+                $st = $c['statut'] ?? '';
+                $badgeClass = 'fo-badge fo-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
+            ?>
                 <tr>
-                    <td><?= (int) $c['idcommande'] ?></td>
+                    <td><strong>#<?= (int) $c['idcommande'] ?></strong></td>
                     <td><?= htmlspecialchars($c['date_commande']) ?></td>
                     <td><?= htmlspecialchars(trim(($c['prenom'] ?? '') . ' ' . ($c['nom'] ?? ''))) ?></td>
                     <td><?= number_format((float) $c['montant_total'], 3, ',', ' ') ?> TND</td>
-                    <td><?= htmlspecialchars($labels[$c['statut']] ?? $c['statut']) ?></td>
+                    <td><span class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($labels[$st] ?? $st) ?></span></td>
                     <td><?= htmlspecialchars((string) ($c['numero_suivi'] ?? '—')) ?></td>
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     <?php endif; ?>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>

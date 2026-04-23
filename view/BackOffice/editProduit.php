@@ -9,8 +9,8 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     header('Location: ../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/ProduitP.php';
-$pp = new ProduitP();
+require_once __DIR__ . '/../../controller/ProduitController.php';
+$pp = new ProduitController();
 $id = (int) ($_GET['id'] ?? 0);
 $prod = $id ? $pp->getById($id) : null;
 if (!$prod) {

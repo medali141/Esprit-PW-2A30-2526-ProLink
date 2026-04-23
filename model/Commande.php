@@ -1,250 +1,120 @@
 <?php
 /**
- * Modèle métier / accès données — tables `commande` et `commande_produit`.
+ * Entité domaine — table `commande` (acheteur, statut, livraison, montant).
+ * La persistance est dans {@see CommandeController}.
  */
-require_once __DIR__ . '/../config.php';
-
 class Commande {
+    private ?int $idcommande;
+    private int $id_acheteur;
+    private string $statut;
+    private float $montant_total;
+    private string $notes;
+    private string $adresse_livraison;
+    private string $code_postal;
+    private string $ville;
+    private string $pays;
+    private ?string $date_commande;
+    private ?string $numero_suivi;
+    private ?string $date_livraison_prevue;
+    private ?string $date_livraison_effective;
 
-    public function listAllAdmin(): array {
-        $sql = "SELECT c.*, u.prenom, u.nom, u.email
-                FROM commande c
-                INNER JOIN user u ON u.iduser = c.id_acheteur
-                ORDER BY c.date_commande DESC";
-        $db = Config::getConnexion();
-        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function listByAcheteur(int $idAcheteur): array {
-        $sql = "SELECT * FROM commande WHERE id_acheteur = :a ORDER BY date_commande DESC";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['a' => $idAcheteur]);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getById(int $id): ?array {
-        $sql = "SELECT c.*, u.prenom, u.nom, u.email
-                FROM commande c
-                INNER JOIN user u ON u.iduser = c.id_acheteur
-                WHERE c.idcommande = :id LIMIT 1";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['id' => $id]);
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
-    }
-
-    public function getLignes(int $idCommande): array {
-        $sql = "SELECT cp.*, p.reference, p.designation, p.id_vendeur,
-                       uv.prenom AS v_prenom, uv.nom AS v_nom
-                FROM commande_produit cp
-                INNER JOIN produit p ON p.idproduit = cp.idproduit
-                INNER JOIN user uv ON uv.iduser = p.id_vendeur
-                WHERE cp.idcommande = :id
-                ORDER BY p.designation";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['id' => $idCommande]);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * @param array<int,int> $cart idproduit => quantite
-     * @param array{adresse_livraison:string,code_postal:string,ville:string,pays?:string,notes?:string} $livraison
-     */
-    public function createFromCart(int $acheteurId, array $cart, array $livraison): int {
-        if (empty($cart)) {
-            throw new InvalidArgumentException('Panier vide');
-        }
-
-        $db = Config::getConnexion();
-        $db->beginTransaction();
-
-        try {
-            $total = 0.0;
-            $resolved = [];
-
-            foreach ($cart as $idProduit => $qte) {
-                $idProduit = (int) $idProduit;
-                $qte = (int) $qte;
-                if ($idProduit <= 0 || $qte <= 0) {
-                    continue;
-                }
-
-                $st = $db->prepare("SELECT idproduit, prix_unitaire, stock, actif FROM produit WHERE idproduit = :id FOR UPDATE");
-                $st->execute(['id' => $idProduit]);
-                $p = $st->fetch(PDO::FETCH_ASSOC);
-                if (!$p || !(int) $p['actif']) {
-                    throw new RuntimeException('Produit indisponible : #' . $idProduit);
-                }
-                if ((int) $p['stock'] < $qte) {
-                    throw new RuntimeException('Stock insuffisant pour le produit #' . $idProduit);
-                }
-
-                $pu = (float) $p['prix_unitaire'];
-                $lineTotal = $pu * $qte;
-                $total += $lineTotal;
-                $resolved[] = ['id' => $idProduit, 'qte' => $qte, 'pu' => $pu];
-            }
-
-            if (empty($resolved)) {
-                throw new InvalidArgumentException('Panier invalide');
-            }
-
-            $pays = $livraison['pays'] ?? 'Tunisie';
-            $notes = $livraison['notes'] ?? null;
-
-            $ins = $db->prepare(
-                "INSERT INTO commande (id_acheteur, statut, montant_total, notes, adresse_livraison, code_postal, ville, pays)
-                 VALUES (:acheteur, 'en_attente_paiement', :total, :notes, :adr, :cp, :ville, :pays)"
-            );
-            $ins->execute([
-                'acheteur' => $acheteurId,
-                'total' => round($total, 2),
-                'notes' => $notes,
-                'adr' => $livraison['adresse_livraison'],
-                'cp' => $livraison['code_postal'],
-                'ville' => $livraison['ville'],
-                'pays' => $pays,
-            ]);
-            $idCommande = (int) $db->lastInsertId();
-
-            $insL = $db->prepare(
-                "INSERT INTO commande_produit (idcommande, idproduit, quantite, prix_unitaire)
-                 VALUES (:idc, :idp, :qte, :pu)"
-            );
-            $upd = $db->prepare("UPDATE produit SET stock = stock - :q WHERE idproduit = :id");
-
-            foreach ($resolved as $line) {
-                $insL->execute([
-                    'idc' => $idCommande,
-                    'idp' => $line['id'],
-                    'qte' => $line['qte'],
-                    'pu' => $line['pu'],
-                ]);
-                $upd->execute(['q' => $line['qte'], 'id' => $line['id']]);
-            }
-
-            $db->commit();
-            return $idCommande;
-        } catch (Throwable $e) {
-            $db->rollBack();
-            throw $e;
-        }
-    }
-
-    public function updateMeta(
-        int $id,
+    public function __construct(
+        int $id_acheteur,
         string $statut,
-        ?string $numeroSuivi,
-        ?string $datePrevue,
-        ?string $dateEffective,
-        ?string $notes
-    ): void {
-        $allowed = [
-            'brouillon', 'en_attente_paiement', 'payee', 'en_preparation',
-            'expediee', 'livree', 'annulee',
-        ];
-        if (!in_array($statut, $allowed, true)) {
-            throw new InvalidArgumentException('Statut invalide');
-        }
-
-        $db = Config::getConnexion();
-        $db->beginTransaction();
-
-        try {
-            $st = $db->prepare("SELECT statut FROM commande WHERE idcommande = :id FOR UPDATE");
-            $st->execute(['id' => $id]);
-            $old = $st->fetch(PDO::FETCH_ASSOC);
-            if (!$old) {
-                throw new RuntimeException('Commande introuvable');
-            }
-            $oldStatut = $old['statut'];
-
-            if ($statut === 'annulee' && $oldStatut !== 'annulee') {
-                $this->restoreStockForCommande($db, $id);
-            }
-
-            if ($oldStatut === 'annulee' && $statut !== 'annulee') {
-                $this->decrementStockForCommande($db, $id);
-            }
-
-            $up = $db->prepare(
-                "UPDATE commande SET
-                    statut = :st,
-                    numero_suivi = :ns,
-                    date_livraison_prevue = :dp,
-                    date_livraison_effective = :de,
-                    notes = :notes
-                 WHERE idcommande = :id"
-            );
-            $up->execute([
-                'st' => $statut,
-                'ns' => ($numeroSuivi !== null && $numeroSuivi !== '') ? $numeroSuivi : null,
-                'dp' => ($datePrevue !== null && $datePrevue !== '') ? $datePrevue : null,
-                'de' => ($dateEffective !== null && $dateEffective !== '') ? $dateEffective : null,
-                'notes' => $notes ?? '',
-                'id' => $id,
-            ]);
-
-            $db->commit();
-        } catch (Throwable $e) {
-            $db->rollBack();
-            throw $e;
-        }
+        float $montant_total,
+        string $notes,
+        string $adresse_livraison,
+        string $code_postal,
+        string $ville,
+        string $pays = 'Tunisie',
+        ?int $idcommande = null,
+        ?string $date_commande = null,
+        ?string $numero_suivi = null,
+        ?string $date_livraison_prevue = null,
+        ?string $date_livraison_effective = null
+    ) {
+        $this->id_acheteur = $id_acheteur;
+        $this->statut = $statut;
+        $this->montant_total = $montant_total;
+        $this->notes = $notes;
+        $this->adresse_livraison = $adresse_livraison;
+        $this->code_postal = $code_postal;
+        $this->ville = $ville;
+        $this->pays = $pays;
+        $this->idcommande = $idcommande;
+        $this->date_commande = $date_commande;
+        $this->numero_suivi = $numero_suivi;
+        $this->date_livraison_prevue = $date_livraison_prevue;
+        $this->date_livraison_effective = $date_livraison_effective;
     }
 
-    private function restoreStockForCommande(PDO $db, int $idCommande): void {
-        $st = $db->prepare("SELECT idproduit, quantite FROM commande_produit WHERE idcommande = :id");
-        $st->execute(['id' => $idCommande]);
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        $upd = $db->prepare("UPDATE produit SET stock = stock + :q WHERE idproduit = :idp");
-        foreach ($rows as $r) {
-            $upd->execute(['q' => (int) $r['quantite'], 'idp' => (int) $r['idproduit']]);
-        }
+    public static function fromRow(array $r): self {
+        return new self(
+            (int) ($r['id_acheteur'] ?? 0),
+            (string) ($r['statut'] ?? 'brouillon'),
+            (float) ($r['montant_total'] ?? 0),
+            (string) ($r['notes'] ?? ''),
+            (string) ($r['adresse_livraison'] ?? ''),
+            (string) ($r['code_postal'] ?? ''),
+            (string) ($r['ville'] ?? ''),
+            (string) ($r['pays'] ?? 'Tunisie'),
+            isset($r['idcommande']) ? (int) $r['idcommande'] : null,
+            isset($r['date_commande']) ? (string) $r['date_commande'] : null,
+            isset($r['numero_suivi']) ? (string) $r['numero_suivi'] : null,
+            isset($r['date_livraison_prevue']) ? (string) $r['date_livraison_prevue'] : null,
+            isset($r['date_livraison_effective']) ? (string) $r['date_livraison_effective'] : null
+        );
     }
 
-    private function decrementStockForCommande(PDO $db, int $idCommande): void {
-        $st = $db->prepare("SELECT idproduit, quantite FROM commande_produit WHERE idcommande = :id");
-        $st->execute(['id' => $idCommande]);
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        $sel = $db->prepare("SELECT stock FROM produit WHERE idproduit = :id FOR UPDATE");
-        $upd = $db->prepare("UPDATE produit SET stock = stock - :q WHERE idproduit = :idp");
-        foreach ($rows as $r) {
-            $q = (int) $r['quantite'];
-            $idp = (int) $r['idproduit'];
-            $sel->execute(['id' => $idp]);
-            $stock = (int) $sel->fetchColumn();
-            if ($stock < $q) {
-                throw new RuntimeException('Stock insuffisant pour réactiver la commande');
-            }
-            $upd->execute(['q' => $q, 'idp' => $idp]);
-        }
+    public function getIdcommande(): ?int {
+        return $this->idcommande;
     }
 
-    public function countAll(): int {
-        $db = Config::getConnexion();
-        return (int) $db->query("SELECT COUNT(*) FROM commande")->fetchColumn();
+    public function getIdAcheteur(): int {
+        return $this->id_acheteur;
     }
 
-    public function countProduitsActifs(): int {
-        $db = Config::getConnexion();
-        return (int) $db->query("SELECT COUNT(*) FROM produit WHERE actif = 1")->fetchColumn();
+    public function getStatut(): string {
+        return $this->statut;
     }
 
-    /** Commandes contenant au moins un produit du vendeur. */
-    public function listByVendeur(int $idVendeur): array {
-        $sql = "SELECT DISTINCT c.*, u.prenom, u.nom, u.email
-                FROM commande c
-                INNER JOIN user u ON u.iduser = c.id_acheteur
-                INNER JOIN commande_produit cp ON cp.idcommande = c.idcommande
-                INNER JOIN produit p ON p.idproduit = cp.idproduit
-                WHERE p.id_vendeur = :v
-                ORDER BY c.date_commande DESC";
-        $db = Config::getConnexion();
-        $st = $db->prepare($sql);
-        $st->execute(['v' => $idVendeur]);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+    public function getMontantTotal(): float {
+        return $this->montant_total;
+    }
+
+    public function getNotes(): string {
+        return $this->notes;
+    }
+
+    public function getAdresseLivraison(): string {
+        return $this->adresse_livraison;
+    }
+
+    public function getCodePostal(): string {
+        return $this->code_postal;
+    }
+
+    public function getVille(): string {
+        return $this->ville;
+    }
+
+    public function getPays(): string {
+        return $this->pays;
+    }
+
+    public function getDateCommande(): ?string {
+        return $this->date_commande;
+    }
+
+    public function getNumeroSuivi(): ?string {
+        return $this->numero_suivi;
+    }
+
+    public function getDateLivraisonPrevue(): ?string {
+        return $this->date_livraison_prevue;
+    }
+
+    public function getDateLivraisonEffective(): ?string {
+        return $this->date_livraison_effective;
     }
 }
