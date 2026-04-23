@@ -1,7 +1,10 @@
 <?php
+/**
+ * Contrôleur achats / catalogue — requêtes et règles sur la table `produit`.
+ */
 require_once __DIR__ . '/../config.php';
 
-class ProduitP {
+class ProduitController {
 
     public function listAllAdmin(): array {
         $sql = "SELECT p.*, u.nom AS vendeur_nom, u.prenom AS vendeur_prenom, u.email AS vendeur_email

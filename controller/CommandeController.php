@@ -1,7 +1,10 @@
 <?php
+/**
+ * Contrôleur commandes — tables `commande` et `commande_produit`.
+ */
 require_once __DIR__ . '/../config.php';
 
-class CommandeP {
+class CommandeController {
 
     public function listAllAdmin(): array {
         $sql = "SELECT c.*, u.prenom, u.nom, u.email

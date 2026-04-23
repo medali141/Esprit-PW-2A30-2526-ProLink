@@ -9,8 +9,8 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     header('Location: ../../../login.php');
     exit;
 }
-require_once __DIR__ . '/../../../../controller/CommandeP.php';
-$cp = new CommandeP();
+require_once __DIR__ . '/../../../../controller/CommandeController.php';
+$cp = new CommandeController();
 $id = (int) ($_GET['id'] ?? 0);
 $cmd = $id ? $cp->getById($id) : null;
 if (!$cmd) {
@@ -55,27 +55,38 @@ $deVal = $cmd['date_livraison_effective'] ?? '';
 if ($deVal && strpos($deVal, ' ') !== false) {
     $deVal = str_replace(' ', 'T', substr($deVal, 0, 16));
 }
+$st = $cmd['statut'] ?? '';
+$badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Commande #<?= $id ?></title>
-    <style>.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:800px){.grid2{grid-template-columns:1fr}} label{display:block;margin-top:10px;font-weight:600} input,select,textarea{width:100%;padding:8px;margin-top:4px;box-sizing:border-box}</style>
+    <link rel="stylesheet" href="../../commerce.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
-<div class="content">
+<div class="content commerce-page">
     <div class="topbar">
-        <div class="page-title">Commande #<?= $id ?></div>
+        <div>
+            <div class="page-title">Commande #<?= $id ?></div>
+            <p class="hint" style="margin:6px 0 0">Statut : <span class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($statuts[$st] ?? $st) ?></span></p>
+        </div>
         <a href="listCommandes.php" class="btn btn-secondary">Retour liste</a>
     </div>
     <div class="container" style="max-width:960px">
-        <?php if ($ok): ?><p style="color:#27ae60">Enregistré.</p><?php endif; ?>
-        <?php if ($error): ?><p style="color:#c0392b"><?= htmlspecialchars($error) ?></p><?php endif; ?>
+        <?php if ($ok): ?>
+            <div class="commerce-alert commerce-alert--ok">Modifications enregistrées.</div>
+        <?php endif; ?>
+        <?php if ($error): ?>
+            <div class="commerce-alert commerce-alert--err"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
 
-        <div class="card" style="margin-bottom:16px">
-            <h3 style="margin-top:0">Lignes</h3>
+        <div class="commerce-form-card" style="margin-bottom:20px">
+            <h3 class="commerce-card-title">Lignes de commande</h3>
+            <div class="commerce-table-wrap">
             <table class="table-modern">
                 <thead><tr><th>Produit</th><th>Vendeur</th><th>Qté</th><th>Prix u.</th><th>Total ligne</th></tr></thead>
                 <tbody>
@@ -90,17 +101,21 @@ if ($deVal && strpos($deVal, ' ') !== false) {
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            <p style="margin-top:12px"><strong>Total :</strong> <?= number_format((float) $cmd['montant_total'], 3, ',', ' ') ?> TND</p>
+            </div>
+            <p style="margin-top:14px;font-weight:700">Total : <?= number_format((float) $cmd['montant_total'], 3, ',', ' ') ?> TND</p>
         </div>
 
-        <div class="card">
-            <h3 style="margin-top:0">Livraison &amp; suivi</h3>
-            <p><strong>Adresse :</strong> <?= htmlspecialchars($cmd['adresse_livraison']) ?>,
+        <div class="commerce-form-card">
+            <h3 class="commerce-card-title">Livraison et suivi</h3>
+            <div class="commerce-addr-block">
+                <strong>Adresse de livraison</strong><br>
+                <?= htmlspecialchars($cmd['adresse_livraison']) ?>,
                 <?= htmlspecialchars($cmd['code_postal']) ?> <?= htmlspecialchars($cmd['ville']) ?>,
-                <?= htmlspecialchars($cmd['pays'] ?? '') ?></p>
-            <form method="post" class="grid2" novalidate data-validate="commande-form">
+                <?= htmlspecialchars($cmd['pays'] ?? '') ?>
+            </div>
+            <form method="post" class="commerce-detail-grid" novalidate data-validate="commande-form">
                 <div>
-                    <label>Statut</label>
+                    <label class="field-first">Statut</label>
                     <select name="statut">
                         <?php foreach ($statuts as $k => $lab): ?>
                             <option value="<?= htmlspecialchars($k) ?>" <?= ($cmd['statut'] === $k) ? 'selected' : '' ?>><?= htmlspecialchars($lab) ?></option>
@@ -123,7 +138,7 @@ if ($deVal && strpos($deVal, ' ') !== false) {
                     <label>Notes internes</label>
                     <textarea name="notes" rows="3"><?= htmlspecialchars((string) ($cmd['notes'] ?? '')) ?></textarea>
                 </div>
-                <div style="grid-column:1/-1">
+                <div style="grid-column:1/-1" class="btn-submit-wrap">
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </div>
             </form>
