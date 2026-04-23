@@ -9,46 +9,56 @@ if (isset($_GET['id'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Détail utilisateur</title>
-    <style>
-        body{ margin:0; font-family: Arial, sans-serif; }
-        .card {
-            width: 340px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #f4f4f4;
-            border-radius: 10px;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        p { font-size: 16px; }
-    </style>
+    <meta charset="UTF-8">
+    <title>Détail utilisateur — BackOffice</title>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
 <?php include 'sidebar.php'; ?>
 
-<!-- CONTENT -->
 <div class="content">
-    <div class="topbar">
-        <div class="page-title">Détail utilisateur</div>
-        <div class="actions">
-            <a href="listUsers.php" class="btn btn-secondary">← Retour</a>
+    <div class="container page-full">
+        <div class="topbar">
+            <div class="page-title">Détail utilisateur</div>
+            <div class="actions">
+                <a href="listUsers.php" class="btn btn-secondary">← Retour</a>
+            </div>
         </div>
-    </div>
 
-    <div class="card" style="max-width:480px; margin: 0 auto;">
-        <h3 style="margin-top:0;">Profil</h3>
-        <p><b>ID:</b> <?= htmlspecialchars($user['iduser']) ?></p>
-        <p><b>Nom:</b> <?= htmlspecialchars($user['nom']) ?></p>
-        <p><b>Prénom:</b> <?= htmlspecialchars($user['prenom']) ?></p>
-        <p><b>Email:</b> <?= htmlspecialchars($user['email']) ?></p>
-        <p><b>Type:</b> <?= htmlspecialchars($user['type']) ?></p>
-        <p><b>Age:</b> <?= htmlspecialchars($user['age']) ?></p>
+        <div class="card" style="max-width:760px; margin: 0 auto; padding:18px">
+            <h3 style="margin-top:0;">Profil</h3>
+
+            <table class="table-modern" style="width:100%; max-width:720px; margin: 12px auto;">
+                <tbody>
+                <tr>
+                    <th style="width:180px; background:transparent; color:var(--accent-2);">ID</th>
+                    <td><?= htmlspecialchars($user['iduser']) ?></td>
+                </tr>
+                <tr>
+                    <th style="background:transparent; color:var(--accent-2);">Nom</th>
+                    <td><?= htmlspecialchars($user['nom']) ?></td>
+                </tr>
+                <tr>
+                    <th style="background:transparent; color:var(--accent-2);">Prénom</th>
+                    <td><?= htmlspecialchars($user['prenom']) ?></td>
+                </tr>
+                <tr>
+                    <th style="background:transparent; color:var(--accent-2);">Email</th>
+                    <td><?= htmlspecialchars($user['email']) ?></td>
+                </tr>
+                <tr>
+                    <th style="background:transparent; color:var(--accent-2);">Type</th>
+                    <td><?= htmlspecialchars($user['type']) ?></td>
+                </tr>
+                <tr>
+                    <th style="background:transparent; color:var(--accent-2);">Age</th>
+                    <td><?= htmlspecialchars($user['age']) ?></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

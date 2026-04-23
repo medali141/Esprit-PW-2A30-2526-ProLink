@@ -1,21 +1,12 @@
 <?php
-// Ensure session is started before any output. This prevents "headers already sent" warnings
-// and makes session data available to the navbar.
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
+// Ensure the common init/bootstrap is loaded. init.php sets up session and $baseUrl.
+if (!defined('APP_INIT')) {
+    require_once dirname(__DIR__, 3) . '/init.php';
 }
+
 $__nav_user = $_SESSION['user'] ?? null;
 $__nav_type = strtolower($__nav_user['type'] ?? '');
 $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
-
-// Try to compute project root (folder inside htdocs). Falls back to empty string.
-$projectFolder = basename(dirname(__DIR__, 3));
-$root = $projectFolder ? '/' . $projectFolder : '';
-$viewRoot = $root . '/view';
-// Build absolute base URL (http(s)://host{projectFolder}/view) to avoid wrong root-relative links
-$host = $_SERVER['HTTP_HOST'] ?? '';
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 ?>
 <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
