@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../../controller/AuthController.php';
 require_once __DIR__ . '/../../../controller/UserP.php';
 require_once __DIR__ . '/../../../model/User.php';
+require_once __DIR__ . '/../../../helpers/ProfilePhotoHelper.php';
 
 $auth = new AuthController();
 $user = $auth->profile();
@@ -28,17 +29,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Email invalide.';
     } else {
-        $updatedUser = new User($nom, $prenom, $email, $user['mdp'] ?? '', 'admin', $age);
-        $userP->updateUser($updatedUser, $user['iduser']);
+        $uid = (int) $user['iduser'];
+        $removePhoto = !empty($_POST['remove_photo']);
 
-        $fresh = $userP->showUser($user['iduser']);
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
+        if ($removePhoto) {
+            ProfilePhotoHelper::deleteAllForUser($uid);
+            $userP->setUserPhoto(null, $uid);
+        } else {
+            $file = $_FILES['photo'] ?? ['error' => UPLOAD_ERR_NO_FILE];
+            $res = ProfilePhotoHelper::saveFromUpload($file, $uid);
+            if (!$res['ok']) {
+                $error = $res['error'] ?? 'Photo invalide.';
+            } elseif ($res['path'] !== null) {
+                $userP->setUserPhoto($res['path'], $uid);
+            }
         }
-        $_SESSION['user'] = $fresh;
 
-        header('Location: profile_admin.php?updated=1');
-        exit;
+        if ($error === '') {
+            $updatedUser = new User($nom, $prenom, $email, $user['mdp'] ?? '', 'admin', $age);
+            $userP->updateUser($updatedUser, $uid);
+
+            $fresh = $userP->showUser($uid);
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['user'] = $fresh;
+
+            header('Location: profile_admin.php?updated=1');
+            exit;
+        }
     }
 }
 
@@ -68,7 +87,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color:#b00020"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" novalidate data-validate="user-form">
+        <form method="POST" enctype="multipart/form-data" novalidate data-validate="user-form">
+            <label>Photo de profil</label>
+            <?php if (!empty($user['photo'])): ?>
+                <p style="margin:4px 0 8px;font-size:13px;color:#555">Photo actuelle :</p>
+                <p style="margin:0 0 12px"><img src="../../<?= htmlspecialchars(str_replace('\\', '/', $user['photo'])) ?>" alt="" style="max-width:120px;max-height:120px;border-radius:8px;border:1px solid #ddd"></p>
+            <?php endif; ?>
+            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+            <p style="margin:4px 0 12px;font-size:13px;color:#666">JPEG, PNG ou WebP — 2 Mo max.</p>
+            <?php if (!empty($user['photo'])): ?>
+                <label style="display:flex;align-items:center;gap:8px;font-weight:normal;margin-bottom:12px">
+                    <input type="checkbox" name="remove_photo" value="1"> Supprimer la photo
+                </label>
+            <?php endif; ?>
+
             <label>Nom</label>
             <input type="text" name="nom" value="<?= htmlspecialchars($_POST['nom'] ?? $user['nom']) ?>">
 

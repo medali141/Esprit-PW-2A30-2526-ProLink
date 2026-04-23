@@ -24,6 +24,9 @@ if ($initials === '') {
     $initials = '?';
 }
 
+$detailPhotoRel = trim((string) ($user['photo'] ?? ''));
+$detailPhotoSrc = $detailPhotoRel !== '' ? '../../' . htmlspecialchars(str_replace('\\', '/', $detailPhotoRel)) : '';
+
 $typeKey = strtolower((string) ($user['type'] ?? ''));
 $typeLabels = [
     'admin' => 'Administrateur',
@@ -118,6 +121,21 @@ if ($displayName === '') {
             gap: 20px;
             flex-wrap: wrap;
         }
+        .user-detail-avatar-wrap {
+            flex-shrink: 0;
+            position: relative;
+            width: 88px;
+            height: 88px;
+        }
+        .user-detail-photo {
+            width: 88px;
+            height: 88px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: block;
+        }
         .user-detail-avatar {
             width: 88px;
             height: 88px;
@@ -132,6 +150,13 @@ if ($displayName === '') {
             border: 1px solid rgba(255,255,255,0.35);
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             flex-shrink: 0;
+        }
+        .user-detail-avatar-wrap .user-detail-avatar {
+            position: absolute;
+            inset: 0;
+        }
+        .user-detail-avatar-wrap .user-detail-avatar.is-hidden {
+            display: none;
         }
         .user-detail-hero-text { min-width: 0; flex: 1; }
         .user-detail-hero-text h1 {
@@ -273,7 +298,12 @@ if ($displayName === '') {
         <div class="user-detail-wrap">
             <div class="user-detail-hero">
                 <div class="user-detail-hero-inner">
-                    <div class="user-detail-avatar" aria-hidden="true"><?= htmlspecialchars($initials) ?></div>
+                    <div class="user-detail-avatar-wrap">
+                        <?php if ($detailPhotoSrc !== ''): ?>
+                            <img class="user-detail-photo" src="<?= $detailPhotoSrc ?>" alt="" width="88" height="88" decoding="async" onerror="this.style.display='none'; var el=document.getElementById('bo-user-detail-initials'); if(el){ el.classList.remove('is-hidden'); }">
+                        <?php endif; ?>
+                        <div id="bo-user-detail-initials" class="user-detail-avatar<?= $detailPhotoSrc !== '' ? ' is-hidden' : '' ?>" aria-hidden="true"><?= htmlspecialchars($initials) ?></div>
+                    </div>
                     <div class="user-detail-hero-text">
                         <h1><?= $displayName ?></h1>
                         <p class="user-detail-email"><?= htmlspecialchars($user['email'] ?? '') ?></p>

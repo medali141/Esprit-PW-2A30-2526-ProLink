@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../controller/AuthController.php';
+require_once __DIR__ . '/../../../init.php';
 
 $auth = new AuthController();
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
@@ -31,6 +32,12 @@ if ($initials === '') {
     $initials = '?';
 }
 $showUpdated = isset($_GET['updated']);
+
+$photoRel = trim((string) ($user['photo'] ?? ''));
+$photoSrc = '';
+if ($photoRel !== '') {
+    $photoSrc = $baseUrl . '/' . str_replace('\\', '/', $photoRel);
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -100,6 +107,21 @@ $showUpdated = isset($_GET['updated']);
             align-items: center;
             gap: 20px;
         }
+        .profile-view-avatar-wrap {
+            flex-shrink: 0;
+            position: relative;
+            width: 88px;
+            height: 88px;
+        }
+        .profile-view-photo {
+            width: 88px;
+            height: 88px;
+            border-radius: 22px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.45);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: block;
+        }
         .profile-view-avatar {
             width: 88px;
             height: 88px;
@@ -114,6 +136,13 @@ $showUpdated = isset($_GET['updated']);
             border: 1px solid rgba(255,255,255,0.45);
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             flex-shrink: 0;
+        }
+        .profile-view-avatar-wrap .profile-view-avatar {
+            position: absolute;
+            inset: 0;
+        }
+        .profile-view-avatar-wrap .profile-view-avatar.is-hidden {
+            display: none;
         }
         .profile-view-meta { flex: 1; min-width: 200px; }
         .profile-view-eyebrow {
@@ -274,7 +303,12 @@ $showUpdated = isset($_GET['updated']);
 
         <header class="profile-view-hero">
             <div class="profile-view-hero-grid">
-                <div class="profile-view-avatar" aria-hidden="true"><?= htmlspecialchars($initials) ?></div>
+                <div class="profile-view-avatar-wrap">
+                    <?php if ($photoSrc !== ''): ?>
+                        <img class="profile-view-photo" src="<?= htmlspecialchars($photoSrc) ?>" alt="" width="88" height="88" decoding="async" onerror="this.style.display='none'; var el=document.getElementById('fo-profile-initials'); if(el){ el.classList.remove('is-hidden'); }">
+                    <?php endif; ?>
+                    <div id="fo-profile-initials" class="profile-view-avatar<?= $photoSrc !== '' ? ' is-hidden' : '' ?>" aria-hidden="true"><?= htmlspecialchars($initials) ?></div>
+                </div>
                 <div class="profile-view-meta">
                     <p class="profile-view-eyebrow">Mon profil</p>
                     <h1><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h1>
