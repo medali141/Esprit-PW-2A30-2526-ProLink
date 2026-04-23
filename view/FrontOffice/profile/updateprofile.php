@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../../init.php';
 require_once __DIR__ . '/../../../controller/AuthController.php';
 require_once __DIR__ . '/../../../model/User.php';
 require_once __DIR__ . '/../../../controller/UserP.php';
+require_once __DIR__ . '/../../../helpers/ProfilePhotoHelper.php';
 
 $auth = new AuthController();
 $user = $auth->profile();
@@ -29,16 +30,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $type = $user['type'];
         }
 
-        $updatedUserObj = new User($nom, $prenom, $email, $user['mdp'] ?? '', $type, $age);
         $userP = new UserP();
-        $userP->updateUser($updatedUserObj, $user['iduser']);
+        $uid = (int) $user['iduser'];
+        $removePhoto = !empty($_POST['remove_photo']);
 
-        $fresh = $userP->showUser($user['iduser']);
-        session_start();
-        $_SESSION['user'] = $fresh;
+        if ($removePhoto) {
+            ProfilePhotoHelper::deleteAllForUser($uid);
+            $userP->setUserPhoto(null, $uid);
+        } else {
+            $file = $_FILES['photo'] ?? ['error' => UPLOAD_ERR_NO_FILE];
+            $res = ProfilePhotoHelper::saveFromUpload($file, $uid);
+            if (!$res['ok']) {
+                $error = $res['error'] ?? 'Photo invalide.';
+            } elseif ($res['path'] !== null) {
+                $userP->setUserPhoto($res['path'], $uid);
+            }
+        }
 
-        header('Location: profile.php?updated=1');
-        exit;
+        if ($error === '') {
+            $updatedUserObj = new User($nom, $prenom, $email, $user['mdp'] ?? '', $type, $age);
+            $userP->updateUser($updatedUserObj, $uid);
+
+            $fresh = $userP->showUser($uid);
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            $_SESSION['user'] = $fresh;
+
+            header('Location: profile.php?updated=1');
+            exit;
+        }
     }
 }
 
@@ -152,6 +173,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--pe-muted);
             margin-bottom: 6px;
         }
+        .profile-edit-form input[type="file"] {
+            padding: 10px 0;
+            font-size: 0.9rem;
+        }
+        .profile-edit-form .field-hint {
+            margin: 6px 0 0;
+            font-size: 0.8rem;
+            color: var(--pe-muted);
+            line-height: 1.4;
+        }
+        .profile-edit-form .field-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .profile-edit-form .field-check input { width: auto; }
+        .profile-edit-form .field-check label {
+            margin: 0;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--pe-text);
+            cursor: pointer;
+        }
         .profile-edit-form input,
         .profile-edit-form select {
             width: 100%;
@@ -246,6 +293,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         html.dark-mode body.fo-profile-page .profile-edit-form label {
             color: #94a3b8 !important;
         }
+        html.dark-mode body.fo-profile-page .profile-edit-form .field-hint {
+            color: #94a3b8 !important;
+        }
+        html.dark-mode body.fo-profile-page .profile-edit-form .field-check label {
+            color: #e2e8f0 !important;
+        }
         html.dark-mode body.fo-profile-page .profile-edit-form input,
         html.dark-mode body.fo-profile-page .profile-edit-form select {
             background: #1e293b !important;
@@ -292,7 +345,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="profile-form-error"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form class="profile-edit-form" method="POST" novalidate data-validate="user-form">
+            <form class="profile-edit-form" method="POST" enctype="multipart/form-data" novalidate data-validate="user-form">
+                <div class="field">
+                    <label for="f-photo">Photo de profil</label>
+                    <?php if (!empty($user['photo'])): ?>
+                        <p class="field-hint">Une photo est déjà enregistrée. Choisissez un nouveau fichier pour la remplacer.</p>
+                    <?php else: ?>
+                        <p class="field-hint">JPEG, PNG ou WebP — 2 Mo max.</p>
+                    <?php endif; ?>
+                    <input id="f-photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp">
+                    <?php if (!empty($user['photo'])): ?>
+                        <div class="field-check">
+                            <input type="checkbox" id="f-remove-photo" name="remove_photo" value="1">
+                            <label for="f-remove-photo">Supprimer ma photo de profil</label>
+                        </div>
+                    <?php endif; ?>
+                </div>
                 <div class="field">
                     <label for="f-nom">Nom</label>
                     <input id="f-nom" type="text" name="nom" placeholder="Votre nom" value="<?= htmlspecialchars($_POST['nom'] ?? $user['nom']) ?>" required>

@@ -32,6 +32,13 @@ if (strtolower($user['type'] ?? '') !== 'admin') {
     </div>
 
     <div class="card">
+        <?php
+        $__p = trim((string) ($user['photo'] ?? ''));
+        if ($__p !== '') {
+            $__src = '../../' . htmlspecialchars(str_replace('\\', '/', $__p));
+            echo '<p style="margin:0 0 16px"><img src="' . $__src . '" alt="" style="width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid #e5e7eb"></p>';
+        }
+        ?>
         <h2><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h2>
         <p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
         <p><strong>Type:</strong> <?= htmlspecialchars($user['type']) ?></p>
