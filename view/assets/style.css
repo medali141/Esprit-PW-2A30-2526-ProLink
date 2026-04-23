@@ -127,8 +127,20 @@ html.dark-mode .field-error{color:#fca5a5}
 html.dark-mode button.secondary{background:#334155; color:#f1f5f9}
 html.dark-mode h1, html.dark-mode h2, html.dark-mode h3{color:#f1f5f9}
 html.dark-mode a.btn.register{color:#0f1724}
-/* Ensure most textual elements are readable in dark mode */
-html.dark-mode body,
-html.dark-mode body *:not(.logo):not(.nav-links):not(.nav-links a):not(.cta):not(.feature-icon) {
-  color: #ffffff !important;
+
+/*
+ * Ne pas forcer `body * { color: white }` : ça rend le texte illisible sur fonds clairs
+ * (boutons, cartes, héros). La couleur par défaut vient de `html.dark-mode body` ci-dessus.
+ */
+html.dark-mode .hint,
+html.dark-mode .text-muted {
+  color: var(--muted) !important;
+}
+
+/* Liens dans le contenu principal (navbar / auth ont leurs propres règles) */
+html.dark-mode main a:not(.btn):not(.fo-btn):not(.home-btn):not(.cta):not(.login):not(.register):not(.logout):not(.edit) {
+  color: #7dd3fc;
+}
+html.dark-mode main a:not(.btn):not(.fo-btn):not(.home-btn):hover {
+  color: #bae6fd;
 }
