@@ -8,6 +8,8 @@ if (!$u) {
     header('Location: ../login.php');
     exit;
 }
+$isAdmin = strtolower((string) ($u['type'] ?? '')) === 'admin';
+$boDashboardUrl = ($baseUrl ?? '') . '/BackOffice/dashboard/dashboard.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -60,9 +62,13 @@ if (!$u) {
         .hero h1{ font-size:44px; margin:0 0 12px; line-height:1.02; color:#00151b; letter-spacing:-0.5px }
         .hero p{ margin:0 0 18px; color:rgba(0,21,26,0.85); font-weight:600 }
 
+        .hero-ctas{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-top:4px; position:relative; z-index:1 }
         .cta{ display:inline-block; background:linear-gradient(90deg,#00151b, #012a35); color:var(--accent-2); padding:14px 22px; border-radius:12px; font-weight:800; text-decoration:none; box-shadow: 0 10px 30px rgba(0,167,255,0.12); transition: transform .18s ease, box-shadow .18s ease; }
         .cta:hover{ transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,212,255,0.14); }
         .cta:focus{ outline: 3px solid rgba(0,167,255,0.14); outline-offset:4px }
+        .cta-admin{ display:inline-block; background:rgba(0,21,27,0.88); color:#e0f7ff; padding:14px 22px; border-radius:12px; font-weight:800; text-decoration:none; border:2px solid rgba(0,21,27,0.5); box-shadow:0 8px 24px rgba(0,0,0,0.2); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+        .cta-admin:hover{ transform: translateY(-4px); border-color:rgba(0,212,255,0.55); box-shadow:0 16px 36px rgba(0,212,255,0.18); color:#fff }
+        .cta-admin:focus{ outline:3px solid rgba(0,212,255,0.35); outline-offset:4px }
 
         .hero-visual{ flex:1; display:flex; justify-content:flex-end }
         .glass-card{ background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:12px; padding:14px; backdrop-filter: blur(6px); box-shadow: 0 10px 30px rgba(2,12,27,0.5); color:#dff6ff }
@@ -99,9 +105,17 @@ if (!$u) {
 
 <!-- HERO -->
 <section class="hero">
-    <h1>Bienvenue sur ProLink</h1>
-    <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
-    <a href="../login.php" class="cta">commencer</a>
+    <div class="hero-left">
+        <h1>Bienvenue sur ProLink</h1>
+        <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
+        <div class="hero-ctas">
+            <a href="../login.php" class="cta">commencer</a>
+            <?php if ($isAdmin): ?>
+                <a href="<?= htmlspecialchars($boDashboardUrl) ?>" class="cta-admin">Administration</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true"></div>
 </section>
 
 <!-- FEATURES -->
