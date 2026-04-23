@@ -36,7 +36,7 @@ $newId = isset($_GET['new']) ? (int) $_GET['new'] : 0;
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="../assets/storefront.css">
 </head>
-<body>
+<body class="fo-store-page">
 <?php include __DIR__ . '/components/navbar.php'; ?>
 <main class="container fo-page">
     <header class="fo-hero">
