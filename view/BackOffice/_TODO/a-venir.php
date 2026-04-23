@@ -17,6 +17,7 @@ $labels = [
     'projets' => 'Gestion des projets',
     'evenements' => 'Gestion des événements',
     'formations' => 'Gestion des formations',
+    'forum' => 'Forum',
 ];
 $k = preg_replace('/[^a-z_]/', '', (string) ($_GET['module'] ?? ''));
 $title = $labels[$k] ?? 'Module administration';
