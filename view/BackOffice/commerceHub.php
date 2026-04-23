@@ -9,10 +9,10 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     header('Location: ../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/ProduitP.php';
-require_once __DIR__ . '/../../controller/CommandeP.php';
-$pp = new ProduitP();
-$cp = new CommandeP();
+require_once __DIR__ . '/../../controller/ProduitController.php';
+require_once __DIR__ . '/../../controller/CommandeController.php';
+$pp = new ProduitController();
+$cp = new CommandeController();
 $nProd = count($pp->listAllAdmin());
 $nCmd = $cp->countAll();
 ?>

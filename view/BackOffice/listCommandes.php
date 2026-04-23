@@ -9,8 +9,8 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     header('Location: ../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/CommandeP.php';
-$cp = new CommandeP();
+require_once __DIR__ . '/../../controller/CommandeController.php';
+$cp = new CommandeController();
 $list = $cp->listAllAdmin();
 
 $labels = [
