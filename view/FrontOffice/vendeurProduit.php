@@ -3,7 +3,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
-require_once __DIR__ . '/../../controller/ProduitP.php';
+require_once __DIR__ . '/../../controller/ProduitController.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -12,7 +12,7 @@ if (!$u || strtolower($u['type'] ?? '') !== 'entrepreneur') {
     exit;
 }
 
-$pp = new ProduitP();
+$pp = new ProduitController();
 $vid = (int) $u['iduser'];
 $id = (int) ($_GET['id'] ?? 0);
 $prod = $id ? $pp->getById($id) : null;
@@ -81,15 +81,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $id ? 'Modifier' : 'Nouveau' ?> produit</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
     <link rel="stylesheet" href="../assets/style.css">
-    <style>label{display:block;margin-top:12px;font-weight:600} input,textarea{width:100%;max-width:480px;padding:10px;margin-top:6px}</style>
+    <link rel="stylesheet" href="../assets/storefront.css">
 </head>
 <body>
 <?php include __DIR__ . '/components/navbar.php'; ?>
-<main class="container">
-    <h1><?= $id ? 'Modifier le produit' : 'Nouveau produit' ?></h1>
-    <?php if ($error): ?><p style="color:#b00020"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-    <form method="post" class="card" style="margin-top:12px;max-width:560px" novalidate data-validate="produit-form">
+<main class="container fo-page">
+    <header class="fo-hero">
+        <h1><?= $id ? 'Modifier le produit' : 'Nouveau produit' ?></h1>
+        <p class="fo-lead">Référence unique, prix en TND, visibilité sur la boutique.</p>
+    </header>
+    <?php if ($error): ?>
+        <p class="fo-banner fo-banner--err"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+    <form method="post" class="fo-form-card" novalidate data-validate="produit-form">
         <label>Référence *</label>
         <input type="text" name="reference" required value="<?= htmlspecialchars((string) ($prod['reference'] ?? '')) ?>">
         <label>Désignation *</label>
@@ -100,11 +106,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="prix_unitaire" required value="<?= htmlspecialchars((string) ($prod['prix_unitaire'] ?? '0')) ?>">
         <label>Stock *</label>
         <input type="number" name="stock" min="0" required value="<?= (int) ($prod['stock'] ?? 0) ?>">
-        <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
-            <input type="checkbox" name="actif" value="1" <?= !empty($prod['actif']) ? 'checked' : '' ?>> Visible sur le catalogue
+        <label class="fo-form-check">
+            <input type="checkbox" name="actif" value="1" <?= !empty($prod['actif']) ? 'checked' : '' ?>>
+            <span>Visible sur le catalogue</span>
         </label>
-        <button type="submit" style="margin-top:16px">Enregistrer</button>
-        <a href="mesProduits.php" class="hint" style="margin-left:12px">Annuler</a>
+        <div class="fo-actions" style="margin-top:20px">
+            <button type="submit" class="fo-btn fo-btn--primary">Enregistrer</button>
+            <a href="mesProduits.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">Annuler</a>
+        </div>
     </form>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>

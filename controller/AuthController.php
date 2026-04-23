@@ -6,7 +6,7 @@ class AuthController {
     // 🔹 LOGIN
     public function login($email, $mdp) {
         $sql = "SELECT * FROM user WHERE email = :email";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);
@@ -32,7 +32,7 @@ class AuthController {
     public function register($user) {
         $sql = "INSERT INTO user (nom, prenom, email, mdp, type, age)
                 VALUES (:nom, :prenom, :email, :mdp, :type, :age)";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);
@@ -60,7 +60,7 @@ class AuthController {
     // 🔹 FORGOT PASSWORD
     public function forgotPassword($email, $newPassword) {
         $sql = "UPDATE user SET mdp = :mdp WHERE email = :email";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
 
         try {
             $query = $db->prepare($sql);

@@ -2,13 +2,13 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
-require_once __DIR__ . '/../../controller/ProduitP.php';
+require_once __DIR__ . '/../../controller/ProduitController.php';
 
 $id = (int) ($_GET['id'] ?? 0);
 $qte = max(1, (int) ($_GET['qte'] ?? 1));
 
 if ($id > 0) {
-    $pp = new ProduitP();
+    $pp = new ProduitController();
     $p = $pp->getById($id);
     if ($p && (int) $p['actif'] === 1 && (int) $p['stock'] >= $qte) {
         if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
