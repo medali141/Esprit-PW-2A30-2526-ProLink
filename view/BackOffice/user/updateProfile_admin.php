@@ -1,17 +1,16 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
-require_once __DIR__ . '/../../controller/UserP.php';
-require_once __DIR__ . '/../../model/User.php';
+require_once __DIR__ . '/../../../controller/AuthController.php';
+require_once __DIR__ . '/../../../controller/UserP.php';
+require_once __DIR__ . '/../../../model/User.php';
 
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user) {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
-// Only admin allowed
 if (strtolower($user['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
 
@@ -29,13 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Email invalide.';
     } else {
-        // Keep type as admin
         $updatedUser = new User($nom, $prenom, $email, $user['mdp'] ?? '', 'admin', $age);
         $userP->updateUser($updatedUser, $user['iduser']);
 
-        // refresh session
         $fresh = $userP->showUser($user['iduser']);
-        if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
         $_SESSION['user'] = $fresh;
 
         header('Location: profile_admin.php?updated=1');
@@ -49,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Modifier mon profil (admin)</title>
-    <link rel="stylesheet" href="sidebar.css">
     <style>
         .content{ margin-left:var(--sidebar-width,288px); padding:20px }
         .card{ background:white; padding:20px; border-radius:8px; max-width:900px }
@@ -58,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
 <div class="content">
     <div class="topbar">

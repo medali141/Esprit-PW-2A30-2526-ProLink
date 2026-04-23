@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/ProduitP.php';
+require_once __DIR__ . '/../../../../controller/ProduitP.php';
 $pp = new ProduitP();
 $id = (int) ($_GET['id'] ?? 0);
 if ($id > 0) {

@@ -2,15 +2,15 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../controller/AuthController.php';
 $__dashUser = (new AuthController())->profile();
 if (!$__dashUser || strtolower($__dashUser['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
 $nu = $np = $nc = 0;
 try {
-    require_once __DIR__ . '/../../config.php';
+    require_once __DIR__ . '/../../../config.php';
     $__db = Config::getConnexion();
     $nu = (int) $__db->query('SELECT COUNT(*) FROM user')->fetchColumn();
     $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
@@ -62,10 +62,8 @@ try {
 
 <body>
 
-<!-- SIDEBAR -->
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
-<!-- CONTENT -->
 <div class="content">
     <div class="dashboard-header">
         <div>
@@ -73,8 +71,8 @@ try {
             <div class="subtitle">Vue d'ensemble rapide — statistiques et actions</div>
         </div>
         <div class="actions">
-            <a class="btn btn-primary" href="commerceHub.php">Achat / vente</a>
-            <a class="btn btn-secondary" href="listUsers.php">Utilisateurs</a>
+            <a class="btn btn-primary" href="../achat/vente/commerceHub.php">Achat / vente</a>
+            <a class="btn btn-secondary" href="../user/listUsers.php">Utilisateurs</a>
         </div>
     </div>
 
@@ -114,7 +112,7 @@ try {
         <div class="card-light">
             <h4>Commerce</h4>
             <p style="margin-top:8px; color:#5b6b72">Produits, stocks, commandes et livraison.</p>
-            <p style="margin-top:10px"><a href="commerceHub.php">Ouvrir le hub achat / vente</a></p>
+            <p style="margin-top:10px"><a href="../achat/vente/commerceHub.php">Ouvrir le hub achat / vente</a></p>
         </div>
         <div class="card-light">
             <h4>Support</h4>

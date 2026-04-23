@@ -1,5 +1,5 @@
 <?php
-include '../../Controller/UserP.php';
+require_once __DIR__ . '/../../../controller/UserP.php';
 
 $userP = new UserP();
 $list = $userP->listUsers();
@@ -9,7 +9,6 @@ $list = $userP->listUsers();
 <head>
     <meta charset="UTF-8">
     <title>Liste des utilisateurs</title>
-    <?php /* Styles are in sidebar.css included by sidebar.php */ ?>
     <style>
         .alert{padding:12px 16px;border-radius:8px;margin-bottom:16px;font-weight:600}
         .alert-danger{background:#f8d7da;color:#842029;border:1px solid #f5c2c7}
@@ -19,7 +18,7 @@ $list = $userP->listUsers();
 
 <body>
 
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
 <div class="content">
     <div class="container">
@@ -72,7 +71,6 @@ $list = $userP->listUsers();
 </div>
 
 <script>
-    // small client-side search (non-blocking)
     document.getElementById('searchInput').addEventListener('input', function(e){
         const q = e.target.value.toLowerCase();
         const rows = document.querySelectorAll('#usersTable tbody tr');
