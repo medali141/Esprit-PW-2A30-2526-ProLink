@@ -1,19 +1,18 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../controller/AuthController.php';
 
 $auth = new AuthController();
-// logout handler
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_start();
     session_unset();
     session_destroy();
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
 
 $user = $auth->profile();
 if (!$user) {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
 ?>
@@ -35,11 +34,40 @@ if (!$user) {
         dl { margin-top:20px }
         dt{ font-weight:600 }
         dd{ margin:0 0 10px 0 }
+
+        /* Mode sombre : éviter texte blanc sur carte blanche (style.css impose body * { color:#fff }) */
+        html.dark-mode body.fo-profile-page {
+            background: #0c1017 !important;
+        }
+        html.dark-mode body.fo-profile-page .container {
+            background: #151b26 !important;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+            color: #e2e8f0 !important;
+        }
+        html.dark-mode body.fo-profile-page .container h2,
+        html.dark-mode body.fo-profile-page .container .meta div {
+            color: #f1f5f9 !important;
+        }
+        html.dark-mode body.fo-profile-page .container dt {
+            color: #94a3b8 !important;
+        }
+        html.dark-mode body.fo-profile-page .container dd {
+            color: #e2e8f0 !important;
+        }
+        html.dark-mode body.fo-profile-page .avatar {
+            background: #334155 !important;
+            color: #cbd5e1 !important;
+        }
+        html.dark-mode body.fo-profile-page .logout {
+            border-color: rgba(148, 163, 184, 0.35) !important;
+            color: #e2e8f0 !important;
+        }
     </style>
 </head>
-<body>
+<body class="fo-profile-page">
 
-<?php include __DIR__ . '/components/navbar.php'; ?>
+<?php include __DIR__ . '/../components/navbar.php'; ?>
 
 <main class="main">
 
@@ -76,7 +104,7 @@ if (!$user) {
 
 </main>
 
-<?php include __DIR__ . '/components/footer.php'; ?>
+<?php include __DIR__ . '/../components/footer.php'; ?>
 
 </body>
 </html>
