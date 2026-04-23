@@ -10,6 +10,11 @@ $list = $userP->listUsers();
     <meta charset="UTF-8">
     <title>Liste des utilisateurs</title>
     <?php /* Styles are in sidebar.css included by sidebar.php */ ?>
+    <style>
+        .alert{padding:12px 16px;border-radius:8px;margin-bottom:16px;font-weight:600}
+        .alert-danger{background:#f8d7da;color:#842029;border:1px solid #f5c2c7}
+        .alert-success{background:#d1e7dd;color:#0f5132;border:1px solid #badbcc}
+    </style>
 </head>
 
 <body>
@@ -18,6 +23,11 @@ $list = $userP->listUsers();
 
 <div class="content">
     <div class="container">
+        <?php if (isset($_GET['error']) && $_GET['error'] === 'hasCommandes'): ?>
+            <div class="alert alert-danger">Cet utilisateur possède des commandes et ne peut pas être supprimé.</div>
+        <?php elseif (isset($_GET['deleted'])): ?>
+            <div class="alert alert-success">Utilisateur supprimé avec succès.</div>
+        <?php endif; ?>
 
         <div class="topbar">
             <div class="page-title">Liste des utilisateurs</div>
