@@ -295,9 +295,16 @@ $boDashboardUrl = ($baseUrl ?? '') . '/BackOffice/dashboard/dashboard.php';
             color: #cbd5e1 !important;
         }
 
-        html.dark-mode body.fo-home-page .home-btn--primary {
-            background: linear-gradient(105deg, #e0f2fe, #cffafe) !important;
+        /* Mode sombre : bouton clair sur héros = texte bien foncé (lisible sans règle globale body *) */
+        html.dark-mode body.fo-home-page .home-hero .home-btn--primary {
+            background: linear-gradient(105deg, #f0fdfa, #e0f2fe) !important;
             color: #0c4a6e !important;
+            border: 1px solid rgba(15, 23, 42, 0.12) !important;
+        }
+
+        html.dark-mode body.fo-home-page .home-hero .home-btn--primary:hover {
+            color: #082f49 !important;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2) !important;
         }
     </style>
 </head>
