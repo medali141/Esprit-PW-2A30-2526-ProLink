@@ -153,7 +153,10 @@ body {
 }
 
 /* field error display for JS validation */
-.field-error{ color:#e74c3c; font-size:13px; margin-top:6px; }
+.field-error{ color:#e74c3c !important; font-size:13px; margin-top:8px; display:block; text-align:left }
+
+/* invalid input visual */
+.is-invalid{ border-color: #e74c3c !important; box-shadow: 0 6px 18px rgba(231,76,60,0.06); }
 
 /* confirmation modal */
 .confirm-modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; z-index:2000; }

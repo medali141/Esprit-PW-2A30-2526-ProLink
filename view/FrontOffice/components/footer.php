@@ -12,3 +12,4 @@
 }
 .footer p{ margin:0 }
 </style>
+<script src="js/validationHelpers.js"></script>

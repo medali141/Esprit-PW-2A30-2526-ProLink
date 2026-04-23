@@ -97,11 +97,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // reattach handlers to new content
         var newContainer = document.querySelector('.posts');
         if (newContainer) attachHandlers(newContainer);
+        // notify other modules that posts were refreshed
+        if (typeof window.onPostsRefreshed === 'function') {
+          try { window.onPostsRefreshed(newContainer); } catch (e) { console.error(e); }
+        }
       }).catch(function (err) { console.error('refresh error', err); });
   }
 
   // initial attach
   attachHandlers(document);
+
+  // expose refresh function for other modules
+  window.refreshPosts = fetchAndReplacePosts;
 
   // poll every 5 seconds for live updates
   setInterval(fetchAndReplacePosts, 5000);

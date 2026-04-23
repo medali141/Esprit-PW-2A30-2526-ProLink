@@ -14,7 +14,7 @@
         <td><?= htmlspecialchars($p['createdAt']) ?></td>
         <td>
           <a class="btn small" href="index.php?page=backoffice&action=update_post&id=<?= $p['id'] ?>">Edit</a>
-          <form class="inline" action="index.php?action=delete_post" method="post" onsubmit="return confirm('Delete post?');">
+          <form class="inline" action="index.php?action=delete_post" method="post">
             <input type="hidden" name="id" value="<?= $p['id'] ?>" />
             <button class="btn small danger" type="submit">Delete</button>
           </form>

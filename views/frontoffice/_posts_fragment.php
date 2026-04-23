@@ -18,7 +18,7 @@
           <button class="react-btn" data-post-id="<?= $post['id'] ?>" data-type="like">Like (<span class="reactions-count" data-post-id="<?= $post['id'] ?>"><?= $post['reactions_count'] ?></span>)</button>
           <button class="repost-btn" data-post-id="<?= $post['id'] ?>">Repost (<span class="reposts-count" data-post-id="<?= $post['id'] ?>"><?= $post['reposts_count'] ?></span>)</button>
           <a href="index.php?action=update_post&id=<?= $post['id'] ?>" class="btn small">Edit</a>
-          <form class="inline" action="index.php?action=delete_post" method="post" onsubmit="return confirm('Supprimer ce post ?');">
+          <form class="inline" action="index.php?action=delete_post" method="post">
             <input type="hidden" name="id" value="<?= $post['id'] ?>">
             <button class="btn small danger" type="submit">Delete</button>
           </form>
@@ -38,7 +38,7 @@
                   <button class="react-comment-btn" data-comment-id="<?= $c['id'] ?>" data-type="like">Like (<span class="reactions-count-comment" data-comment-id="<?= $c['id'] ?>"><?= $c['reactions_count'] ?? 0 ?></span>)</button>
                   <button class="repost-comment-btn" data-comment-id="<?= $c['id'] ?>">Repost (<span class="reposts-count-comment" data-comment-id="<?= $c['id'] ?>"><?= $c['reposts_count'] ?? 0 ?></span>)</button>
                   <a href="index.php?action=update_comment&id=<?= $c['id'] ?>" class="btn small">Edit</a>
-                  <form class="inline" action="index.php?action=delete_comment" method="post" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                  <form class="inline" action="index.php?action=delete_comment" method="post">
                     <input type="hidden" name="id" value="<?= $c['id'] ?>">
                     <button class="btn small danger" type="submit">Delete</button>
                   </form>

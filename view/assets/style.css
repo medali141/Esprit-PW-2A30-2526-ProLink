@@ -62,3 +62,11 @@ button.secondary{background:#f0f2f5; color:#111}
 /* small animations */
 .fade-in{animation: fade .18s ease both}
 @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+/* Validation error visuals to match templates */
+.is-invalid{ border-color: #e74c3c !important; box-shadow: 0 8px 24px rgba(231,76,60,0.06); }
+.field-error{ color: #e74c3c !important; font-size:13px; margin-top:8px; display:block; text-align:left; }
+
+/* Toast container for legacy alerts fallback */
+#validation-toast-container{ position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 99999; pointer-events: none; }
+.validation-toast{ pointer-events: auto; background: rgba(11,22,38,0.95); color: #fff; padding: 12px 18px; margin-top:8px; border-radius:10px; min-width:220px; box-shadow:0 10px 30px rgba(11,22,38,0.25); font-size:14px }

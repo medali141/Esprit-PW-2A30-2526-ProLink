@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div style="color:#b00020"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form method="POST" onsubmit="return validateUpdate()">
+    <form method="POST" onsubmit="return validateUpdate(this)">
         <input type="text" name="nom" placeholder="Nom" value="<?= htmlspecialchars($_POST['nom'] ?? $user['nom']) ?>" required>
         <input type="text" name="prenom" placeholder="Prénom" value="<?= htmlspecialchars($_POST['prenom'] ?? $user['prenom']) ?>" required>
         <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($_POST['email'] ?? $user['email']) ?>" required>
@@ -96,20 +96,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include __DIR__ . '/components/footer.php'; ?>
 
 <script>
-    function validateUpdate(){
-        const nom = document.querySelector('input[name="nom"]').value.trim();
-        const prenom = document.querySelector('input[name="prenom"]').value.trim();
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const type = document.querySelector('select[name="type"]').value;
-        const age = document.querySelector('input[name="age"]').value;
-        if(!nom || !prenom || !email || !type || !age){
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-            alert('Email invalide.');
-            return false;
-        }
+    function validateUpdate(form){
+        clearFormErrors(form);
+        const nomEl = form.querySelector('input[name="nom"]');
+        const prenomEl = form.querySelector('input[name="prenom"]');
+        const emailEl = form.querySelector('input[name="email"]');
+        const typeEl = form.querySelector('select[name="type"]');
+        const ageEl = form.querySelector('input[name="age"]');
+        let ok = true;
+        if(!nomEl || !nomEl.value.trim()){ setFieldError(nomEl, 'Veuillez entrer le nom.'); ok = false; }
+        if(!prenomEl || !prenomEl.value.trim()){ setFieldError(prenomEl, 'Veuillez entrer le prénom.'); ok = false; }
+        if(!emailEl || !emailEl.value.trim()){ setFieldError(emailEl, 'Email requis.'); ok = false; }
+        else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value.trim())){ setFieldError(emailEl, 'Email invalide.'); ok = false; }
+        if(!typeEl || !typeEl.value){ setFieldError(typeEl, 'Veuillez choisir un type.'); ok = false; }
+        if(!ageEl || !ageEl.value){ setFieldError(ageEl, 'Veuillez entrer l\'âge.'); ok = false; }
+        if(!ok){ if(typeof focusFirstInvalid === 'function') focusFirstInvalid(form); return false; }
         return true;
     }
 </script>

@@ -138,7 +138,7 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" onsubmit="return validateLogin()">
+        <form method="POST" onsubmit="return validateLogin(this)">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="mdp" placeholder="Mot de passe" required>
 
@@ -161,17 +161,15 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
 <?php endif; ?>
 
 <script>
-    function validateLogin() {
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const mdp = document.querySelector('input[name="mdp"]').value;
-        if (!email || !mdp) {
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if (mdp.length < 6) {
-            alert('Le mot de passe doit contenir au moins 6 caractères.');
-            return false;
-        }
+    function validateLogin(form){
+        clearFormErrors(form);
+        const emailEl = form.querySelector('input[name="email"]');
+        const mdpEl = form.querySelector('input[name="mdp"]');
+        let ok = true;
+        if(!emailEl || !emailEl.value.trim()){ setFieldError(emailEl, 'Email requis.'); ok = false; }
+        if(!mdpEl || !mdpEl.value){ setFieldError(mdpEl, 'Mot de passe requis.'); ok = false; }
+        else if(mdpEl.value.length < 6){ setFieldError(mdpEl, 'Le mot de passe doit contenir au moins 6 caractères.'); ok = false; }
+        if(!ok){ if(typeof focusFirstInvalid === 'function') focusFirstInvalid(form); return false; }
         return true;
     }
 </script>

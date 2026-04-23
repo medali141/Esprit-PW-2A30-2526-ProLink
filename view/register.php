@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" onsubmit="return validateRegister()">
+        <form method="POST" onsubmit="return validateRegister(this)">
             <input type="text" name="nom" placeholder="Nom" required value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
             <input type="text" name="prenom" placeholder="Prénom" required value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
             <input type="email" name="email" placeholder="Email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
@@ -123,31 +123,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
 
-<script>
-    function validateRegister() {
-        const nom = document.querySelector('input[name="nom"]').value.trim();
-        const prenom = document.querySelector('input[name="prenom"]').value.trim();
-        const email = document.querySelector('input[name="email"]').value.trim();
-        const mdp = document.querySelector('input[name="mdp"]').value;
-        const type = document.querySelector('select[name="type"]').value;
-        const age = document.querySelector('input[name="age"]').value;
+    <script>
+    function validateRegister(form){
+        clearFormErrors(form);
+        const nomEl = form.querySelector('input[name="nom"]');
+        const prenomEl = form.querySelector('input[name="prenom"]');
+        const emailEl = form.querySelector('input[name="email"]');
+        const mdpEl = form.querySelector('input[name="mdp"]');
+        const typeEl = form.querySelector('select[name="type"]');
+        const ageEl = form.querySelector('input[name="age"]');
 
-        if (!nom || !prenom || !email || !mdp || !type || !age) {
-            alert('Veuillez remplir tous les champs.');
-            return false;
-        }
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-            alert('Email invalide.');
-            return false;
-        }
-        if (mdp.length < 6) {
-            alert('Le mot de passe doit faire au moins 6 caractères.');
-            return false;
-        }
-        if (Number(age) < 13) {
-            alert('Vous devez avoir au moins 13 ans.');
-            return false;
-        }
+        let ok = true;
+        if(!nomEl || !nomEl.value.trim()){ setFieldError(nomEl, 'Veuillez entrer le nom.'); ok = false; }
+        if(!prenomEl || !prenomEl.value.trim()){ setFieldError(prenomEl, 'Veuillez entrer le prénom.'); ok = false; }
+        if(!emailEl || !emailEl.value.trim()){ setFieldError(emailEl, 'Email requis.'); ok = false; }
+        else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailEl.value.trim())){ setFieldError(emailEl, 'Email invalide.'); ok = false; }
+        if(!mdpEl || mdpEl.value.length < 6){ setFieldError(mdpEl, 'Le mot de passe doit faire au moins 6 caractères.'); ok = false; }
+        if(!typeEl || !typeEl.value){ setFieldError(typeEl, 'Veuillez choisir un type d\'utilisateur.'); ok = false; }
+        if(!ageEl || !ageEl.value || Number(ageEl.value) < 13){ setFieldError(ageEl, 'Vous devez avoir au moins 13 ans.'); ok = false; }
+
+        if(!ok){ if(typeof focusFirstInvalid === 'function') focusFirstInvalid(form); return false; }
         return true;
     }
 </script>
