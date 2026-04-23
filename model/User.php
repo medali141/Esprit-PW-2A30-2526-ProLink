@@ -24,3 +24,22 @@ class User {
     public function getType() { return $this->type; }
     public function getAge() { return $this->age; }
 }
+
+// Concrete user types consolidated here to avoid multiple small files.
+class Admin extends User {
+    public function getType() {
+        return "admin";
+    }
+}
+
+class Candidat extends User {
+    public function getType() {
+        return "candidat";
+    }
+}
+
+class Entrepreneur extends User {
+    public function getType() {
+        return "entrepreneur";
+    }
+}

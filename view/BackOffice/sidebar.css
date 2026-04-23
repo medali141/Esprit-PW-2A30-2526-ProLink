@@ -11,6 +11,7 @@
     --sb-muted: rgba(248, 250, 252, 0.68);
     --accent: #06b6d4;
     --accent-2: #8b5cf6;
+    --accent-3: #ff7ab6;
 }
 
 /* ——— Sidebar ——— */
@@ -301,7 +302,7 @@ body {
     justify-content: space-between;
     gap: 12px;
     padding: 18px 24px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8));
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.9));
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
     margin-bottom: 18px;
@@ -310,7 +311,7 @@ body {
 .page-title {
     font-size: 28px;
     font-weight: 700;
-    color: #222;
+    color: var(--accent-2);
 }
 
 .actions {
@@ -331,8 +332,9 @@ body {
 }
 
 .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
     color: white;
+    box-shadow: 0 8px 28px rgba(11, 102, 195, 0.08);
 }
 .btn-secondary {
     background: #f0f2f5;
@@ -345,11 +347,15 @@ body {
 }
 
 .card {
-    background: white;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
     padding: 18px;
     border-radius: 10px;
     box-shadow: 0 6px 18px rgba(35, 47, 86, 0.06);
+    border-left: 6px solid rgba(11, 102, 195, 0.12);
 }
+
+.card h3 { color: var(--accent-2); margin: 0 0 10px }
+.card strong { color: var(--accent); }
 
 .form-grid {
     display: grid;
@@ -396,6 +402,17 @@ body {
     .actions {
         flex-wrap: wrap;
     }
+}
+
+/* Helper: make a page container fill available viewport space and center its content.
+   Use on pages where a single card should be vertically centered (e.g. detailUser). */
+.container.page-full {
+    min-height: calc(100vh - 120px); /* account for topbar + padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 8px; /* small breathing room */
+    padding-bottom: 8px;
 }
 
 .field-error {
