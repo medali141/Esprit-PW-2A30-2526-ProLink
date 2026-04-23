@@ -32,15 +32,16 @@ CREATE TABLE `user` (
   `mdp` varchar(255) NOT NULL,
   `type` enum('admin','candidat','entrepreneur') NOT NULL,
   `age` int(11) NOT NULL,
+  `photo` varchar(255) DEFAULT NULL COMMENT 'Chemin relatif depuis view/, ex. uploads/profiles/user_1.jpg',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`iduser`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `user` (`iduser`, `nom`, `prenom`, `email`, `mdp`, `type`, `age`, `created_at`) VALUES
-(5, 'chihaoui', 'mohammed ali', 'chihaouidali443@gmail.com', '$2y$10$legH0oYVvjIhe4ZLne4sB.c9YW8gctbNfWe5jGmRNTfPkckJp.zAe', 'admin', 75, '2026-04-15 13:30:47'),
-(7, 'chihaoui', 'mohammed ali', 'chihaouidali44@gmail.com', '$2y$10$NTalhxoL.rH.uSh8sjUJlu1yhfRbg4moZpn3M3qGey03UQ8zUfmwe', 'candidat', 24, '2026-04-15 13:41:01'),
-(8, 'aissa', 'idouni', 'issado@gmail.com', '$2y$10$7rT5hKUUaUBeuQUYeTkqXuVdu5nIHRn85NU9fjLAsorNAC.P3fdCy', 'candidat', 75, '2026-04-15 13:44:12');
+INSERT INTO `user` (`iduser`, `nom`, `prenom`, `email`, `mdp`, `type`, `age`, `photo`, `created_at`) VALUES
+(5, 'chihaoui', 'mohammed ali', 'chihaouidali443@gmail.com', '$2y$10$legH0oYVvjIhe4ZLne4sB.c9YW8gctbNfWe5jGmRNTfPkckJp.zAe', 'admin', 75, NULL, '2026-04-15 13:30:47'),
+(7, 'chihaoui', 'mohammed ali', 'chihaouidali44@gmail.com', '$2y$10$NTalhxoL.rH.uSh8sjUJlu1yhfRbg4moZpn3M3qGey03UQ8zUfmwe', 'candidat', 24, NULL, '2026-04-15 13:41:01'),
+(8, 'aissa', 'idouni', 'issado@gmail.com', '$2y$10$7rT5hKUUaUBeuQUYeTkqXuVdu5nIHRn85NU9fjLAsorNAC.P3fdCy', 'candidat', 75, NULL, '2026-04-15 13:44:12');
 
 -- -----------------------------------------------------------------------------
 -- Tables commerce : produit, commande, commande_produit
