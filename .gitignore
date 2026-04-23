@@ -1,0 +1,3 @@
+# Photos de profil uploadées (ne pas versionner)
+view/uploads/profiles/*
+!view/uploads/profiles/.gitkeep

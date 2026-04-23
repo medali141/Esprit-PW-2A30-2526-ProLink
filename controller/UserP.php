@@ -94,6 +94,13 @@ class UserP {
         }
     }
 
+    /** Chemin relatif au dossier view, ex. uploads/profiles/user_7.jpg, ou null pour retirer la photo. */
+    public function setUserPhoto(?string $relativePathFromView, int $id): void {
+        $db = Config::getConnexion();
+        $st = $db->prepare('UPDATE user SET photo = :p WHERE iduser = :id');
+        $st->execute(['p' => $relativePathFromView, 'id' => $id]);
+    }
+
     // 🔹 SHOW USER
     public function showUser($id) {
         $sql = "SELECT * FROM user WHERE iduser = :id";
