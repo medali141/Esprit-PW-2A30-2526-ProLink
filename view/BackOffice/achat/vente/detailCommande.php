@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/CommandeP.php';
+require_once __DIR__ . '/../../../../controller/CommandeP.php';
 $cp = new CommandeP();
 $id = (int) ($_GET['id'] ?? 0);
 $cmd = $id ? $cp->getById($id) : null;
@@ -61,11 +61,10 @@ if ($deVal && strpos($deVal, ' ') !== false) {
 <head>
     <meta charset="UTF-8">
     <title>Commande #<?= $id ?></title>
-    <link rel="stylesheet" href="sidebar.css">
     <style>.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px} @media(max-width:800px){.grid2{grid-template-columns:1fr}} label{display:block;margin-top:10px;font-weight:600} input,select,textarea{width:100%;padding:8px;margin-top:4px;box-sizing:border-box}</style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <div class="content">
     <div class="topbar">
         <div class="page-title">Commande #<?= $id ?></div>

@@ -1,5 +1,5 @@
 <?php
-include '../../Controller/UserP.php';
+require_once __DIR__ . '/../../../controller/UserP.php';
 
 $error = "";
 $userP = new UserP();
@@ -23,7 +23,7 @@ if (
         );
 
         $userP->addUser($user);
-        header('Location:listUsers.php');
+        header('Location: listUsers.php');
     } else {
         $error = "Champs manquants";
     }
@@ -31,7 +31,7 @@ if (
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>Ajouter utilisateur</title>
     <style>
@@ -42,15 +42,10 @@ if (
     </style>
 </head>
 
-    <?php /* sidebar stylesheet will be loaded by the included sidebar.php */ ?>
-</head>
-
 <body>
 
-    <!-- SIDEBAR -->
-    <?php include 'sidebar.php'; ?>
+    <?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
-    <!-- CONTENT -->
     <div class="content">
         <div class="topbar">
             <div class="page-title">Ajouter utilisateur</div>
@@ -91,7 +86,7 @@ if (
                 </div>
             </form>
 
-            <p style="color:red; text-align:center; margin-top:10px;\"><?= $error ?></p>
+            <p style="color:red; text-align:center; margin-top:10px;"><?= $error ?></p>
         </div>
 
     </div>

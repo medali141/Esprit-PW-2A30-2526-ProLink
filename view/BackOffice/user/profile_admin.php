@@ -1,15 +1,14 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../controller/AuthController.php';
 
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user) {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
-// Only admin allowed
 if (strtolower($user['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../login.php');
     exit;
 }
 ?>
@@ -18,7 +17,6 @@ if (strtolower($user['type'] ?? '') !== 'admin') {
 <head>
     <meta charset="UTF-8">
     <title>Profil Admin - BackOffice</title>
-    <link rel="stylesheet" href="sidebar.css">
     <style>
         .content{ margin-left:var(--sidebar-width,288px); padding:20px }
         .card{ background:white; padding:20px; border-radius:8px; max-width:900px }
@@ -26,7 +24,7 @@ if (strtolower($user['type'] ?? '') !== 'admin') {
 </head>
 <body>
 
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
 <div class="content">
     <div class="topbar">
@@ -41,7 +39,7 @@ if (strtolower($user['type'] ?? '') !== 'admin') {
 
         <div style="margin-top:12px">
             <a href="updateProfile_admin.php" class="btn btn-primary">Modifier mon profil</a>
-            <a href="../logout.php" class="btn btn-secondary">Se déconnecter</a>
+            <a href="../../logout.php" class="btn btn-secondary">Se déconnecter</a>
         </div>
     </div>
 </div>

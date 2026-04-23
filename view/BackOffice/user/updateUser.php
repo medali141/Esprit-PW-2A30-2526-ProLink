@@ -1,5 +1,5 @@
 <?php
-include '../../Controller/UserP.php';
+require_once __DIR__ . '/../../../controller/UserP.php';
 
 $userP = new UserP();
 
@@ -15,29 +15,29 @@ if (
         $_POST['nom'],
         $_POST['prenom'],
         $_POST['email'],
-        "", // mdp non modifié ici
+        "",
         $_POST['type'],
         $_POST['age']
     );
 
     $userP->updateUser($newUser, $_GET['id']);
-    header('Location:listUsers.php');
+    header('Location: listUsers.php');
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
+    <meta charset="UTF-8">
     <title>Modifier utilisateur</title>
     <style>
-        /* local fallbacks; shared styles live in sidebar.css */
         body{ margin:0; font-family: Arial, sans-serif; }
     </style>
 </head>
 
 <body>
 
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
 
 <div class="content">
     <div class="topbar">

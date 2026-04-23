@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // redirect admin to backoffice, others to frontoffice
             $role = strtolower($user['type'] ?? '');
             if ($role === 'admin') {
-                header('Location: BackOffice/dashboard.php');
+                header('Location: BackOffice/dashboard/dashboard.php');
                 exit;
             } else {
                 header('Location: FrontOffice/home.php');

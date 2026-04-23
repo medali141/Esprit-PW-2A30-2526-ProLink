@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../../login.php');
     exit;
 }
-require_once __DIR__ . '/../../controller/CommandeP.php';
+require_once __DIR__ . '/../../../../controller/CommandeP.php';
 $cp = new CommandeP();
 $list = $cp->listAllAdmin();
 
@@ -30,7 +30,7 @@ $labels = [
     <title>Commandes — BackOffice</title>
 </head>
 <body>
-<?php include 'sidebar.php'; ?>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <div class="content">
     <div class="container">
         <div class="topbar">
