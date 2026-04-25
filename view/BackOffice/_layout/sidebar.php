@@ -26,7 +26,7 @@ $__fo_accueil = $__vb . 'FrontOffice/home.php';
             <?php endif; ?>
             <li><a href="<?= htmlspecialchars(bo_url('user/listUsers.php')) ?>"><span class="icon">👤</span> <span>Gestion Users</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=projets')) ?>"><span class="icon">📁</span> <span>Gestion Projets</span></a></li>
-            <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=evenements')) ?>"><span class="icon">📅</span> <span>Gestion Events</span></a></li>
+            <li><a href="<?= htmlspecialchars(bo_url('evenement/liste_event.php')) ?>"><span class="icon">📅</span> <span>Gestion événements</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('achat/vente/commerceHub.php')) ?>"><span class="icon">🛒</span> <span>Gestion vente / achat</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=formations')) ?>"><span class="icon">🎓</span> <span>Gestion des formation</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=forum')) ?>"><span class="icon">💬</span> <span>Forum</span></a></li>
