@@ -4,12 +4,23 @@ require_once __DIR__ . '/../model/User.php';
 
 class UserP {
 
-    // 🔹 LIST USERS
-    public function listUsers() {
-        $sql = "SELECT * FROM user";
+    /** @return list<array<string, mixed>> */
+    public function listUsers(string $sort = 'iduser', string $order = 'asc'): array
+    {
+        $allowed = ['iduser', 'nom', 'prenom', 'email', 'type', 'age'];
+        if (!in_array($sort, $allowed, true)) {
+            $sort = 'iduser';
+        }
+        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        $sql = 'SELECT * FROM `user` ORDER BY `' . $sort . '` ' . $order;
         $db = Config::getConnexion();
         try {
-            return $db->query($sql);
+            $st = $db->query($sql);
+            if (!$st) {
+                return [];
+            }
+            $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+            return is_array($rows) ? $rows : [];
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());
         }
