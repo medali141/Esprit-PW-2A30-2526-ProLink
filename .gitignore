@@ -1,3 +1,6 @@
 # Photos de profil uploadées (ne pas versionner)
 view/uploads/profiles/*
 !view/uploads/profiles/.gitkeep
+
+# Secrets SMTP (copier mail.local.example.php → mail.local.php)
+config/mail.local.php
