@@ -1,4 +1,28 @@
-<?php require_once __DIR__ . '/../init.php'; ?>
+<?php
+require_once __DIR__ . '/../init.php';
+require_once __DIR__ . '/../controller/AuthController.php';
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $mdp = trim($_POST['mdp'] ?? '');
+
+    if ($email === '' || $mdp === '') {
+        $error = 'Veuillez remplir tous les champs.';
+    } elseif (strlen($mdp) < 6) {
+        $error = 'Le mot de passe doit contenir au moins 6 caractères.';
+    } else {
+        $auth = new AuthController();
+        if ($auth->forgotPassword($email, $mdp)) {
+            $success = 'Mot de passe mis à jour. Vous pouvez vous connecter.';
+        } else {
+            $error = 'Aucun compte n\'est associé à cette adresse email.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -91,7 +115,14 @@
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
-        <form method="post" action="#" novalidate data-validate="forgot-form">
+        <?php if ($error): ?>
+            <div style="color: #b00020; margin-bottom:10px; font-size:14px;"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div style="color: #0a7f2a; margin-bottom:10px; font-size:14px;"><?= htmlspecialchars($success) ?></div>
+        <?php endif; ?>
+
+        <form method="post" action="forgotpwd.php" novalidate data-validate="forgot-form">
             <input type="email" name="email" placeholder="Votre email" autocomplete="email">
 
             <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">

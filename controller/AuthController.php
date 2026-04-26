@@ -57,7 +57,7 @@ class AuthController {
         return $_SESSION['user'] ?? null;
     }
 
-    // 🔹 FORGOT PASSWORD
+    // 🔹 FORGOT PASSWORD — returns true if a user row was updated
     public function forgotPassword($email, $newPassword) {
         $sql = "UPDATE user SET mdp = :mdp WHERE email = :email";
         $db = Config::getConnexion();
@@ -68,6 +68,7 @@ class AuthController {
                 'email' => $email,
                 'mdp' => password_hash($newPassword, PASSWORD_DEFAULT)
             ]);
+            return $query->rowCount() > 0;
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());
         }
