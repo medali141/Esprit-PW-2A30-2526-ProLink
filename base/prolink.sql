@@ -32,6 +32,8 @@ CREATE TABLE `user` (
   `prenom` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `mdp` varchar(255) NOT NULL,
+  `mdp_reset_otp_hash` varchar(255) DEFAULT NULL,
+  `mdp_reset_otp_expires` datetime DEFAULT NULL,
   `type` enum('admin','candidat','entrepreneur') NOT NULL,
   `age` int(11) NOT NULL,
   `photo` varchar(255) DEFAULT NULL COMMENT 'Chemin relatif depuis view/, ex. uploads/profiles/user_1.jpg',

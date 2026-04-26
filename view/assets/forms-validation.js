@@ -268,6 +268,47 @@
         return ok;
     }
 
+    function validateForgotSendForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var email = form.elements['email'];
+        if (email) {
+            var ve = email.value.trim();
+            if (!ve) {
+                setError(email, 'Email requis');
+                ok = false;
+            } else if (!isEmail(ve)) {
+                setError(email, 'Format email invalide');
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
+    function validateForgotResetForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var otp = form.elements['otp'];
+        var mdp = form.elements['mdp'];
+        if (otp) {
+            var c = otp.value.trim();
+            if (!/^\d{6}$/.test(c)) {
+                setError(otp, 'Code : 6 chiffres');
+                ok = false;
+            }
+        }
+        if (mdp) {
+            if (!mdp.value || mdp.value.length === 0) {
+                setError(mdp, 'Mot de passe requis');
+                ok = false;
+            } else if (mdp.value.length < 6) {
+                setError(mdp, 'Mot de passe : au moins 6 caractères');
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
     function validatePanierForm(form) {
         clearErrors(form);
         var ok = true;
@@ -306,5 +347,7 @@
         bindForm('form[data-validate="panier-form"]', validatePanierForm);
         bindForm('form[data-validate="login-form"]', validateLoginForm);
         bindForm('form[data-validate="forgot-form"]', validateLoginForm);
+        bindForm('form[data-validate="forgot-send-form"]', validateForgotSendForm);
+        bindForm('form[data-validate="forgot-reset-form"]', validateForgotResetForm);
     });
 })();
