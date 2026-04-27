@@ -29,7 +29,7 @@ $__fo_accueil = $__vb . 'FrontOffice/home.php';
             <li><a href="<?= htmlspecialchars(bo_url('evenement/liste_event.php')) ?>"><span class="icon">📅</span> <span>Gestion événements</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('achat/vente/commerceHub.php')) ?>"><span class="icon">🛒</span> <span>Gestion vente / achat</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=formations')) ?>"><span class="icon">🎓</span> <span>Gestion des formation</span></a></li>
-            <li><a href="<?= htmlspecialchars(bo_url('_TODO/a-venir.php?module=forum')) ?>"><span class="icon">💬</span> <span>Forum</span></a></li>
+            <li><a href="<?= htmlspecialchars(bo_url('forum/forum_index.php')) ?>"><span class="icon">💬</span> <span>Forum</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('user/profile_admin.php')) ?>"><span class="icon">👤</span> <span>Mon profil (admin)</span></a></li>
             <li><a href="<?= htmlspecialchars($__vb) ?>logout.php"><span class="icon">🔓</span> <span>Se déconnecter</span></a></li>
         </ul>

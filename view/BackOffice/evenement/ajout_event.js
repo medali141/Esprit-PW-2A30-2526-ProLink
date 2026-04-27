@@ -1,3 +1,29 @@
+// ==================== DATES (AAAA-MM-JJ, heure locale) ====================
+
+function parseYMD(s) {
+    const t = String(s).trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) {
+        return null;
+    }
+    const p = t.split("-");
+    return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+}
+
+function formatYMD(d) {
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+}
+
+function ymdAddOneDay(ymd) {
+    const d = parseYMD(ymd);
+    if (!d) {
+        return ymd;
+    }
+    d.setDate(d.getDate() + 1);
+    return formatYMD(d);
+}
+
 // ==================== FONCTIONS DE VALIDATION ====================
 
 function checkTitre(val) {
@@ -21,15 +47,23 @@ function checkDateDebut(val) {
     if (typeof window !== "undefined" && window.PROLINK_EVENT_EDIT) {
         return /^\d{4}-\d{2}-\d{2}$/.test(String(val).trim());
     }
-    const inputDate = new Date(val);
+    const inputDate = parseYMD(val);
+    if (!inputDate) {
+        return false;
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return inputDate > today;
+    return inputDate.getTime() > today.getTime();
 }
 
 function checkDateFin(dateDebut, dateFin) {
     if (!dateDebut || !dateFin) return false;
-    return new Date(dateFin) > new Date(dateDebut);
+    const d0 = parseYMD(dateDebut);
+    const d1 = parseYMD(dateFin);
+    if (!d0 || !d1) {
+        return false;
+    }
+    return d1.getTime() > d0.getTime();
 }
 
 function checkLieu(val) {
@@ -135,7 +169,7 @@ if (eventForm && typeEvent && titreEvent && descriptionEvent && lieuEvent && dat
         if (checkDateDebut(dateDebutVal)) {
             displayMsg("msg-date-debut", "Correct !", true);
         } else {
-            displayMsg("msg-date-debut", (typeof window !== "undefined" && window.PROLINK_EVENT_EDIT) ? "Date de début invalide (format AAAA-MM-JJ)." : "La date de début doit être une date future.", false);
+            displayMsg("msg-date-debut", (typeof window !== "undefined" && window.PROLINK_EVENT_EDIT) ? "Sélectionnez une date de début valide." : "La date de début doit être future (après aujourd’hui).", false);
             isValid = false;
         }
 
@@ -175,10 +209,27 @@ if (eventForm && typeEvent && titreEvent && descriptionEvent && lieuEvent && dat
             checkLieu(this.value) ? "Gouvernorat valide" : "Sélectionnez un gouvernorat.", checkLieu(this.value));
     });
 
+    function syncFinMinFromDebut() {
+        const a = dateDebut.value;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(a)) {
+            return;
+        }
+        const minFin = ymdAddOneDay(a);
+        dateFin.setAttribute("min", minFin);
+        if (dateFin.value && dateFin.value.length >= 8 && checkDateFin(a, dateFin.value) === false) {
+            dateFin.value = minFin;
+        }
+    }
+
+    syncFinMinFromDebut();
+
     dateDebut.addEventListener("change", function () {
         const ok = checkDateDebut(this.value);
         displayMsg("msg-date-debut",
-            ok ? "Date de début valide" : ((typeof window !== "undefined" && window.PROLINK_EVENT_EDIT) ? "Format AAAA-MM-JJ requis." : "La date de début doit être future."), ok);
+            ok ? "Date de début valide" : ((typeof window !== "undefined" && window.PROLINK_EVENT_EDIT) ? "Sélectionnez une date (AAAA-MM-JJ)." : "La date de début doit être future."), ok);
+        if (ok) {
+            syncFinMinFromDebut();
+        }
     });
 
     dateFin.addEventListener("change", function () {

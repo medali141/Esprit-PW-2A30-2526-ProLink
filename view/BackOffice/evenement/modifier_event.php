@@ -33,6 +33,7 @@ if (!$event) {
         .msg { font-size: 0.9em; margin-top: 5px; display: block; }
         .error { color: #dc3545; } .success { color: #198754; }
         #type_autre_wrap { display: none; margin-top: 6px; }
+        .input-date-bo { width: 100%; max-width: 100%; box-sizing: border-box; min-height: 38px; }
     </style>
 </head>
 <body>
@@ -104,13 +105,25 @@ if (!$event) {
                     <div class="msg" id="msg-lieu"></div>
                 </div>
                 <div>
-                    <input type="text" name="date_debut" id="date_debut" placeholder="AAAA-MM-JJ"
-                           value="<?= htmlspecialchars((string) $event['date_debut']) ?>">
+                    <?php
+                    $ddeb = (string) $event['date_debut'];
+                    $dfin = (string) $event['date_fin'];
+                    if (strlen($ddeb) > 10) {
+                        $ddeb = substr($ddeb, 0, 10);
+                    }
+                    if (strlen($dfin) > 10) {
+                        $dfin = substr($dfin, 0, 10);
+                    }
+                    ?>
+                    <input type="date" name="date_debut" id="date_debut" required
+                           value="<?= htmlspecialchars($ddeb) ?>"
+                           title="Date de début" class="input-date-bo" autocomplete="off">
                     <div class="msg" id="msg-date-debut"></div>
                 </div>
                 <div>
-                    <input type="text" name="date_fin" id="date_fin" placeholder="AAAA-MM-JJ"
-                           value="<?= htmlspecialchars((string) $event['date_fin']) ?>">
+                    <input type="date" name="date_fin" id="date_fin" required
+                           value="<?= htmlspecialchars($dfin) ?>"
+                           title="Date de fin" class="input-date-bo" autocomplete="off">
                     <div class="msg" id="msg-date-fin"></div>
                 </div>
                 <div>
