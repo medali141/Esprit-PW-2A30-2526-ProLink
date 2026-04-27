@@ -26,7 +26,8 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
         <?php endif; ?>
         <li><a href="#">Réseau</a></li>
         <li><a href="#">Projets</a></li>
-        <li><a href="#">Événements</a></li>
+        <li><a href="<?= $baseUrl ?>/FrontOffice/evenements.php">Événements</a></li>
+        <li><a href="<?= $baseUrl ?>/FrontOffice/forum.php">Forum</a></li>
     </ul>
 
 <!-- global stylesheet -->

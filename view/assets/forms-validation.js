@@ -309,6 +309,85 @@
         return ok;
     }
 
+    function validateForumReplyForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var reponse = form.elements['reponse'];
+        var photo = form.elements['photo'];
+        var hasFile = photo && photo.files && photo.files.length > 0;
+        if (reponse) {
+            var t = reponse.value.trim();
+            if (t.length < 2 && !hasFile) {
+                setError(reponse, 'Message : au moins 2 caractères, ou choisissez une photo');
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
+    function validateForumNewTopicForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var titre = form.elements['titre'];
+        var contenu = form.elements['contenu'];
+        var photo = form.elements['photo'];
+        var hasFile = photo && photo.files && photo.files.length > 0;
+        if (titre) {
+            if (titre.value.trim().length < 3) {
+                setError(titre, 'Titre : au moins 3 caractères');
+                ok = false;
+            }
+        }
+        if (contenu) {
+            if (contenu.value.trim().length < 2 && !hasFile) {
+                setError(contenu, 'Message : au moins 2 caractères, ou choisissez une photo');
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
+    function validateEventInscriptionForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var nom = form.elements['nom'];
+        var prenom = form.elements['prenom'];
+        var email = form.elements['email'];
+        var telephone = form.elements['telephone'];
+        if (nom) {
+            var n = nom.value.trim();
+            if (n.length < 2) {
+                setError(nom, 'Nom : au moins 2 caractères');
+                ok = false;
+            }
+        }
+        if (prenom) {
+            var pr = prenom.value.trim();
+            if (pr.length < 2) {
+                setError(prenom, 'Prénom : au moins 2 caractères');
+                ok = false;
+            }
+        }
+        if (email) {
+            var ve = email.value.trim();
+            if (!ve) {
+                setError(email, 'E-mail requis');
+                ok = false;
+            } else if (!isEmail(ve)) {
+                setError(email, 'E-mail invalide');
+                ok = false;
+            }
+        }
+        if (telephone) {
+            var t = telephone.value.replace(/\s/g, '');
+            if (!/^\d{8}$/.test(t)) {
+                setError(telephone, 'Téléphone : 8 chiffres');
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
     function validatePanierForm(form) {
         clearErrors(form);
         var ok = true;
@@ -349,5 +428,8 @@
         bindForm('form[data-validate="forgot-form"]', validateLoginForm);
         bindForm('form[data-validate="forgot-send-form"]', validateForgotSendForm);
         bindForm('form[data-validate="forgot-reset-form"]', validateForgotResetForm);
+        bindForm('form[data-validate="event-inscription-form"]', validateEventInscriptionForm);
+        bindForm('form[data-validate="forum-reply-form"]', validateForumReplyForm);
+        bindForm('form[data-validate="forum-new-topic-form"]', validateForumNewTopicForm);
     });
 })();

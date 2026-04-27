@@ -53,6 +53,7 @@ if (
         .msg.success { color: #198754; }
         .msg.error { color: #dc3545; }
         #type_autre_wrap { display: none; margin-top: 6px; }
+        .input-date-bo { width: 100%; max-width: 100%; box-sizing: border-box; min-height: 38px; }
     </style>
 </head>
 <body>
@@ -100,11 +101,17 @@ if (
                     <span class="msg" id="msg-type"></span>
                 </div>
                 <div>
-                    <input type="text" name="date_debut" id="date_debut" placeholder="Date début (AAAA-MM-JJ)">
+                    <input type="date" name="date_debut" id="date_debut" required
+                           min="<?= htmlspecialchars(date('Y-m-d', strtotime('+1 day'))) ?>"
+                           title="Date de début"
+                           class="input-date-bo" autocomplete="off">
                     <span class="msg" id="msg-date-debut"></span>
                 </div>
                 <div>
-                    <input type="text" name="date_fin" id="date_fin" placeholder="Date fin (AAAA-MM-JJ)">
+                    <input type="date" name="date_fin" id="date_fin" required
+                           min="<?= htmlspecialchars(date('Y-m-d', strtotime('+2 day'))) ?>"
+                           title="Date de fin"
+                           class="input-date-bo" autocomplete="off">
                     <span class="msg" id="msg-date-fin"></span>
                 </div>
                 <div>

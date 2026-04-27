@@ -324,6 +324,8 @@ $boDashboardUrl = ($baseUrl ?? '') . '/BackOffice/dashboard/dashboard.php';
         <p class="home-lead">Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
         <div class="home-ctas">
             <a href="catalogue.php" class="home-btn home-btn--primary">Explorer le catalogue</a>
+            <a href="evenements.php" class="home-btn home-btn--ghost">Événements</a>
+            <a href="forum.php" class="home-btn home-btn--ghost">Forum</a>
             <a href="profile/profile.php" class="home-btn home-btn--ghost">Mon profil</a>
             <?php if ($isAdmin): ?>
                 <a href="<?= htmlspecialchars($boDashboardUrl) ?>" class="home-btn home-btn--admin">Administration</a>

@@ -32,10 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($role === 'admin') {
                 header('Location: BackOffice/dashboard/dashboard.php');
                 exit;
-            } else {
-                header('Location: FrontOffice/home.php');
+            }
+            $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
+            if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
+                header('Location: ' . $next);
                 exit;
             }
+            header('Location: FrontOffice/home.php');
+            exit;
         }
     }
 }
@@ -43,6 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // show message after successful registration
 if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     $success = 'Inscription réussie. Vous pouvez vous connecter.';
+}
+
+$nextParam = '';
+if (isset($_GET['next'])) {
+    $cand = (string) $_GET['next'];
+    if ($cand !== '' && strpos($cand, '..') === false && preg_match('#^FrontOffice/forum/#', $cand)) {
+        $nextParam = $cand;
+    }
 }
 ?>
 
@@ -147,6 +159,9 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
         <?php endif; ?>
 
         <form method="POST" novalidate data-validate="login-form">
+            <?php if ($nextParam !== ''): ?>
+                <input type="hidden" name="next" value="<?= htmlspecialchars($nextParam) ?>">
+            <?php endif; ?>
             <input type="email" name="email" placeholder="Email" autocomplete="username">
             <input type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password">
 

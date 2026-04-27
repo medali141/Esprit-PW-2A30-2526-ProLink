@@ -155,4 +155,48 @@ class EventC
             // leave quietly
         }
     }
+
+    /**
+     * Front office : événements dont la date de fin n’est pas passée, avec effectif d’inscrits.
+     * @return list<array<string, mixed>>
+     */
+    public function listeEvenementsPublic(): array
+    {
+        $db = Config::getConnexion();
+        $sql = 'SELECT e.*, (
+            SELECT COUNT(*) FROM `participation` p
+            WHERE p.`id_event` = e.`id_event` AND p.`statut` <> \'annulé\'
+        ) AS inscrits
+        FROM `evenement` e
+        WHERE e.`date_fin` >= CURDATE()
+        ORDER BY e.`date_debut` ASC, e.`id_event` ASC';
+        $st = $db->query($sql);
+        $rows = $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+        return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * Front office : détail si la date de fin de l’événement n’est pas passée.
+     * @return array<string, mixed>|false
+     */
+    public function getEventPublic(int $id)
+    {
+        if ($id < 1) {
+            return false;
+        }
+        $row = $this->getEvent($id);
+        if ($row === false) {
+            return false;
+        }
+        $end = (string) ($row['date_fin'] ?? '');
+        if ($end === '' || strtotime($end) < strtotime('today')) {
+            return false;
+        }
+        $db = Config::getConnexion();
+        $c = $db->prepare("SELECT COUNT(*) AS c FROM `participation` WHERE `id_event` = :id AND `statut` <> 'annulé'");
+        $c->execute(['id' => $id]);
+        $cnt = (int) ($c->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
+        $row['inscrits'] = $cnt;
+        return $row;
+    }
 }
