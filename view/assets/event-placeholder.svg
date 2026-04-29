@@ -1,0 +1,31 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<title id="title">Image evenement par defaut</title>
+<desc id="desc">Fond degrade avec icone calendrier pour evenement sans photo</desc>
+<rect width="1200" height="675" fill="url(#bg)"/>
+<circle cx="1000" cy="120" r="220" fill="url(#glow1)" opacity="0.7"/>
+<circle cx="180" cy="560" r="240" fill="url(#glow2)" opacity="0.65"/>
+<rect x="430" y="170" width="340" height="300" rx="30" fill="white" fill-opacity="0.9"/>
+<rect x="430" y="170" width="340" height="86" rx="30" fill="#4F46E5"/>
+<circle cx="510" cy="165" r="20" fill="#22D3EE"/>
+<circle cx="690" cy="165" r="20" fill="#22D3EE"/>
+<rect x="500" y="308" width="70" height="60" rx="12" fill="#C7D2FE"/>
+<rect x="590" y="308" width="70" height="60" rx="12" fill="#C7D2FE"/>
+<rect x="500" y="386" width="70" height="60" rx="12" fill="#C7D2FE"/>
+<rect x="590" y="386" width="70" height="60" rx="12" fill="#C7D2FE"/>
+<text x="600" y="548" text-anchor="middle" fill="#E2E8F0" font-size="54" font-family="Inter, Arial, sans-serif" font-weight="700">Evenement</text>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1184.12" y2="709.045" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0891B2"/>
+<stop offset="0.48" stop-color="#2563EB"/>
+<stop offset="1" stop-color="#7C3AED"/>
+</linearGradient>
+<radialGradient id="glow1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1000 120) rotate(90) scale(220)">
+<stop stop-color="#D946EF"/>
+<stop offset="1" stop-color="#D946EF" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="glow2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(180 560) rotate(90) scale(240)">
+<stop stop-color="#22D3EE"/>
+<stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+</radialGradient>
+</defs>
+</svg>
