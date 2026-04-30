@@ -1,5 +1,5 @@
 <?php
-include '../../Controller/UserP.php';
+require_once __DIR__ . '/../../controller/UserP.php';
 
 $userP = new UserP();
 $list = $userP->listUsers();

@@ -31,7 +31,10 @@ class UserP {
                 'type' => $user->getType(),
                 'age' => $user->getAge()
             ]);
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                throw new RuntimeException('duplicate_email', 0, $e);
+            }
             die('Error: ' . $e->getMessage());
         }
     }
@@ -53,7 +56,7 @@ class UserP {
     // 🔹 CHECK IF USER HAS COMMANDES (orders)
     public function hasCommandes($id) {
         $sql = "SELECT COUNT(*) as cnt FROM commande WHERE id_acheteur = :id";
-        $db = config::getConnexion();
+        $db = Config::getConnexion();
         try {
             $query = $db->prepare($sql);
             $query->execute(['id' => $id]);
@@ -89,7 +92,10 @@ class UserP {
                 'age' => $user->getAge()
             ]);
 
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                throw new RuntimeException('duplicate_email', 0, $e);
+            }
             die('Error:' . $e->getMessage());
         }
     }
@@ -102,7 +108,7 @@ class UserP {
         try {
             $query = $db->prepare($sql);
             $query->execute(['id' => $id]);
-            return $query->fetch();
+            return $query->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());
         }

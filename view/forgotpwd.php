@@ -91,10 +91,11 @@
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
+        <!-- Validation JavaScript : view/assets/forms-validation.js (forgot-form) -->
         <form method="post" action="#" novalidate data-validate="forgot-form">
-            <input type="email" name="email" placeholder="Votre email" autocomplete="email">
+            <input type="email" name="email" placeholder="Votre email" required maxlength="150" autocomplete="email">
 
-            <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">
+            <input type="password" name="mdp" placeholder="Nouveau mot de passe" required minlength="6" maxlength="128" autocomplete="new-password">
 
             <button type="submit">Réinitialiser</button>
         </form>

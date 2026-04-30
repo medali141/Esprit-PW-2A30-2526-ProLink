@@ -8,28 +8,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $prenom = trim($_POST['prenom'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $mdp = trim($_POST['mdp'] ?? '');
+    $mdp = $_POST['mdp'] ?? '';
     $type = trim($_POST['type'] ?? '');
-    $age = intval($_POST['age'] ?? 0);
+    $age = (int) ($_POST['age'] ?? 0);
 
-    // Server-side validation
-    if (!$nom || !$prenom || !$email || !$mdp || !$type || !$age) {
-        $error = 'Veuillez remplir tous les champs correctement.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Adresse email invalide.';
-    } elseif (strlen($mdp) < 6) {
-        $error = 'Le mot de passe doit contenir au moins 6 caractères.';
-    } else {
-        // Prevent creating an admin via the public form
-        if ($type === 'admin') {
-            $type = 'candidat';
-        }
+    if ($type === 'admin') {
+        $type = 'candidat';
+    }
 
+    try {
         $userObj = new User($nom, $prenom, $email, $mdp, $type, $age);
         $auth = new AuthController();
         $auth->register($userObj);
         header('Location: login.php?registered=1');
         exit;
+    } catch (RuntimeException $e) {
+        if ($e->getMessage() === AuthController::ERR_DUPLICATE_EMAIL) {
+            $error = 'Cet email est déjà utilisé.';
+        } else {
+            $error = 'Erreur lors de l\'inscription.';
+        }
+    } catch (Throwable $e) {
+        $error = 'Erreur lors de l\'inscription.';
     }
 }
 ?>
@@ -106,11 +106,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" novalidate data-validate="user-form">
-            <input type="text" name="nom" placeholder="Nom" required value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
-            <input type="text" name="prenom" placeholder="Prénom" required value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
-            <input type="email" name="email" placeholder="Email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
-            <input type="password" name="mdp" placeholder="Mot de passe" required>
+        <form method="POST" novalidate data-validate="user-form" autocomplete="off">
+            <input type="text" name="nom" placeholder="Nom" required minlength="2" maxlength="100"
+                   pattern="[A-Za-zÀ-ÖØ-öø-ÿ' \-]+"
+                   value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>">
+            <input type="text" name="prenom" placeholder="Prénom" required minlength="2" maxlength="100"
+                   pattern="[A-Za-zÀ-ÖØ-öø-ÿ' \-]+"
+                   value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
+            <input type="email" name="email" placeholder="Email" required maxlength="150"
+                   value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
+            <input type="password" name="mdp" placeholder="Mot de passe" required minlength="6" maxlength="128" autocomplete="new-password">
 
             <select name="type" required>
                 <option value="">Type utilisateur</option>
@@ -119,7 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="entrepreneur" <?= (($_POST['type'] ?? '') === 'entrepreneur') ? 'selected' : '' ?>>Entrepreneur</option>
             </select>
 
-            <input type="number" name="age" placeholder="Age" required value="<?= htmlspecialchars($_POST['age'] ?? '') ?>">
+            <input type="number" name="age" placeholder="Âge" required min="13" max="120" inputmode="numeric"
+                   value="<?= htmlspecialchars($_POST['age'] ?? '') ?>">
 
             <button type="submit">S'inscrire</button>
         </form>

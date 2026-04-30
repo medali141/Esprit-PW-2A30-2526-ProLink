@@ -1,6 +1,9 @@
 /**
- * Contrôles de saisie côté client (Back-office + Front-office).
- * Attacher data-validate="…" et novalidate sur les <form>.
+ * Contrôles de saisie côté client (JavaScript) — Back-office + Front-office.
+ *
+ * Usage :
+ *   <form novalidate data-validate="user-form|login-form|…">
+ * Les règles sont appliquées au submit ; la saisie enlève l’erreur sous le champ.
  */
 (function () {
     'use strict';
@@ -9,6 +12,20 @@
         form.querySelectorAll('.field-error').forEach(function (el) {
             el.remove();
         });
+        form.querySelectorAll('[data-invalid="1"]').forEach(function (el) {
+            el.removeAttribute('aria-invalid');
+            el.removeAttribute('data-invalid');
+        });
+    }
+
+    function removeFieldError(field) {
+        if (!field) return;
+        var err = field.nextElementSibling;
+        if (err && err.classList.contains('field-error')) {
+            err.remove();
+        }
+        field.removeAttribute('aria-invalid');
+        field.removeAttribute('data-invalid');
     }
 
     function setError(field, message) {
@@ -21,6 +38,8 @@
             field.insertAdjacentElement('afterend', err);
         }
         err.textContent = message;
+        field.setAttribute('aria-invalid', 'true');
+        field.setAttribute('data-invalid', '1');
     }
 
     function isEmail(val) {
@@ -79,7 +98,9 @@
             }
         }
         if (mdp) {
-            if (mdp.value.length < 6) {
+            var pwd = mdp.value;
+            var needPwd = mdp.hasAttribute('required') || (pwd && pwd.length > 0);
+            if (needPwd && pwd.length < 6) {
                 setError(mdp, 'Le mot de passe doit contenir au moins 6 caractères');
                 ok = false;
             }
@@ -185,8 +206,8 @@
             ok = false;
         }
         var deff = form.elements['date_livraison_effective'];
-        if (deff && deff.value && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(deff.value)) {
-            setError(deff, 'Date/heure invalide');
+        if (deff && deff.value && !/^\d{4}-\d{2}-\d{2}$/.test(deff.value)) {
+            setError(deff, 'Date effective invalide');
             ok = false;
         }
         return ok;
@@ -233,6 +254,14 @@
             setError(pays, 'Pays : maximum 100 caractères');
             ok = false;
         }
+        var tel = form.elements['telephone_livraison'];
+        if (tel) {
+            var t = tel.value.trim();
+            if (!/^\d{8}$/.test(t)) {
+                setError(tel, 'Téléphone : 8 chiffres');
+                ok = false;
+            }
+        }
         var notes = form.elements['notes'];
         if (notes && notes.value.length > 500) {
             setError(notes, 'Notes : maximum 500 caractères');
@@ -260,8 +289,29 @@
             if (!mdp.value || mdp.value.length === 0) {
                 setError(mdp, 'Mot de passe requis');
                 ok = false;
-            } else if (mdp.value.length < 6) {
-                setError(mdp, 'Mot de passe : au moins 6 caractères');
+            }
+        }
+        return ok;
+    }
+
+    function validateForgotForm(form) {
+        clearErrors(form);
+        var ok = true;
+        var email = form.elements['email'];
+        var mdp = form.elements['mdp'];
+        if (email) {
+            var ve = email.value.trim();
+            if (!ve) {
+                setError(email, 'Email requis');
+                ok = false;
+            } else if (!isEmail(ve)) {
+                setError(email, 'Format email invalide');
+                ok = false;
+            }
+        }
+        if (mdp) {
+            if (!mdp.value || mdp.value.length < 6) {
+                setError(mdp, 'Nouveau mot de passe : au moins 6 caractères');
                 ok = false;
             }
         }
@@ -279,9 +329,10 @@
                 return;
             }
             var n = parseInt(v, 10);
-            var max = parseInt(inp.getAttribute('max'), 10);
-            var min = parseInt(inp.getAttribute('min'), 10);
+            var max = parseInt(inp.getAttribute('data-max'), 10);
+            var min = parseInt(inp.getAttribute('data-min'), 10);
             if (isNaN(min)) min = 0;
+            if (isNaN(max)) max = Number.MAX_SAFE_INTEGER;
             if (n < min || n > max) {
                 setError(inp, 'Quantité entre ' + min + ' et ' + max);
                 ok = false;
@@ -298,13 +349,32 @@
         });
     }
 
+    /** Retire le message d’erreur sous un champ dès que l’utilisateur corrige (UX). */
+    function bindLiveClearErrors() {
+        document.addEventListener('input', function (e) {
+            var t = e.target;
+            if (!t || !t.closest || !t.name) return;
+            var form = t.closest('form[data-validate]');
+            if (!form) return;
+            removeFieldError(t);
+        }, true);
+        document.addEventListener('change', function (e) {
+            var t = e.target;
+            if (!t || !t.closest) return;
+            var form = t.closest('form[data-validate]');
+            if (!form) return;
+            if (t.tagName === 'SELECT') removeFieldError(t);
+        }, true);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        bindLiveClearErrors();
         bindForm('form[data-validate="user-form"]', validateUserForm);
         bindForm('form[data-validate="produit-form"]', validateProduitForm);
         bindForm('form[data-validate="commande-form"]', validateCommandeForm);
         bindForm('form[data-validate="checkout-form"]', validateCheckoutForm);
         bindForm('form[data-validate="panier-form"]', validatePanierForm);
         bindForm('form[data-validate="login-form"]', validateLoginForm);
-        bindForm('form[data-validate="forgot-form"]', validateLoginForm);
+        bindForm('form[data-validate="forgot-form"]', validateForgotForm);
     });
 })();

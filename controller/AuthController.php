@@ -3,6 +3,9 @@ require_once __DIR__ . '/../config.php';
 
 class AuthController {
 
+    /** Email déjà présent en base (MySQL 1062). */
+    public const ERR_DUPLICATE_EMAIL = 'duplicate_email';
+
     // 🔹 LOGIN
     public function login($email, $mdp) {
         $sql = "SELECT * FROM user WHERE email = :email";
@@ -11,7 +14,7 @@ class AuthController {
         try {
             $query = $db->prepare($sql);
             $query->execute(['email' => $email]);
-            $user = $query->fetch();
+            $user = $query->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($mdp, $user['mdp'])) {
                 if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -44,8 +47,11 @@ class AuthController {
                 'type' => $user->getType(),
                 'age' => $user->getAge()
             ]);
-        } catch (Exception $e) {
-            die('Error:' . $e->getMessage());
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1062) {
+                throw new RuntimeException(self::ERR_DUPLICATE_EMAIL, 0, $e);
+            }
+            throw $e;
         }
     }
 
@@ -54,7 +60,23 @@ class AuthController {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
-        return $_SESSION['user'] ?? null;
+        $sessionUser = $_SESSION['user'] ?? null;
+        if (!$sessionUser || empty($sessionUser['iduser'])) {
+            return null;
+        }
+        try {
+            $db = Config::getConnexion();
+            $q = $db->prepare("SELECT * FROM user WHERE iduser = :id LIMIT 1");
+            $q->execute(['id' => (int) $sessionUser['iduser']]);
+            $fresh = $q->fetch(PDO::FETCH_ASSOC);
+            if ($fresh) {
+                $_SESSION['user'] = $fresh;
+                return $fresh;
+            }
+        } catch (Throwable $e) {
+            // Fallback on session snapshot if DB refresh fails.
+        }
+        return $sessionUser;
     }
 
     // 🔹 FORGOT PASSWORD

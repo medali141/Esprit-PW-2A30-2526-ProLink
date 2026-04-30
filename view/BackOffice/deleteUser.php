@@ -1,5 +1,5 @@
 <?php
-include '../../Controller/UserP.php';
+require_once __DIR__ . '/../../controller/UserP.php';
 
 if (isset($_GET['id'])) {
     $userP = new UserP();

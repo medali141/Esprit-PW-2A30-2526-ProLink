@@ -128,7 +128,8 @@ html.dark-mode button.secondary{background:#334155; color:#f1f5f9}
 html.dark-mode h1, html.dark-mode h2, html.dark-mode h3{color:#f1f5f9}
 html.dark-mode a.btn.register{color:#0f1724}
 /* Ensure most textual elements are readable in dark mode */
+/* Exclude coloured badges/pills so they keep WCAG-friendly text on tinted backgrounds */
 html.dark-mode body,
-html.dark-mode body *:not(.logo):not(.nav-links):not(.nav-links a):not(.cta):not(.feature-icon) {
+html.dark-mode body *:not(.logo):not(.nav-links):not(.nav-links a):not(.cta):not(.feature-icon):not(.commerce-badge):not(.fo-badge):not(.commerce-yesno):not(.commerce-stock-pill):not(.commerce-cat-pill) {
   color: #ffffff !important;
 }

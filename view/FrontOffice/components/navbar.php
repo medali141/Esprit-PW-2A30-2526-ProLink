@@ -7,6 +7,7 @@ if (!defined('APP_INIT')) {
 $__nav_user = $_SESSION['user'] ?? null;
 $__nav_type = strtolower($__nav_user['type'] ?? '');
 $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
+$__points = (int) ($__nav_user['points_fidelite'] ?? 0);
 ?>
 <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
@@ -35,6 +36,7 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
      <div class="auth">
         <button type="button" class="theme-toggle js-theme-toggle" aria-label="Activer le mode sombre" aria-pressed="false">🌙</button>
         <?php if ($__nav_user): ?>
+            <span class="nav-points" title="Points fidélité"><?= $__points ?> pts</span>
             <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
             <a href="<?= $baseUrl ?>/FrontOffice/profile.php?action=logout" class="btn register">Se déconnecter</a>
         <?php else: ?>
@@ -99,6 +101,18 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
     flex-wrap: wrap;
     gap: 8px;
 }
+.nav-points {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #065f46;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+}
 
 html.dark-mode .navbar {
     background: #121826 !important;
@@ -114,6 +128,11 @@ html.dark-mode .login {
 html.dark-mode .register {
     background: #38bdf8 !important;
     color: #0f1724 !important;
+}
+html.dark-mode .nav-points {
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(110, 231, 183, 0.4);
 }
 </style>
 <script src="<?= $baseUrl ?>/assets/theme.js" defer></script>
