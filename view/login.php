@@ -30,12 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // redirect admin to backoffice, others to frontoffice
             $role = strtolower($user['type'] ?? '');
             if ($role === 'admin') {
-                header('Location: BackOffice/dashboard.php');
-                exit;
-            } else {
-                header('Location: FrontOffice/home.php');
+                header('Location: BackOffice/dashboard/dashboard.php');
                 exit;
             }
+            $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
+            if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
+                header('Location: ' . $next);
+                exit;
+            }
+            header('Location: FrontOffice/home.php');
+            exit;
         }
     }
 }
@@ -43,6 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // show message after successful registration
 if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     $success = 'Inscription réussie. Vous pouvez vous connecter.';
+}
+
+$nextParam = '';
+if (isset($_GET['next'])) {
+    $cand = (string) $_GET['next'];
+    if ($cand !== '' && strpos($cand, '..') === false && preg_match('#^FrontOffice/forum/#', $cand)) {
+        $nextParam = $cand;
+    }
 }
 ?>
 
@@ -57,6 +69,8 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
 <head>
     <meta charset="UTF-8">
     <title>Login - ProLink</title>
+    <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
+    <link rel="stylesheet" href="assets/style.css">
 
     <style>
         body {
@@ -122,6 +136,12 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
         .links a:hover {
             text-decoration: underline;
         }
+
+        html.dark-mode body { background: #0b1017 !important; }
+        html.dark-mode .login-box { background: #151b26 !important; color: #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.45); }
+        html.dark-mode .login-box h2 { color: #38bdf8; }
+        html.dark-mode .login-box input { background: #1e293b; border: 1px solid rgba(148,163,184,0.25); color: #f8fafc; }
+        html.dark-mode .links a { color: #7dd3fc; }
     </style>
 </head>
 
@@ -138,9 +158,12 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" onsubmit="return validateLogin(this)">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="mdp" placeholder="Mot de passe" required>
+        <form method="POST" novalidate data-validate="login-form">
+            <?php if ($nextParam !== ''): ?>
+                <input type="hidden" name="next" value="<?= htmlspecialchars($nextParam) ?>">
+            <?php endif; ?>
+            <input type="email" name="email" placeholder="Email" autocomplete="username">
+            <input type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password">
 
             <button type="submit">Se connecter</button>
         </form>
@@ -160,22 +183,9 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     <div style="text-align:center; margin-top:10px; color: #0a7f2a;"><?= htmlspecialchars($success) ?></div>
 <?php endif; ?>
 
-<script>
-    function validateLogin(form){
-        clearFormErrors(form);
-        const emailEl = form.querySelector('input[name="email"]');
-        const mdpEl = form.querySelector('input[name="mdp"]');
-        let ok = true;
-        if(!emailEl || !emailEl.value.trim()){ setFieldError(emailEl, 'Email requis.'); ok = false; }
-        if(!mdpEl || !mdpEl.value){ setFieldError(mdpEl, 'Mot de passe requis.'); ok = false; }
-        else if(mdpEl.value.length < 6){ setFieldError(mdpEl, 'Le mot de passe doit contenir au moins 6 caractères.'); ok = false; }
-        if(!ok){ if(typeof focusFirstInvalid === 'function') focusFirstInvalid(form); return false; }
-        return true;
-    }
-</script>
-
 <!-- FOOTER -->
 <?php include 'FrontOffice/components/footer.php'; ?>
+<script src="assets/forms-validation.js"></script>
 
 </body>
 </html>

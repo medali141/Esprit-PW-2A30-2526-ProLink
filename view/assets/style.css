@@ -11,7 +11,11 @@
 }
 
 *{box-sizing:border-box}
-body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:var(--bg); color:#0f1724; -webkit-font-smoothing:antialiased}
+html, body { height: 100%; min-height: 100vh; }
+body{display:flex; flex-direction:column; min-height:100vh; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:var(--bg); color:#0f1724; -webkit-font-smoothing:antialiased}
+
+/* make main content expand so footer stays at bottom */
+main { flex: 1 0 auto; }
 
 /* Navbar */
 .navbar{background:transparent; padding:14px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px}
@@ -35,7 +39,10 @@ button{background:var(--accent); color:white; border:none; padding:10px 14px; bo
 button.secondary{background:#f0f2f5; color:#111}
 
 /* Footer */
-.footer{background:#2b3b46; color:white; padding:26px; text-align:center}
+.footer{background:#2b3b46; color:white; padding:26px; text-align:center; flex-shrink:0}
+
+/* ensure footer stays pinned to the bottom when body is a column flex container */
+body > .footer { margin-top: auto; }
 
 /* Responsive */
 @media (max-width:920px){
@@ -59,14 +66,81 @@ button.secondary{background:#f0f2f5; color:#111}
 .table-modern tbody td{padding:12px}
 .table-modern tbody tr:nth-child(even){background:#fbfdff}
 
+/* Erreurs validation JS (forms-validation.js) */
+.field-error{color:#b91c1c;font-size:13px;margin:6px 0 10px;font-weight:600}
+
 /* small animations */
 .fade-in{animation: fade .18s ease both}
 @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
 
-/* Validation error visuals to match templates */
-.is-invalid{ border-color: #e74c3c !important; box-shadow: 0 8px 24px rgba(231,76,60,0.06); }
-.field-error{ color: #e74c3c !important; font-size:13px; margin-top:8px; display:block; text-align:left; }
+/* ——— Mode sombre (html.dark-mode) ——— */
+.theme-toggle{
+  font-size:1.15rem;
+  line-height:1;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,0.12);
+  background:rgba(255,255,255,0.85);
+  cursor:pointer;
+  font-family:inherit;
+  box-shadow:none;
+}
+.theme-toggle:hover{filter:brightness(0.95)}
 
-/* Toast container for legacy alerts fallback */
-#validation-toast-container{ position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 99999; pointer-events: none; }
-.validation-toast{ pointer-events: auto; background: rgba(11,22,38,0.95); color: #fff; padding: 12px 18px; margin-top:8px; border-radius:10px; min-width:220px; box-shadow:0 10px 30px rgba(11,22,38,0.25); font-size:14px }
+html.dark-mode{
+  --bg:#0c1017;
+  --card:#151b26;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+  --accent-600:#0ea5e9;
+  --shadow: 0 14px 40px rgba(0,0,0,0.35);
+}
+html.dark-mode body{
+  background:var(--bg);
+  color:#e2e8f0;
+}
+html.dark-mode .navbar{
+  background:#121826 !important;
+  box-shadow:0 4px 24px rgba(0,0,0,0.35) !important;
+}
+html.dark-mode .logo{color:var(--accent) !important}
+html.dark-mode .nav-links a{color:#e2e8f0 !important}
+html.dark-mode .nav-links a:hover{background:rgba(56,189,248,0.12) !important; color:var(--accent) !important}
+html.dark-mode .auth .login{border-color:rgba(56,189,248,0.35) !important; color:var(--accent) !important}
+html.dark-mode .auth .register{background:var(--accent) !important; color:#0f1724 !important}
+html.dark-mode .card{background:var(--card); color:#e2e8f0; box-shadow:var(--shadow)}
+html.dark-mode input, html.dark-mode select{
+  background:#1e293b;
+  border-color:rgba(148,163,184,0.2);
+  color:#f1f5f9;
+}
+html.dark-mode .table-modern thead th{background:#1e3a5f; color:#f1f5f9}
+html.dark-mode .table-modern tbody tr:nth-child(even){background:#1a2230}
+html.dark-mode .table-modern tbody td{color:#e2e8f0}
+html.dark-mode .footer{background:#070b10; border-top:1px solid rgba(148,163,184,0.12)}
+html.dark-mode .theme-toggle{
+  border-color:rgba(148,163,184,0.25);
+  background:rgba(30,41,59,0.9);
+  color:#f1f5f9;
+}
+html.dark-mode .field-error{color:#fca5a5}
+html.dark-mode button.secondary{background:#334155; color:#f1f5f9}
+html.dark-mode h1, html.dark-mode h2, html.dark-mode h3{color:#f1f5f9}
+html.dark-mode a.btn.register{color:#0f1724}
+
+/*
+ * Ne pas forcer `body * { color: white }` : ça rend le texte illisible sur fonds clairs
+ * (boutons, cartes, héros). La couleur par défaut vient de `html.dark-mode body` ci-dessus.
+ */
+html.dark-mode .hint,
+html.dark-mode .text-muted {
+  color: var(--muted) !important;
+}
+
+/* Liens dans le contenu principal (navbar / auth ont leurs propres règles) */
+html.dark-mode main a:not(.btn):not(.fo-btn):not(.home-btn):not(.cta):not(.login):not(.register):not(.logout):not(.edit) {
+  color: #7dd3fc;
+}
+html.dark-mode main a:not(.btn):not(.fo-btn):not(.home-btn):hover {
+  color: #bae6fd;
+}

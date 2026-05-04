@@ -1,0 +1,436 @@
+/**
+ * Design module Gestion achats / ventes (back-office)
+ * Charger après sidebar.css — wrapper .commerce-page sur le contenu.
+ */
+
+.commerce-page {
+    --c-cyan: #06b6d4;
+    --c-violet: #8b5cf6;
+    --c-fuchsia: #d946ef;
+    --c-amber: #f59e0b;
+    --c-emerald: #10b981;
+    --c-rose: #f43f5e;
+    --c-slate: #64748b;
+    --c-card-border: rgba(6, 182, 212, 0.18);
+    --c-glow: 0 12px 40px rgba(6, 182, 212, 0.08);
+}
+
+/* --- Hub --- */
+.commerce-hub-intro {
+    margin-bottom: 28px;
+    padding: 22px 26px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(139, 92, 246, 0.1), rgba(217, 70, 239, 0.06));
+    border: 1px solid var(--c-card-border);
+    box-shadow: var(--c-glow);
+}
+.commerce-hub-intro h1 {
+    margin: 0 0 6px 0;
+    font-size: 1.75rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(105deg, #0891b2, #7c3aed, #c026d3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+    .commerce-hub-intro h1 {
+        background: none;
+        -webkit-text-fill-color: inherit;
+        color: #0e7490;
+    }
+}
+.commerce-hub-intro p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+    max-width: 52ch;
+}
+
+.commerce-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+.commerce-hub-card {
+    position: relative;
+    border-radius: 18px;
+    padding: 26px 24px 24px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fff;
+    box-shadow: 0 10px 36px rgba(15, 23, 42, 0.07);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.commerce-hub-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(6, 182, 212, 0.12);
+}
+.commerce-hub-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 18px 18px 0 0;
+}
+.commerce-hub-card--products::before {
+    background: linear-gradient(90deg, var(--c-cyan), var(--c-violet));
+}
+.commerce-hub-card--orders::before {
+    background: linear-gradient(90deg, var(--c-fuchsia), var(--c-amber));
+}
+
+.commerce-hub-card .hub-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.12));
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+.commerce-hub-card--orders .hub-icon {
+    background: linear-gradient(135deg, rgba(217, 70, 239, 0.15), rgba(245, 158, 11, 0.12));
+    border-color: rgba(217, 70, 239, 0.22);
+}
+
+.commerce-hub-card h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+.commerce-hub-stat {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(90deg, #0e7490, #6d28d9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 4px 0 14px;
+}
+.commerce-hub-card--orders .commerce-hub-stat {
+    background: linear-gradient(90deg, #a21caf, #d97706);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+.commerce-hub-card .hub-hint {
+    margin: 0 0 18px;
+    font-size: 0.88rem;
+    color: #64748b;
+    font-weight: 500;
+}
+.commerce-hub-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.commerce-hub-actions .btn {
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 700;
+}
+
+/* --- Listes (tables) --- */
+.commerce-table-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+    background: #fff;
+}
+.commerce-page .commerce-table-wrap .table-modern {
+    box-shadow: none;
+    border-radius: 0;
+}
+.commerce-page .commerce-table-wrap .table-modern thead th {
+    background: linear-gradient(90deg, #0891b2, #2563eb);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 14px 12px;
+}
+.commerce-page .commerce-table-wrap .table-modern tbody td {
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+.commerce-page .commerce-table-wrap .table-modern tbody tr:hover {
+    background: linear-gradient(90deg, rgba(6, 182, 212, 0.06), rgba(139, 92, 246, 0.04));
+}
+
+.commerce-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.commerce-actions .btn {
+    border-radius: 8px;
+    font-size: 0.82rem;
+    padding: 6px 10px;
+}
+
+/* Badges statut commande */
+.commerce-badge {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.commerce-badge--brouillon {
+    background: #f1f5f9;
+    color: #475569;
+}
+.commerce-badge--en_attente_paiement {
+    background: #fef3c7;
+    color: #b45309;
+}
+.commerce-badge--payee {
+    background: #d1fae5;
+    color: #047857;
+}
+.commerce-badge--en_preparation {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+.commerce-badge--expediee {
+    background: #cffafe;
+    color: #0e7490;
+}
+.commerce-badge--livree {
+    background: #dcfce7;
+    color: #15803d;
+}
+.commerce-badge--annulee {
+    background: #ffe4e6;
+    color: #be123c;
+}
+
+.commerce-stock-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    background: #f1f5f9;
+    color: #334155;
+}
+.commerce-stock-pill--low {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.commerce-yesno {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+.commerce-yesno--yes {
+    background: #d1fae5;
+    color: #047857;
+}
+.commerce-yesno--no {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* --- Formulaires produit / commande --- */
+.commerce-form-shell {
+    max-width: 640px;
+}
+.commerce-form-card {
+    border-radius: 16px;
+    padding: 28px 26px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fff;
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+}
+.commerce-form-card h2 {
+    margin: 0 0 6px 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+.commerce-form-card .form-lead {
+    margin: 0 0 22px;
+    font-size: 0.88rem;
+    color: #64748b;
+}
+.commerce-form-card label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #334155;
+    letter-spacing: 0.02em;
+}
+.commerce-form-card label:first-of-type,
+.commerce-form-card .field-first {
+    margin-top: 0;
+}
+.commerce-form-card input,
+.commerce-form-card select,
+.commerce-form-card textarea {
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 6px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.commerce-form-card input:focus,
+.commerce-form-card select:focus,
+.commerce-form-card textarea:focus {
+    outline: none;
+    border-color: rgba(6, 182, 212, 0.55);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+.commerce-form-card .form-row-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    font-weight: 600;
+    color: #475569;
+}
+.commerce-form-card .form-row-check input {
+    width: auto;
+    margin: 0;
+}
+.commerce-form-card .btn-submit-wrap {
+    margin-top: 22px;
+}
+.commerce-form-card .btn-submit-wrap .btn {
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-weight: 800;
+}
+
+.commerce-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+@media (max-width: 800px) {
+    .commerce-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.commerce-card-title {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.commerce-card-title::before {
+    content: '';
+    width: 4px;
+    height: 1.1em;
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--c-cyan), var(--c-violet));
+}
+
+.commerce-alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+.commerce-alert--ok {
+    background: #d1fae5;
+    color: #047857;
+    border: 1px solid #6ee7b7;
+}
+.commerce-alert--err {
+    background: #ffe4e6;
+    color: #be123c;
+    border: 1px solid #fda4af;
+}
+
+.commerce-addr-block {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.06), rgba(139, 92, 246, 0.05));
+    border: 1px solid rgba(6, 182, 212, 0.12);
+    margin-bottom: 18px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+/* --- Dark mode --- */
+html.dark-mode .commerce-hub-intro {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.12));
+    border-color: rgba(148, 163, 184, 0.2);
+}
+html.dark-mode .commerce-hub-intro p {
+    color: #94a3b8;
+}
+html.dark-mode .commerce-hub-card {
+    background: #151b26;
+    border-color: rgba(148, 163, 184, 0.15);
+}
+html.dark-mode .commerce-hub-card h2 {
+    color: #f1f5f9;
+}
+html.dark-mode .commerce-hub-card .hub-hint {
+    color: #94a3b8;
+}
+html.dark-mode .commerce-table-wrap {
+    background: #151b26;
+    border-color: rgba(148, 163, 184, 0.12);
+}
+html.dark-mode .commerce-form-card {
+    background: #151b26;
+    border-color: rgba(148, 163, 184, 0.12);
+}
+html.dark-mode .commerce-form-card h2,
+html.dark-mode .commerce-card-title {
+    color: #f1f5f9;
+}
+html.dark-mode .commerce-form-card label {
+    color: #cbd5e1;
+}
+html.dark-mode .commerce-form-card .form-lead {
+    color: #94a3b8;
+}
+html.dark-mode .commerce-addr-block {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+}
+html.dark-mode .commerce-stock-pill {
+    background: #334155;
+    color: #e2e8f0;
+}
+html.dark-mode .commerce-stock-pill--low {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fdba74;
+}
+html.dark-mode .commerce-form-card .commerce-detail-grid input,
+html.dark-mode .commerce-form-card .commerce-detail-grid select,
+html.dark-mode .commerce-form-card .commerce-detail-grid textarea {
+    background: #0f172a;
+    border-color: rgba(148, 163, 184, 0.2);
+    color: #f1f5f9;
+}
