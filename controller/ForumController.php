@@ -16,11 +16,50 @@ class ForumController
         return $this->lastPublicError;
     }
     /** @return list<array<string, mixed>> */
-    public function listCategories(): array
+    public function listCategories(string $sort = 'ordre', string $dir = 'asc'): array
     {
+        $allowed = ['ordre', 'titre', 'id_categorie'];
+        if (!in_array($sort, $allowed, true)) {
+            $sort = 'ordre';
+        }
+        $dir = strtoupper($dir) === 'ASC' ? 'ASC' : 'DESC';
+        $map = [
+            'ordre' => '`ordre`',
+            'titre' => '`titre`',
+            'id_categorie' => '`id_categorie`',
+        ];
+        $col = $map[$sort] ?? '`ordre`';
         $db = Config::getConnexion();
-        $st = $db->query('SELECT * FROM `forum_categorie` ORDER BY `ordre` ASC, `id_categorie` ASC');
+        $sql = "SELECT * FROM `forum_categorie` ORDER BY {$col} {$dir}, `id_categorie` ASC";
+        $st = $db->query($sql);
         return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function searchCategories(?string $q = null, string $sort = 'ordre', string $dir = 'asc'): array
+    {
+        $allowed = ['ordre', 'titre', 'id_categorie'];
+        if (!in_array($sort, $allowed, true)) {
+            $sort = 'ordre';
+        }
+        $dir = strtoupper($dir) === 'ASC' ? 'ASC' : 'DESC';
+        $map = [
+            'ordre' => '`ordre`',
+            'titre' => '`titre`',
+            'id_categorie' => '`id_categorie`',
+        ];
+        $col = $map[$sort] ?? '`ordre`';
+
+        $db = Config::getConnexion();
+        if ($q === null || trim($q) === '') {
+            $st = $db->prepare("SELECT * FROM `forum_categorie` ORDER BY {$col} {$dir}, `id_categorie` ASC");
+            $st->execute();
+            return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+        }
+        $st = $db->prepare("SELECT * FROM `forum_categorie` WHERE `titre` LIKE :q OR `description` LIKE :q ORDER BY {$col} {$dir}, `id_categorie` ASC");
+        $st->execute(['q' => '%' . $q . '%']);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($rows) ? $rows : [];
     }
 
     /** @return array<string, mixed>|false */

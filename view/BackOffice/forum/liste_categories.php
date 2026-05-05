@@ -28,7 +28,45 @@ if (isset($_GET['delete'], $_GET['token']) && (string) $_GET['token'] === ($_SES
     exit;
 }
 
-$liste = $fc->listCategories();
+$allowedSort = ['ordre', 'titre', 'id_categorie'];
+$sort = (string) ($_GET['sort'] ?? 'ordre');
+$dir = (string) ($_GET['dir'] ?? 'asc');
+if (!in_array($sort, $allowedSort, true)) {
+    $sort = 'ordre';
+}
+$dir = strtoupper($dir) === 'ASC' ? 'asc' : 'desc';
+
+$liste = $fc->listCategories($sort, $dir);
+$t = urlencode((string) ($_SESSION['forum_csrf'] ?? ''));
+$csrf_js = json_encode((string) ($_SESSION['forum_csrf'] ?? ''));
+$sort_js = json_encode($sort);
+$dir_js = json_encode($dir);
+
+$qval = isset($_GET['q']) ? (string) $_GET['q'] : null;
+$baseQuery = array_filter(['q' => $qval, 'sort' => $sort, 'dir' => $dir], static function ($v) {
+    return $v !== null && $v !== '';
+});
+$baseQs = http_build_query($baseQuery);
+
+$sortUrl = static function (string $col) use ($sort, $dir, $qval) {
+    $is = strtolower($sort) === strtolower($col);
+    $next = ($is && strtolower($dir) === 'asc') ? 'desc' : 'asc';
+    if (!$is) {
+        $next = 'asc';
+    }
+    $q = ['sort' => $col, 'dir' => $next];
+    if ($qval !== null && $qval !== '') {
+        $q['q'] = $qval;
+    }
+    return 'liste_categories.php?' . http_build_query($q);
+};
+
+$sortMark = static function (string $col) use ($sort, $dir) {
+    if (strtolower($sort) !== strtolower($col)) {
+        return '';
+    }
+    return strtolower($dir) === 'asc' ? ' ↑' : ' ↓';
+};
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -72,12 +110,16 @@ $liste = $fc->listCategories();
     <?php endif; ?>
     <div class="card" style="max-width:900px;margin:0 auto">
         <h2 style="margin-top:0;font-size:1.1rem">Liste</h2>
+        <div style="margin-top:8px;margin-bottom:12px">
+            <label for="q-cat">Recherche</label>
+            <input type="search" id="q-cat" name="q" class="search-input" placeholder="Titre, description..." value="<?= htmlspecialchars((string)($_GET['q'] ?? '')) ?>">
+        </div>
         <div style="overflow-x:auto">
             <table class="table-modern" style="width:100%;border-collapse:collapse">
                 <thead>
                 <tr>
-                    <th>Ordre</th>
-                    <th>Titre</th>
+                    <th><a href="<?= htmlspecialchars($sortUrl('ordre')) ?>">Ordre<?= $sortMark('ordre') ?></a></th>
+                    <th><a href="<?= htmlspecialchars($sortUrl('titre')) ?>">Titre<?= $sortMark('titre') ?></a></th>
                     <th>Description</th>
                     <th></th>
                 </tr>
@@ -102,5 +144,47 @@ $liste = $fc->listCategories();
         <?php endif; ?>
     </div>
 </div>
+        <script>
+        (function(){
+            var input = document.getElementById('q-cat');
+            var tbody = document.querySelector('table.table-modern tbody');
+            if (!input || !tbody) return;
+            var timer = null;
+            var csrf = <?= $csrf_js ?>;
+            var sort = <?= $sort_js ?>;
+            var dir = <?= $dir_js ?>;
+            function escapeHtml(s){
+                return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');
+            }
+            function render(items){
+                if (!items || items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="color:#64748b;padding:12px">Aucune catégorie.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = items.map(function(c){
+                    var desc = (c.description || '');
+                    return '<tr>' +
+                        '<td>' + (c.ordre||0) + '</td>' +
+                        '<td><strong>' + escapeHtml(c.titre) + '</strong></td>' +
+                        '<td style="max-width:280px;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(desc).replace(/\n/g,'<br>') + '</td>' +
+                        '<td>' +
+                            '<a class="btn btn-sm btn-secondary" href="modifier_categorie.php?id=' + c.id_categorie + '">Modifier</a> ' +
+                            '<a class="btn btn-sm btn-danger" href="liste_categories.php?delete=' + c.id_categorie + '&token=' + encodeURIComponent(csrf) + '" onclick="return confirm(\'Supprimer cette catégorie et tous les sujets associés ?\');">Suppr.</a>' +
+                        '</td>' +
+                    '</tr>';
+                }).join('');
+            }
+            function doSearch(){
+                var q = input.value || '';
+                var url = 'search_categories.php?q=' + encodeURIComponent(q) + '&sort=' + encodeURIComponent(sort) + '&dir=' + encodeURIComponent(dir);
+                fetch(url)
+                    .then(function(r){ return r.json(); })
+                    .then(function(data){ render(data); })
+                    .catch(function(e){ console.error(e); });
+            }
+            input.addEventListener('input', function(){ clearTimeout(timer); timer = setTimeout(doSearch, 300); });
+            if (input.value && input.value.trim() !== '') { doSearch(); }
+        })();
+        </script>
 </body>
 </html>

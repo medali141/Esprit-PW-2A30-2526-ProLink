@@ -110,7 +110,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
             </div>
             <div>
                 <label for="q">Recherche</label>
-                <input type="search" id="q" name="q" placeholder="Titre, auteur..." value="<?= htmlspecialchars((string)($_GET['q'] ?? '')) ?>" style="min-width:220px">
+                <input type="search" id="q" name="q" class="search-input" placeholder="Titre, auteur..." value="<?= htmlspecialchars((string)($_GET['q'] ?? '')) ?>">
             </div>
             <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
             <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
