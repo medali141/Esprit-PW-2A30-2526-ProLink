@@ -44,6 +44,17 @@ $categories = $fc->listCategoriesWithStats();
         <?php endforeach; ?>
     </div>
 
+    <!-- Chatbot widget -->
+    <div style="max-width:900px;margin:30px auto;padding:18px;background:var(--sf-card);border-radius:12px;border:1px solid var(--sf-border);">
+        <h3>Assistant forum</h3>
+        <p style="color:var(--sf-muted);margin-top:6px">Posez une question rapide au chatbot (réponses courtes).</p>
+        <div style="display:flex;gap:10px;margin-top:12px">
+            <input id="chat-prompt" type="text" placeholder="Posez votre question" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--sf-border)">
+            <button id="chat-send" class="fo-btn fo-btn--primary">Envoyer</button>
+        </div>
+        <div id="chat-reply" style="margin-top:12px;padding:12px;border-radius:8px;background:var(--sf-card);display:none"></div>
+    </div>
+
     <?php if (empty($categories)): ?>
         <div class="fo-empty">
             <p class="hint" style="margin:0 0 12px">Aucune catégorie pour le moment.</p>
@@ -54,3 +65,27 @@ $categories = $fc->listCategoriesWithStats();
 <?php include __DIR__ . '/components/footer.php'; ?>
 </body>
 </html>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('chat-send');
+    var inp = document.getElementById('chat-prompt');
+    var out = document.getElementById('chat-reply');
+    if (!btn || !inp || !out) return;
+    btn.addEventListener('click', function(){
+        var v = inp.value.trim();
+        if (v.length < 2) return;
+        btn.disabled = true; out.style.display = 'block'; out.textContent = '… en cours';
+        fetch('chatbot_component.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: v }) })
+            .then(function(r){ return r.json(); })
+            .then(function(j){
+                if (j && j.ok) {
+                    out.textContent = j.reply || '(aucune réponse)';
+                } else {
+                    out.textContent = 'Erreur: ' + (j && j.error ? j.error : 'réponse invalide');
+                }
+            })
+            .catch(function(e){ out.textContent = 'Erreur réseau'; })
+            .finally(function(){ btn.disabled = false; });
+    });
+});
+</script>
