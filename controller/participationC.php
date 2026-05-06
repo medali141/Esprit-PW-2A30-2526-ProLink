@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../model/participation.php';
+require_once __DIR__ . '/../config/mailer.php';   // ← ajoute cette ligne
 
 class ParticipationC
 {
@@ -20,7 +21,7 @@ class ParticipationC
             return;
         }
         $stC = $db->prepare(
-            "SELECT COUNT(*) AS c FROM `participation` WHERE `id_event` = :id AND `statut` <> 'annulé'"
+            "SELECT COUNT(*) AS c FROM `participation` WHERE `id_event` = :id AND `statut` = 'confirmé'"
         );
         $stC->execute(['id' => $idEvent]);
         $cnt = (int) ($stC->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
@@ -38,7 +39,6 @@ class ParticipationC
         return is_array($rows) ? $rows : [];
     }
 
-    
     public function listeParticipation(string $sort = 'date_inscription', string $order = 'desc'): array
     {
         $order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
@@ -67,6 +67,68 @@ class ParticipationC
         return is_array($rows) ? $rows : [];
     }
 
+    /** Count participations with status 'en attente' */
+    public function countEnAttente(): int
+    {
+        $db = Config::getConnexion();
+        $st = $db->query("SELECT COUNT(*) AS c FROM `participation` WHERE `statut` = 'en attente'");
+        if (!$st) {
+            return 0;
+        }
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return (int) ($row['c'] ?? 0);
+    }
+
+    /** Accept or reject a participation by updating its statut */
+    public function updateStatut(int $id, string $statut): bool
+    {
+        $allowed = ['confirmé', 'annulé', 'en attente'];
+        if (!in_array($statut, $allowed, true)) {
+            return false;
+        }
+        if ($id < 1) {
+            return false;
+        }
+        $db = Config::getConnexion();
+
+        // Fetch toutes les infos nécessaires (JOIN pour avoir titre_event + dates + lieu pour le ticket)
+        $g = $db->prepare('
+            SELECT p.`id_participation`, p.`id_event`, p.`email`, p.`nom`, p.`prenom`,
+                   e.`titre_event`, e.`date_debut`, e.`date_fin`, e.`lieu_event`
+            FROM `participation` p
+            INNER JOIN `evenement` e ON p.`id_event` = e.`id_event`
+            WHERE p.`id_participation` = :id LIMIT 1
+        ');
+        $g->execute(['id' => $id]);
+        $row = $g->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return false;
+        }
+        $eid = (int) $row['id_event'];
+
+        $q = $db->prepare('UPDATE `participation` SET `statut` = :st WHERE `id_participation` = :id');
+        try {
+            $q->execute(['st' => $statut, 'id' => $id]);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $this->recomputeEventStatut($eid);
+
+        // ✉️ Envoi email + ticket PDF si confirmé
+        if (in_array($statut, ['confirmé', 'annulé'], true)) {
+            sendParticipationEmail(
+                (string) $row['email'],
+                trim((string) $row['prenom'] . ' ' . (string) $row['nom']),
+                (string) $row['titre_event'],
+                $statut,
+                $row   // ← données complètes pour générer le ticket
+            );
+        }
+
+        return true;
+    }
+
     public function addParticipation(Participation $p)
     {
         $idEvent = (int) $p->getIdEvent();
@@ -88,23 +150,24 @@ class ParticipationC
         if ($stDup->fetch()) {
             return 'Cet email est déjà inscrit à cet événement.';
         }
+        // ✅ Default statut is always 'en attente'
         $sql = 'INSERT INTO `participation` (
             `id_event`, `nom`, `prenom`, `email`, `telephone`, `statut`
         ) VALUES (:id_event, :nom, :prenom, :email, :telephone, :statut)';
         try {
             $st = $db->prepare($sql);
             $st->execute([
-                'id_event' => $idEvent,
-                'nom' => $p->getNom(),
-                'prenom' => $p->getPrenom(),
-                'email' => $p->getEmail(),
+                'id_event'  => $idEvent,
+                'nom'       => $p->getNom(),
+                'prenom'    => $p->getPrenom(),
+                'email'     => $p->getEmail(),
                 'telephone' => $p->getTelephone(),
-                'statut' => $p->getStatut(),
+                'statut'    => 'en attente',   // ← always 'en attente' on creation
             ]);
         } catch (Exception $e) {
             return 'Erreur : ' . $e->getMessage();
         }
-        $this->recomputeEventStatut($idEvent);
+        // Do NOT mark event Complet yet (only confirmed count matters)
         return true;
     }
 
@@ -141,12 +204,12 @@ class ParticipationC
         $db = Config::getConnexion();
 
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-            $nom = trim((string) ($_POST['nom'] ?? ''));
-            $prenom = trim((string) ($_POST['prenom'] ?? ''));
-            $email = trim((string) ($_POST['email'] ?? ''));
+            $nom       = trim((string) ($_POST['nom']       ?? ''));
+            $prenom    = trim((string) ($_POST['prenom']    ?? ''));
+            $email     = trim((string) ($_POST['email']     ?? ''));
             $telephone = trim((string) ($_POST['telephone'] ?? ''));
-            $statut = (string) ($_POST['statut'] ?? '');
-            $idEvent = (int) ($_POST['id_event'] ?? 0);
+            $statut    = (string) ($_POST['statut']  ?? '');
+            $idEvent   = (int)   ($_POST['id_event'] ?? 0);
             if ($nom !== '' && $prenom !== '' && $email !== '' && $telephone !== '' && $statut !== '') {
                 $dup = $db->prepare(
                     'SELECT 1 FROM `participation` WHERE `id_event` = :eid AND LOWER(`email`) = LOWER(:em) AND `id_participation` <> :id LIMIT 1'
@@ -158,12 +221,12 @@ class ParticipationC
                         WHERE `id_participation` = :id');
                     try {
                         $q->execute([
-                            'id' => $id,
-                            'nom' => $nom,
+                            'id'     => $id,
+                            'nom'    => $nom,
                             'prenom' => $prenom,
-                            'email' => $email,
-                            'tel' => $telephone,
-                            'st' => $statut,
+                            'email'  => $email,
+                            'tel'    => $telephone,
+                            'st'     => $statut,
                         ]);
                     } catch (Exception $e) {
                         // keep form
