@@ -156,6 +156,10 @@ if ($chartJson === false) {
         </div>
     </div>
 
+        <div style="margin-bottom:12px">
+            <a class="btn btn-secondary" href="../forum/chatbot_logs.php">Voir logs chatbot</a>
+        </div>
+
     <section class="stats-grid">
         <div class="stat-card">
             <div class="icon">👥</div>

@@ -44,15 +44,15 @@ $categories = $fc->listCategoriesWithStats();
         <?php endforeach; ?>
     </div>
 
-    <!-- Chatbot widget -->
-    <div style="max-width:900px;margin:30px auto;padding:18px;background:var(--sf-card);border-radius:12px;border:1px solid var(--sf-border);">
+    <!-- Chatbot widget (uses storefront theme classes) -->
+    <div class="fo-form-card" role="region" aria-label="Assistant forum" style="max-width:900px;margin:30px auto;padding:18px;">
         <h3>Assistant forum</h3>
-        <p style="color:var(--sf-muted);margin-top:6px">Posez une question rapide au chatbot (réponses courtes).</p>
-        <div style="display:flex;gap:10px;margin-top:12px">
-            <input id="chat-prompt" type="text" placeholder="Posez votre question" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--sf-border)">
+        <p class="hint">Posez une question rapide au chatbot (réponses courtes).</p>
+        <div style="display:flex;gap:12px;align-items:center">
+            <input id="chat-prompt" type="text" placeholder="Posez votre question (ex: comment créer un sujet ?)" autocomplete="off">
             <button id="chat-send" class="fo-btn fo-btn--primary">Envoyer</button>
         </div>
-        <div id="chat-reply" style="margin-top:12px;padding:12px;border-radius:8px;background:var(--sf-card);display:none"></div>
+        <div id="chat-reply" aria-live="polite" style="display:none;margin-top:12px"></div>
     </div>
 
     <?php if (empty($categories)): ?>
@@ -65,27 +65,96 @@ $categories = $fc->listCategoriesWithStats();
 <?php include __DIR__ . '/components/footer.php'; ?>
 </body>
 </html>
+<script src="../assets/puter.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', function () {
     var btn = document.getElementById('chat-send');
     var inp = document.getElementById('chat-prompt');
     var out = document.getElementById('chat-reply');
     if (!btn || !inp || !out) return;
-    btn.addEventListener('click', function(){
+
+    function updateUI(state) {
+        if (state.busy || state.reply || state.error) {
+            out.style.display = 'block';
+        } else {
+            out.style.display = 'none';
+        }
+
+        if (state.error) {
+            out.className = 'field-error';
+            out.textContent = state.error;
+        } else if (state.reply) {
+            out.className = 'fo-banner fo-banner--ok';
+            out.textContent = state.reply;
+        } else if (state.busy) {
+            out.className = 'fo-banner';
+            out.textContent = '… en cours';
+        } else {
+            out.className = '';
+            out.textContent = '';
+        }
+
+        btn.disabled = !!state.busy;
+        inp.disabled = !!state.busy;
+        btn.textContent = state.busy ? 'Envoi…' : 'Envoyer';
+    }
+
+    var app;
+    if (window.Puter && typeof window.Puter.create === 'function') {
+        app = window.Puter.create({ state: { busy: false, reply: '', error: '' }, render: updateUI });
+    } else {
+        app = { setState: function(partial) { updateUI(Object.assign({ busy: false, reply: '', error: '' }, partial)); } };
+    }
+
+    function generateLocalReply(v) {
+        var p = (v || '').toLowerCase().trim();
+        function hasAny(keys) { for (var i=0;i<keys.length;i++){ if (p.indexOf(keys[i]) !== -1) return true; } return false; }
+
+        if (!p) return 'Veuillez préciser votre question.';
+
+        if (hasAny(['créer un sujet','creer un sujet','nouveau sujet','ouvrir un sujet']) || (p.indexOf('sujet') !== -1 && hasAny(['créer','creer','comment','ouvrir']))) {
+            return 'Pour créer un sujet : connectez-vous, allez dans la rubrique souhaitée, cliquez sur « Nouveau sujet », donnez un titre et rédigez votre message puis cliquez sur « Publier ». ';
+        }
+
+        if (p.indexOf('recherch') !== -1 || hasAny(['chercher','trouver','recherche'])) {
+            return 'Pour rechercher un sujet : utilisez le champ de recherche du forum avec des mots‑clés courts et précis (ex : "installation php", "erreur login").';
+        }
+
+        if (hasAny(['profil','photo','avatar'])) {
+            return 'Pour modifier votre profil : cliquez sur votre avatar en haut à droite, puis "Modifier le profil". Vous pouvez téléverser une photo depuis l’onglet profil.';
+        }
+
+        if (hasAny(['panier','commande','acheter','paiement','achat'])) {
+            return 'Les commandes sont accessibles via "Mes commandes". Le panier se remplit depuis les pages produits et le paiement se fait à la validation du panier.';
+        }
+
+        if (hasAny(['règles','regles','modération','moderation','charte'])) {
+            return 'Le forum applique une charte de bonne conduite : pas d’insultes, pas de spam. Les messages contraires peuvent être modérés. Contactez l’administrateur pour les cas particuliers.';
+        }
+
+        // Fallback
+        return 'Je suis un assistant local basé sur Puter.js. Je peux aider pour : créer un sujet, rechercher, modifier votre profil ou consulter vos commandes. Précisez votre question pour une réponse plus ciblée.';
+    }
+
+    function send() {
         var v = inp.value.trim();
-        if (v.length < 2) return;
-        btn.disabled = true; out.style.display = 'block'; out.textContent = '… en cours';
-        fetch('chatbot_component.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: v }) })
-            .then(function(r){ return r.json(); })
-            .then(function(j){
-                if (j && j.ok) {
-                    out.textContent = j.reply || '(aucune réponse)';
-                } else {
-                    out.textContent = 'Erreur: ' + (j && j.error ? j.error : 'réponse invalide');
-                }
-            })
-            .catch(function(e){ out.textContent = 'Erreur réseau'; })
-            .finally(function(){ btn.disabled = false; });
-    });
+        if (v.length < 2) { app.setState({ error: 'Veuillez saisir une question plus longue.'}); return; }
+        app.setState({ busy: true, reply: '', error: '' });
+
+        // Generate reply locally using Puter-driven UI — no external API calls
+        setTimeout(function () {
+            try {
+                var reply = generateLocalReply(v);
+                app.setState({ reply: reply });
+            } catch (e) {
+                app.setState({ error: 'Erreur interne du chatbot local.' });
+            } finally {
+                app.setState({ busy: false });
+            }
+        }, 300);
+    }
+
+    btn.addEventListener('click', send);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
 });
 </script>
