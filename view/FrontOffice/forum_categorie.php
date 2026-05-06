@@ -26,8 +26,11 @@ $sujets = $fc->listSujets($id, 'created_at', 'desc');
         .fo-forum-list__row { display: block; padding: 14px 16px; border-bottom: 1px solid var(--sf-border); text-decoration: none; color: inherit; border-radius: 0; }
         .fo-forum-list__row:hover { background: rgba(6, 182, 212, 0.06); }
         .fo-forum-list__row--pinned { background: linear-gradient(90deg, rgba(6, 182, 212, 0.08), transparent); }
-        .fo-forum-list__h { font-weight: 800; font-size: 0.95rem; margin: 0 0 4px; color: var(--sf-text); }
-        .fo-forum-list__meta { font-size: 0.82rem; color: var(--sf-muted); }
+        /* Titles for forum subjects: larger, clearer, better dark-mode contrast */
+        .fo-forum-list__h { font-weight: 800; font-size: 1.08rem; margin: 0 0 6px; color: var(--sf-text); line-height: 1.25; }
+        .fo-forum-list__meta { font-size: 0.9rem; color: var(--sf-muted); }
+        /* Dark-mode override so titles remain highly readable */
+        html.dark-mode body.fo-store-page .fo-forum-list__h { color: #f1f5f9 !important; text-shadow: 0 1px 0 rgba(0,0,0,0.28); }
     </style>
 </head>
 <body class="fo-store-page">

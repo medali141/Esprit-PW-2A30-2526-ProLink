@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../lib/ForumImageHelper.php';
+require_once __DIR__ . '/../lib/ContentModeration.php';
 
 /**
  * Back-office : catégories, sujets et messages du forum.
@@ -177,14 +178,32 @@ class ForumController
     public function createSujetWithFirstMessage(int $idCategorie, int $idUser, string $titre, string $contenu)
     {
         $this->lastPublicError = '';
+        $titre = trim($titre);
+        $contenu = trim($contenu);
+
+        // Moderate title and content before processing uploads
+        if ($titre !== '') {
+            $mt = ContentModeration::moderate($titre);
+            if (!$mt['ok']) {
+                $this->lastPublicError = $mt['reason'];
+                return false;
+            }
+        }
+        if ($contenu !== '') {
+            $mc = ContentModeration::moderate($contenu);
+            if (!$mc['ok']) {
+                $this->lastPublicError = $mc['reason'];
+                return false;
+            }
+        }
+
         $img = ForumImageHelper::processUpload('photo');
         if (!$img['ok']) {
             $this->lastPublicError = (string) ($img['error'] ?? '');
             return false;
         }
-        $titre = trim($titre);
-        $contenu = trim($contenu);
         $path = $img['path'];
+
         if ($titre === '' || $idCategorie < 1 || $idUser < 1) {
             if ($path !== null) {
                 ForumImageHelper::removeFileIfSafe($path);
@@ -349,11 +368,20 @@ class ForumController
      */
     public function addMessagePublic(int $idSujet, int $idUser, string $contenu)
     {
+        $contenu = trim($contenu);
+
+        // Moderate content before handling uploads
+        if ($contenu !== '') {
+            $mc = ContentModeration::moderate($contenu);
+            if (!$mc['ok']) {
+                return $mc['reason'];
+            }
+        }
+
         $img = ForumImageHelper::processUpload('photo');
         if (!$img['ok']) {
             return (string) ($img['error'] ?? 'Image invalide.');
         }
-        $contenu = trim($contenu);
         $path = $img['path'];
         if ($idSujet < 1 || $idUser < 1) {
             if ($path !== null) {
