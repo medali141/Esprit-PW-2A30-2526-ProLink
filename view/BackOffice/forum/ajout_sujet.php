@@ -19,7 +19,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         header('Location: ' . bo_url('forum/sujet_messages.php?id=' . $newId . '&ok=1'));
         exit;
     }
-    $err = 'Remplissez tous les champs et choisissez une catégorie.';
+    $le = $fc->getLastPublicError();
+    $err = $le !== '' ? $le : 'Remplissez tous les champs et choisissez une catégorie.';
 }
 ?>
 <!DOCTYPE html>

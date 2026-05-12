@@ -1,0 +1,78 @@
+/* Basic modern styles inspired by the screenshot */
+:root{
+  --bg:#f3f6f8;
+  --accent1:#00b4ff;
+  --accent2:#00e0ff;
+  --card:#ffffff;
+  --muted:#9aa5b1;
+  --dark:#21313a;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--dark);margin:0}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.site-header{background:transparent;padding:16px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.logo a{font-weight:700;color:var(--dark);text-decoration:none;font-size:22px}
+.main-nav a{margin:0 12px;color:var(--muted);text-decoration:none}
+.user-actions .btn.connect{background:#0a84ff;color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none}
+.user-actions .btn.admin{background:#0e3946;color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none;margin-right:10px}
+.user-actions .btn.profile{background:transparent;color:var(--dark);border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:6px;margin-right:8px}
+.hero{padding:36px 0}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#00303a;border-radius:12px;padding:28px;box-shadow:0 8px 18px rgba(0,0,0,0.08)}
+.hero h1{font-size:52px;margin:0}
+.hero p{color:rgba(255,255,255,0.95);max-width:480px}
+.btn{display:inline-block;background:#0f1720;color:#fff;padding:10px 16px;border-radius:10px;border:none;cursor:pointer}
+.btn.primary{background:#052a3a}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn.danger{background:#d64545}
+.muted{color:var(--muted)}
+
+.forum-section{margin-top:28px}
+.new-post{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(20,40,60,0.06);margin-bottom:20px}
+.new-post input,.new-post textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef3;margin:8px 0}
+
+.post-card{background:var(--card);padding:18px;margin-bottom:16px;border-radius:10px;box-shadow:0 10px 30px rgba(30,40,50,0.06);transition:transform .18s ease}
+.post-card:hover{transform:translateY(-6px)}
+.post-card header{display:flex;justify-content:space-between;align-items:center}
+.post-card .meta{color:var(--muted);font-size:13px}
+.post-actions{margin-top:12px;display:flex;gap:8px;align-items:center}
+.post-actions .inline{display:inline-block;margin:0}
+.comment{padding:10px;border-radius:8px;background:#fbfdff;margin-top:8px}
+.comment-meta{color:var(--muted);font-size:13px}
+.comment-body{margin-top:6px}
+.comment-form textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef3;margin-top:8px}
+
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th,.admin-table td{padding:8px;border-bottom:1px solid #eef4f7}
+
+/* responsive */
+@media (max-width:800px){
+  .hero-inner{flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:32px}
+}
+
+/* Backoffice styles */
+.back-layout{display:flex;min-height:100vh}
+.back-sidebar{width:240px;background:linear-gradient(180deg,#07292f,#0e3946);color:#fff;padding:28px 16px}
+.back-logo{font-weight:700;font-size:22px;margin-bottom:18px}
+.back-menu{display:flex;flex-direction:column;gap:8px}
+.back-menu a{color:rgba(255,255,255,0.9);padding:12px;border-radius:8px;text-decoration:none;display:flex;gap:8px;align-items:center}
+.back-menu a.active,.back-menu a:hover{background:linear-gradient(90deg,#06333b,#094a55)}
+.back-main{flex:1;background:var(--bg)}
+.back-topbar{padding:18px 0}
+.back-content{padding:18px}
+
+/* Admin table look */
+.admin-table thead th{background:#06a6ff;color:#fff;padding:12px;border-radius:8px 8px 0 0}
+.admin-table tbody tr td{background:#fff}
+.admin-table{border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+
+/* Reaction / repost buttons */
+.react-btn,.repost-btn,.react-comment-btn,.repost-comment-btn{background:transparent;border:1px solid #e6eef3;padding:8px 12px;border-radius:20px;cursor:pointer;color:var(--dark);transition:all .12s ease}
+.react-btn:hover{background:rgba(0,180,255,0.08);border-color:rgba(0,180,255,0.25)}
+.repost-btn:hover{background:rgba(2,155,129,0.06);border-color:rgba(2,155,129,0.2)}
+.react-btn:active,.repost-btn:active{transform:translateY(1px)}
+
+/* Profile link small */
+.user-actions .btn.profile{font-size:14px}
+

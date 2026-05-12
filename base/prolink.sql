@@ -136,17 +136,6 @@ ALTER TABLE `user` AUTO_INCREMENT = 9;
 ALTER TABLE `produit` AUTO_INCREMENT = 11;
 ALTER TABLE `commande` AUTO_INCREMENT = 6;
 
--- Optional projects table used by BackOffice projects scaffold
-CREATE TABLE IF NOT EXISTS `project` (
-  `idproject` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `owner_id` int(11) DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'draft',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`idproject`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- ---------------------------------------------------------------------------
 -- Module événements (liste / participations back-office) — idem `migration_evenement.sql`
 -- ---------------------------------------------------------------------------
