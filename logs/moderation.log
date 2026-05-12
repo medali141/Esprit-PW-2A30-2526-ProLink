@@ -1,0 +1,17 @@
+Moderation log created: 2026-05-06
+2026-05-06T15:27:03+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6005 milliseconds with 0 bytes received | matched_local=putain
+2026-05-06T15:27:09+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6013 milliseconds with 0 bytes received | matched_local=putain
+2026-05-06T15:28:35+02:00 | openai_moderation | flagged=0 | http=429 | curl_err=- | matched_local=
+2026-05-06T15:28:41+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6002 milliseconds with 0 bytes received | matched_local=
+2026-05-06T15:28:47+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6013 milliseconds with 0 bytes received | matched_local=
+2026-05-06T15:28:53+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6003 milliseconds with 0 bytes received | matched_local=
+2026-05-06T15:28:59+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6001 milliseconds with 0 bytes received | matched_local=
+2026-05-06T15:29:05+02:00 | openai_moderation | flagged=0 | http=429 | curl_err=- | matched_local=
+2026-05-06T15:29:55+02:00 | openai_moderation | flagged=0 | http=0 | curl_err=Operation timed out after 6012 milliseconds with 0 bytes received | matched_local=merde
+2026-05-06T15:33:28+02:00 | openai_moderation | flagged=0 | http=429 | curl_err=- | matched_local=
+2026-05-06T15:33:33+02:00 | openai_moderation | flagged=0 | http=429 | curl_err=- | matched_local=
+2026-05-06T15:33:59+02:00 | openai_moderation | error_or_no_response | flagged=0 | http=429 | curl_err=- | matched_local=merde
+2026-05-06T15:43:12+02:00 | openai_moderation | error_or_no_response | flagged=0 | http=429 | curl_err=- | matched_local=putain
+2026-05-06T15:43:31+02:00 | openai_moderation | error_or_no_response | flagged=0 | http=429 | curl_err=- | matched_local=merde
+2026-05-06T15:52:04+02:00 | openai_moderation | error_or_no_response | flagged=0 | http=429 | curl_err=- | matched_local=putain
+2026-05-06T15:52:13+02:00 | openai_moderation | error_or_no_response | flagged=0 | http=429 | curl_err=- | matched_local=putain

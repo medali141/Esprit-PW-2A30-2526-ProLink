@@ -23,6 +23,10 @@ try {
     $nu = (int) $__db->query('SELECT COUNT(*) FROM user')->fetchColumn();
     $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
     $nc = (int) $__db->query('SELECT COUNT(*) FROM commande')->fetchColumn();
+        // Forum statistics
+        $forumCategories = (int) $__db->query('SELECT COUNT(*) FROM `forum_categorie`')->fetchColumn();
+        $forumSujets = (int) $__db->query('SELECT COUNT(*) FROM `forum_sujet`')->fetchColumn();
+        $forumMessages = (int) $__db->query('SELECT COUNT(*) FROM `forum_message`')->fetchColumn();
 
     $days = 14;
     $endD = new DateTimeImmutable('today');
@@ -152,6 +156,10 @@ if ($chartJson === false) {
         </div>
     </div>
 
+        <div style="margin-bottom:12px">
+            <a class="btn btn-secondary" href="../forum/chatbot_logs.php">Voir logs chatbot</a>
+        </div>
+
     <section class="stats-grid">
         <div class="stat-card">
             <div class="icon">👥</div>
@@ -174,6 +182,34 @@ if ($chartJson === false) {
             <div>
                 <h3><?= (int) $nc ?></h3>
                 <p>Commandes</p>
+            </div>
+        </div>
+    </section>
+
+    <div style="height:18px"></div>
+
+    <section class="stats-grid">
+        <div class="stat-card" style="background: linear-gradient(135deg,#00c853,#00796b);">
+            <div class="icon">📂</div>
+            <div>
+                <h3><?= (int) $forumCategories ?></h3>
+                <p>Catégories (forum)</p>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: linear-gradient(135deg,#00bcd4,#006064);">
+            <div class="icon">💬</div>
+            <div>
+                <h3><?= (int) $forumSujets ?></h3>
+                <p>Sujets (threads)</p>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: linear-gradient(135deg,#ff7043,#bf360c);">
+            <div class="icon">📝</div>
+            <div>
+                <h3><?= (int) $forumMessages ?></h3>
+                <p>Messages (forum)</p>
             </div>
         </div>
     </section>

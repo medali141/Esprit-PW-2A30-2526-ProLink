@@ -108,6 +108,10 @@ $sortMark = static function (string $col) use ($sort, $dir) {
                     <?php endforeach; ?>
                 </select>
             </div>
+            <div>
+                <label for="q">Recherche</label>
+                <input type="search" id="q" name="q" class="search-input" placeholder="Titre, auteur..." value="<?= htmlspecialchars((string)($_GET['q'] ?? '')) ?>">
+            </div>
             <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
             <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
         </form>
@@ -150,5 +154,54 @@ $sortMark = static function (string $col) use ($sort, $dir) {
         <?php endif; ?>
     </div>
 </div>
+        <script>
+        (function(){
+            var input = document.getElementById('q');
+            var catSel = document.getElementById('cat');
+            var sortInput = document.querySelector('input[name="sort"]');
+            var dirInput = document.querySelector('input[name="dir"]');
+            var tbody = document.querySelector('table.table-modern tbody');
+            if (!input || !tbody) return;
+            var timer = null;
+            function escapeHtml(s){
+                return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#39;');
+            }
+            function render(items){
+                if (!items || items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="color:#64748b;padding:12px">Aucun sujet.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = items.map(function(s){
+                    var author = ((s.prenom||'') + ' ' + (s.nom||'')).trim();
+                    return '<tr>' +
+                        '<td>' + s.id_sujet + '</td>' +
+                        '<td><a href="sujet_messages.php?id=' + s.id_sujet + '"><strong>' + escapeHtml(s.titre) + '</strong></a></td>' +
+                        '<td>' + escapeHtml(s.cat_titre) + '</td>' +
+                        '<td>' + escapeHtml(author) + '</td>' +
+                        '<td>' + escapeHtml(s.created_at) + '</td>' +
+                        '<td>' + (s.epingle ? 'Oui' : '—') + '</td>' +
+                        '<td>' + (s.verrouille ? 'Oui' : '—') + '</td>' +
+                        '<td style="white-space:nowrap">' +
+                            '<a class="btn btn-sm btn-secondary" href="liste_sujets.php?toggle_ep=' + s.id_sujet + '&token=<?= $t ?>">Épingler</a> ' +
+                            '<a class="btn btn-sm btn-secondary" href="liste_sujets.php?toggle_v=' + s.id_sujet + '&token=<?= $t ?>">Verrou</a> ' +
+                            '<a class="btn btn-sm btn-danger" href="liste_sujets.php?delete=' + s.id_sujet + '&token=<?= $t ?>" onclick="return confirm(\'Supprimer ce sujet et tous les messages ?\');">Suppr.</a>' +
+                        '</td>' +
+                    '</tr>';
+                }).join('');
+            }
+            function doSearch(){
+                var q = input.value || '';
+                var cat = catSel ? catSel.value : '';
+                var sort = sortInput ? sortInput.value : '';
+                var dir = dirInput ? dirInput.value : '';
+                fetch('search_sujets.php?q=' + encodeURIComponent(q) + '&cat=' + encodeURIComponent(cat) + '&sort=' + encodeURIComponent(sort) + '&dir=' + encodeURIComponent(dir))
+                    .then(function(r){ return r.json(); })
+                    .then(function(data){ render(data); })
+                    .catch(function(e){ console.error(e); });
+            }
+            input.addEventListener('input', function(){ clearTimeout(timer); timer = setTimeout(doSearch, 300); });
+            if (input.value && input.value.trim() !== '') { doSearch(); }
+        })();
+        </script>
 </body>
 </html>

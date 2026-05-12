@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../lib/ForumImageHelper.php';
+require_once __DIR__ . '/../lib/ContentModeration.php';
 
 /**
  * Back-office : catégories, sujets et messages du forum.
@@ -16,11 +17,50 @@ class ForumController
         return $this->lastPublicError;
     }
     /** @return list<array<string, mixed>> */
-    public function listCategories(): array
+    public function listCategories(string $sort = 'ordre', string $dir = 'asc'): array
     {
+        $allowed = ['ordre', 'titre', 'id_categorie'];
+        if (!in_array($sort, $allowed, true)) {
+            $sort = 'ordre';
+        }
+        $dir = strtoupper($dir) === 'ASC' ? 'ASC' : 'DESC';
+        $map = [
+            'ordre' => '`ordre`',
+            'titre' => '`titre`',
+            'id_categorie' => '`id_categorie`',
+        ];
+        $col = $map[$sort] ?? '`ordre`';
         $db = Config::getConnexion();
-        $st = $db->query('SELECT * FROM `forum_categorie` ORDER BY `ordre` ASC, `id_categorie` ASC');
+        $sql = "SELECT * FROM `forum_categorie` ORDER BY {$col} {$dir}, `id_categorie` ASC";
+        $st = $db->query($sql);
         return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function searchCategories(?string $q = null, string $sort = 'ordre', string $dir = 'asc'): array
+    {
+        $allowed = ['ordre', 'titre', 'id_categorie'];
+        if (!in_array($sort, $allowed, true)) {
+            $sort = 'ordre';
+        }
+        $dir = strtoupper($dir) === 'ASC' ? 'ASC' : 'DESC';
+        $map = [
+            'ordre' => '`ordre`',
+            'titre' => '`titre`',
+            'id_categorie' => '`id_categorie`',
+        ];
+        $col = $map[$sort] ?? '`ordre`';
+
+        $db = Config::getConnexion();
+        if ($q === null || trim($q) === '') {
+            $st = $db->prepare("SELECT * FROM `forum_categorie` ORDER BY {$col} {$dir}, `id_categorie` ASC");
+            $st->execute();
+            return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+        }
+        $st = $db->prepare("SELECT * FROM `forum_categorie` WHERE `titre` LIKE :q OR `description` LIKE :q ORDER BY {$col} {$dir}, `id_categorie` ASC");
+        $st->execute(['q' => '%' . $q . '%']);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        return is_array($rows) ? $rows : [];
     }
 
     /** @return array<string, mixed>|false */
@@ -72,7 +112,7 @@ class ForumController
     }
 
     /** @return list<array<string, mixed>> */
-    public function listSujets(?int $idCategorie, string $sort = 'created_at', string $order = 'desc'): array
+    public function listSujets(?int $idCategorie, string $sort = 'created_at', string $order = 'desc', ?string $search = null): array
     {
         $allowed = ['id_sujet', 'titre', 'created_at', 'epingle', 'verrouille', 'cat_titre'];
         if (!in_array($sort, $allowed, true)) {
@@ -93,16 +133,25 @@ class ForumController
             FROM `forum_sujet` s
             INNER JOIN `forum_categorie` c ON s.`id_categorie` = c.`id_categorie`
             INNER JOIN `user` u ON s.`id_user` = u.`iduser`";
+
+        $where = [];
+        $params = [];
         if ($idCategorie !== null && $idCategorie > 0) {
-            $sql .= ' WHERE s.`id_categorie` = :cid';
+            $where[] = 's.`id_categorie` = :cid';
+            $params['cid'] = $idCategorie;
         }
+        if ($search !== null && trim($search) !== '') {
+            $where[] = '(s.`titre` LIKE :q OR u.`prenom` LIKE :q OR u.`nom` LIKE :q)';
+            $params['q'] = '%' . $search . '%';
+        }
+
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+
         $sql .= " ORDER BY s.`epingle` DESC, {$col} {$order}";
         $st = $db->prepare($sql);
-        if ($idCategorie !== null && $idCategorie > 0) {
-            $st->execute(['cid' => $idCategorie]);
-        } else {
-            $st->execute();
-        }
+        $st->execute($params);
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
         return is_array($rows) ? $rows : [];
     }
@@ -129,14 +178,32 @@ class ForumController
     public function createSujetWithFirstMessage(int $idCategorie, int $idUser, string $titre, string $contenu)
     {
         $this->lastPublicError = '';
+        $titre = trim($titre);
+        $contenu = trim($contenu);
+
+        // Moderate title and content before processing uploads
+        if ($titre !== '') {
+            $mt = ContentModeration::moderate($titre);
+            if (!$mt['ok']) {
+                $this->lastPublicError = $mt['reason'];
+                return false;
+            }
+        }
+        if ($contenu !== '') {
+            $mc = ContentModeration::moderate($contenu);
+            if (!$mc['ok']) {
+                $this->lastPublicError = $mc['reason'];
+                return false;
+            }
+        }
+
         $img = ForumImageHelper::processUpload('photo');
         if (!$img['ok']) {
             $this->lastPublicError = (string) ($img['error'] ?? '');
             return false;
         }
-        $titre = trim($titre);
-        $contenu = trim($contenu);
         $path = $img['path'];
+
         if ($titre === '' || $idCategorie < 1 || $idUser < 1) {
             if ($path !== null) {
                 ForumImageHelper::removeFileIfSafe($path);
@@ -301,11 +368,20 @@ class ForumController
      */
     public function addMessagePublic(int $idSujet, int $idUser, string $contenu)
     {
+        $contenu = trim($contenu);
+
+        // Moderate content before handling uploads
+        if ($contenu !== '') {
+            $mc = ContentModeration::moderate($contenu);
+            if (!$mc['ok']) {
+                return $mc['reason'];
+            }
+        }
+
         $img = ForumImageHelper::processUpload('photo');
         if (!$img['ok']) {
             return (string) ($img['error'] ?? 'Image invalide.');
         }
-        $contenu = trim($contenu);
         $path = $img['path'];
         if ($idSujet < 1 || $idUser < 1) {
             if ($path !== null) {

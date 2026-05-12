@@ -373,44 +373,6 @@ body {
     gap: 12px;
 }
 
-/* Form helpers used across BackOffice forms */
-.form-row {
-    display: block;
-    margin-bottom: 12px;
-}
-.form-row label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 700;
-    color: rgba(17,24,39,0.85);
-}
-.form-control,
-input.form-control, textarea.form-control, select.form-control {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(15,23,42,0.06);
-    box-shadow: none;
-    box-sizing: border-box;
-    font-family: inherit;
-}
-.form-control:focus {
-    outline: none;
-    box-shadow: 0 8px 24px rgba(11,102,195,0.06);
-    border-color: rgba(11,102,195,0.18);
-}
-.form-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-top: 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .form-row label { color: rgba(226,232,240,0.9); }
-    .form-control { background: #151b26; border-color: rgba(148,163,184,0.12); color: #e2e8f0; }
-}
-
 .table-modern {
     width: 100%;
     border-collapse: collapse;

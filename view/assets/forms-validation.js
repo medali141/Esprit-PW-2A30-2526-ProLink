@@ -321,6 +321,20 @@
                 setError(reponse, 'Message : au moins 2 caractères, ou choisissez une photo');
                 ok = false;
             }
+            // client-side forbidden words check (catches obfuscations like put@in)
+            var forbidden = ['merde','putain','salope','connard','pute','fuck','shit','bitch','asshole'];
+            var low = t.toLowerCase();
+            for (var i = 0; i < forbidden.length; i++) {
+                var w = forbidden[i];
+                var esc = w.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                var pat = esc.split('').join('\\W*');
+                var re = new RegExp('(^|\\W)'+pat+'(\\W|$)', 'i');
+                if (re.test(low)) {
+                    setError(reponse, 'Message refusé : langage inapproprié détecté.');
+                    ok = false;
+                    break;
+                }
+            }
         }
         return ok;
     }
@@ -337,11 +351,39 @@
                 setError(titre, 'Titre : au moins 3 caractères');
                 ok = false;
             }
+            // client-side forbidden words check on title (catches obfuscations)
+            var ft = titre.value.trim().toLowerCase();
+            var forbidden = ['merde','putain','salope','connard','pute','fuck','shit','bitch','asshole'];
+            for (var j = 0; j < forbidden.length; j++) {
+                var w2 = forbidden[j];
+                var esc2 = w2.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                var pat2 = esc2.split('').join('\\W*');
+                var r2 = new RegExp('(^|\\W)'+pat2+'(\\W|$)', 'i');
+                if (r2.test(ft)) {
+                    setError(titre, 'Titre refusé : langage inapproprié détecté.');
+                    ok = false;
+                    break;
+                }
+            }
         }
         if (contenu) {
             if (contenu.value.trim().length < 2 && !hasFile) {
                 setError(contenu, 'Message : au moins 2 caractères, ou choisissez une photo');
                 ok = false;
+            }
+            // client-side forbidden words check on content (catches obfuscations)
+            var fc = contenu.value.trim().toLowerCase();
+            var forbidden2 = ['merde','putain','salope','connard','pute','fuck','shit','bitch','asshole'];
+            for (var k = 0; k < forbidden2.length; k++) {
+                var w3 = forbidden2[k];
+                var esc3 = w3.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                var pat3 = esc3.split('').join('\\W*');
+                var r3 = new RegExp('(^|\\W)'+pat3+'(\\W|$)', 'i');
+                if (r3.test(fc)) {
+                    setError(contenu, 'Message refusé : langage inapproprié détecté.');
+                    ok = false;
+                    break;
+                }
             }
         }
         return ok;

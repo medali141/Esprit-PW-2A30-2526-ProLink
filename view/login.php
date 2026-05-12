@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../controller/AuthController.php';
-require_once __DIR__ . '/../lib/MailOtpService.php';
 
 error_reporting(E_ALL);
 $error = '';
@@ -21,46 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Email ou mot de passe incorrect.';
         }
         // ensure session stores the logged user (AuthController::login already does this,
-        // but for admin we require a second factor code first)
+        // but be defensive in case it's changed)
         if ($user) {
-            $role = strtolower($user['type'] ?? '');
-            if ($role === 'admin') {
-                // remove any session user set by AuthController::login to avoid granting access
-                if (session_status() !== PHP_SESSION_ACTIVE) {
-                    session_start();
-                }
-                unset($_SESSION['user']);
-
-                // generate a one-time 6-digit code and store it in session with expiry (5 minutes)
-                $code = random_int(100000, 999999);
-                $_SESSION['admin_mfa'] = [
-                    'id' => (int) $user['iduser'],
-                    'code' => (string) $code,
-                    'expires' => time() + 300,
-                    'email' => $user['email'] ?? '',
-                    'attempts' => 0,
-                    'resend_after' => time() + 60, // wait 60s before allowing resend
-                    'locked_until' => 0 // timestamp until which login is blocked
-                ];
-
-                // Send admin MFA code through PHPMailer / SMTP pipeline
-                MailOtpService::sendAdminMfaCode(
-                    (string) ($_SESSION['admin_mfa']['email'] ?? ''),
-                    (string) $code,
-                    (int) $_SESSION['admin_mfa']['expires']
-                );
-
-                // redirect to verification form
-                header('Location: BackOffice/verify_admin.php');
-                exit;
-            }
-
-            // Non-admin: finalize session and redirect as before
             if (session_status() !== PHP_SESSION_ACTIVE) {
                 session_start();
             }
             $_SESSION['user'] = $user;
 
+            // redirect admin to backoffice, others to frontoffice
+            $role = strtolower($user['type'] ?? '');
+            if ($role === 'admin') {
+                header('Location: BackOffice/dashboard/dashboard.php');
+                exit;
+            }
             $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
             if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
                 header('Location: ' . $next);

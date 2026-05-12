@@ -44,6 +44,17 @@ $categories = $fc->listCategoriesWithStats();
         <?php endforeach; ?>
     </div>
 
+    <!-- Chatbot widget (uses storefront theme classes) -->
+    <div class="fo-form-card" role="region" aria-label="Assistant forum" style="max-width:900px;margin:30px auto;padding:18px;">
+        <h3>Assistant forum</h3>
+        <p class="hint">Posez une question rapide au chatbot (réponses courtes).</p>
+        <div style="display:flex;gap:12px;align-items:center">
+            <input id="chat-prompt" type="text" placeholder="Posez votre question (ex: comment créer un sujet ?)" autocomplete="off">
+            <button id="chat-send" class="fo-btn fo-btn--primary">Envoyer</button>
+        </div>
+        <div id="chat-reply" aria-live="polite" style="display:none;margin-top:12px"></div>
+    </div>
+
     <?php if (empty($categories)): ?>
         <div class="fo-empty">
             <p class="hint" style="margin:0 0 12px">Aucune catégorie pour le moment.</p>
@@ -54,3 +65,96 @@ $categories = $fc->listCategoriesWithStats();
 <?php include __DIR__ . '/components/footer.php'; ?>
 </body>
 </html>
+<script src="../assets/puter.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('chat-send');
+    var inp = document.getElementById('chat-prompt');
+    var out = document.getElementById('chat-reply');
+    if (!btn || !inp || !out) return;
+
+    function updateUI(state) {
+        if (state.busy || state.reply || state.error) {
+            out.style.display = 'block';
+        } else {
+            out.style.display = 'none';
+        }
+
+        if (state.error) {
+            out.className = 'field-error';
+            out.textContent = state.error;
+        } else if (state.reply) {
+            out.className = 'fo-banner fo-banner--ok';
+            out.textContent = state.reply;
+        } else if (state.busy) {
+            out.className = 'fo-banner';
+            out.textContent = '… en cours';
+        } else {
+            out.className = '';
+            out.textContent = '';
+        }
+
+        btn.disabled = !!state.busy;
+        inp.disabled = !!state.busy;
+        btn.textContent = state.busy ? 'Envoi…' : 'Envoyer';
+    }
+
+    var app;
+    if (window.Puter && typeof window.Puter.create === 'function') {
+        app = window.Puter.create({ state: { busy: false, reply: '', error: '' }, render: updateUI });
+    } else {
+        app = { setState: function(partial) { updateUI(Object.assign({ busy: false, reply: '', error: '' }, partial)); } };
+    }
+
+    function generateLocalReply(v) {
+        var p = (v || '').toLowerCase().trim();
+        function hasAny(keys) { for (var i=0;i<keys.length;i++){ if (p.indexOf(keys[i]) !== -1) return true; } return false; }
+
+        if (!p) return 'Veuillez préciser votre question.';
+
+        if (hasAny(['créer un sujet','creer un sujet','nouveau sujet','ouvrir un sujet']) || (p.indexOf('sujet') !== -1 && hasAny(['créer','creer','comment','ouvrir']))) {
+            return 'Pour créer un sujet : connectez-vous, allez dans la rubrique souhaitée, cliquez sur « Nouveau sujet », donnez un titre et rédigez votre message puis cliquez sur « Publier ». ';
+        }
+
+        if (p.indexOf('recherch') !== -1 || hasAny(['chercher','trouver','recherche'])) {
+            return 'Pour rechercher un sujet : utilisez le champ de recherche du forum avec des mots‑clés courts et précis (ex : "installation php", "erreur login").';
+        }
+
+        if (hasAny(['profil','photo','avatar'])) {
+            return 'Pour modifier votre profil : cliquez sur votre avatar en haut à droite, puis "Modifier le profil". Vous pouvez téléverser une photo depuis l’onglet profil.';
+        }
+
+        if (hasAny(['panier','commande','acheter','paiement','achat'])) {
+            return 'Les commandes sont accessibles via "Mes commandes". Le panier se remplit depuis les pages produits et le paiement se fait à la validation du panier.';
+        }
+
+        if (hasAny(['règles','regles','modération','moderation','charte'])) {
+            return 'Le forum applique une charte de bonne conduite : pas d’insultes, pas de spam. Les messages contraires peuvent être modérés. Contactez l’administrateur pour les cas particuliers.';
+        }
+
+        // Fallback
+        return 'Je suis un assistant local basé sur Puter.js. Je peux aider pour : créer un sujet, rechercher, modifier votre profil ou consulter vos commandes. Précisez votre question pour une réponse plus ciblée.';
+    }
+
+    function send() {
+        var v = inp.value.trim();
+        if (v.length < 2) { app.setState({ error: 'Veuillez saisir une question plus longue.'}); return; }
+        app.setState({ busy: true, reply: '', error: '' });
+
+        // Generate reply locally using Puter-driven UI — no external API calls
+        setTimeout(function () {
+            try {
+                var reply = generateLocalReply(v);
+                app.setState({ reply: reply });
+            } catch (e) {
+                app.setState({ error: 'Erreur interne du chatbot local.' });
+            } finally {
+                app.setState({ busy: false });
+            }
+        }, 300);
+    }
+
+    btn.addEventListener('click', send);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); send(); } });
+});
+</script>

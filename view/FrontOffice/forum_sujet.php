@@ -43,10 +43,40 @@ $nextLogin = 'FrontOffice/forum/forum_sujet.php?id=' . $id;
     <link rel="stylesheet" href="../assets/storefront.css">
     <style>
         .fo-forum-post { max-width: 800px; margin: 0 auto; }
-        .fo-forum-post__item { background: var(--sf-card); border: 1px solid rgba(255,255,255,0.9); border-radius: var(--sf-radius); padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 4px 6px rgba(15,23,42,0.04); }
-        .fo-forum-post__meta { font-size: 0.82rem; color: var(--sf-muted); margin-bottom: 8px; }
-        .fo-forum-post__body { white-space: pre-wrap; word-break: break-word; line-height: 1.55; color: var(--sf-text); }
+        .fo-forum-post__item {
+            background: var(--sf-card);
+            border: 1px solid rgba(148,163,184,0.12);
+            border-radius: var(--sf-radius);
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 6px rgba(15,23,42,0.04);
+        }
+        .fo-forum-post__meta { font-size: 0.9rem; color: var(--sf-muted); margin-bottom: 8px; }
+        .fo-forum-post__body {
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+            color: var(--sf-text);
+            font-size: 1rem;
+            font-weight: 500;
+        }
         .fo-forum-post__img { margin-top: 12px; max-width: 100%; border-radius: 12px; border: 1px solid var(--sf-border, rgba(0,0,0,.08)); }
+
+        /* Dark-mode overrides: ensure message text and cards are readable */
+        html.dark-mode body.fo-store-page .fo-forum-post__item {
+            background: #151b26 !important;
+            border-color: rgba(148,163,184,0.2) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+        }
+        html.dark-mode body.fo-store-page .fo-forum-post__body {
+            color: #e2e8f0 !important;
+        }
+
+        /* Upload field styling (bouton + nom de fichier) */
+        .fo-file-input { display:flex; gap:12px; align-items:center; }
+        .fo-file-input .fo-file-name { color: var(--sf-muted); font-size:0.95rem; overflow:hidden; text-overflow:ellipsis; max-width:60%; white-space:nowrap; }
+        .fo-file-input .fo-btn--secondary { padding:8px 14px; border-radius:12px; }
+        html.dark-mode body.fo-store-page .fo-file-input .fo-file-name { color:#94a3b8 !important; }
     </style>
 </head>
 <body class="fo-store-page">
@@ -100,7 +130,11 @@ $nextLogin = 'FrontOffice/forum/forum_sujet.php?id=' . $id;
                 </div>
                 <div style="margin-top:12px">
                     <label for="photo" style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:6px;color:var(--sf-muted)">Photo (optionnel) — JPEG, PNG, GIF, WebP, max. 2 Mo</label>
-                    <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/gif,image/webp" style="max-width:100%;font-size:0.9rem">
+                    <div class="fo-file-input" style="margin-top:6px;display:flex;gap:12px;align-items:center;">
+                        <label for="photo" class="fo-btn fo-btn--secondary" style="margin:0;padding:8px 14px;border-radius:12px;cursor:pointer">Choisir un fichier</label>
+                        <span class="fo-file-name" id="fo-file-name">Aucun fichier sélectionné</span>
+                        <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none">
+                    </div>
                 </div>
                 <button type="submit" class="fo-btn fo-btn--primary fo-btn--block" style="margin-top:12px">Publier</button>
             </form>
@@ -112,5 +146,17 @@ $nextLogin = 'FrontOffice/forum/forum_sujet.php?id=' . $id;
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>
 <script src="../assets/forms-validation.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var input = document.getElementById('photo');
+    var nameEl = document.getElementById('fo-file-name');
+    if (input && nameEl) {
+        input.addEventListener('change', function(){
+            var fname = (input.files && input.files.length) ? input.files[0].name : 'Aucun fichier sélectionné';
+            nameEl.textContent = fname;
+        });
+    }
+});
+</script>
 </body>
 </html>
