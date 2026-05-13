@@ -1,10 +1,20 @@
 <?php
-require_once __DIR__ . '/../../init.php';
-requireLogin('Connectez-vous pour ajouter un article au panier.');
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
-$id = (int) ($_GET['id'] ?? 0);
-$qte = max(1, (int) ($_GET['qte'] ?? 1));
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: catalogue.php');
+    exit;
+}
+if (empty($_SESSION['csrf_token']) || !hash_equals((string) $_SESSION['csrf_token'], (string) ($_POST['csrf_token'] ?? ''))) {
+    header('Location: catalogue.php?err=csrf');
+    exit;
+}
+
+$id = (int) ($_POST['id'] ?? 0);
+$qte = max(1, (int) ($_POST['qte'] ?? 1));
 
 if ($id > 0) {
     $pp = new ProduitController();

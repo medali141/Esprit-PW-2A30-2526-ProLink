@@ -100,6 +100,7 @@ body.fo-store-page .fo-product-grid {
 }
 
 body.fo-store-page .fo-product-card {
+    position: relative;
     background: var(--sf-card);
     border-radius: var(--sf-radius);
     padding: 22px 20px 20px;
@@ -217,17 +218,17 @@ body.fo-store-page .fo-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 18px;
-    font-size: 0.9rem;
+    padding: 12px 20px;
+    font-size: 0.92rem;
     font-weight: 700;
     text-decoration: none;
     border-radius: 12px;
     border: none;
     cursor: pointer;
     font-family: inherit;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
     text-align: center;
-    margin-top: auto;
+    margin-top: 0;
 }
 
 body.fo-store-page .fo-btn--primary {
@@ -253,6 +254,278 @@ body.fo-store-page .fo-btn--secondary:hover {
     color: var(--sf-blue);
     border-color: rgba(37, 99, 235, 0.35);
     background: #fff;
+}
+
+/** Boutons catalogue / tableau : léger ou compact */
+body.fo-store-page a.fo-btn--secondary {
+    box-sizing: border-box;
+}
+
+body.fo-store-page .fo-btn--ghost.fo-btn--secondary {
+    background: transparent;
+    box-shadow: none;
+}
+
+body.fo-store-page .fo-btn--ghost.fo-btn--secondary:hover {
+    background: rgba(248, 250, 252, 0.95);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+body.fo-store-page .fo-btn--compact {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+    border-radius: 10px;
+    line-height: 1.2;
+}
+
+body.fo-store-page .fo-product-card form .fo-btn--block {
+    margin-top: 14px;
+}
+
+body.fo-store-page .fo-product-actions .fo-btn--product-spec {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+}
+
+body.fo-store-page .fo-link-soft {
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+    padding: 8px 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--sf-muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+body.fo-store-page .fo-link-soft:hover {
+    color: var(--sf-blue);
+    border-bottom-color: rgba(37, 99, 235, 0.35);
+}
+
+body.fo-store-page .fo-actions--cart {
+    justify-content: flex-start;
+    align-items: center;
+}
+
+body.fo-store-page .fo-actions--pager {
+    margin-top: 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+body.fo-store-page .fo-actions--toolbar {
+    margin: 4px 0 14px;
+}
+
+body.fo-store-page .fo-actions--dense {
+    gap: 10px;
+}
+
+body.fo-store-page .fo-banner__link {
+    display: inline-block;
+    margin-left: 8px;
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: inherit;
+}
+
+body.fo-store-page .fo-banner--ok .fo-banner__link {
+    color: #047857;
+}
+
+body.fo-store-page .fo-track-panel {
+    margin: -4px 0 18px;
+    padding: 14px 18px;
+    border-radius: var(--sf-radius-sm);
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(124, 58, 237, 0.08));
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    font-size: 0.92rem;
+    color: var(--sf-text);
+}
+
+body.fo-store-page .fo-track-panel .hint {
+    display: inline-block;
+    margin-top: 4px;
+}
+
+/* Filtres boutique / mes commandes / tri panier */
+body.fo-store-page .fo-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    background: var(--sf-card);
+    border-radius: var(--sf-radius);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+        0 4px 6px rgba(15, 23, 42, 0.04),
+        0 14px 32px rgba(37, 99, 235, 0.07);
+}
+
+body.fo-store-page .fo-filters--inline {
+    max-width: min(420px, 100%);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+}
+
+body.fo-store-page .fo-filters__field {
+    flex: 1 1 160px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+body.fo-store-page .fo-filters__field label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sf-muted);
+}
+
+body.fo-store-page .fo-filters__field input[type='search'],
+body.fo-store-page .fo-filters__field input[type='text'],
+body.fo-store-page .fo-filters__field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--sf-border);
+    font: inherit;
+    font-size: 0.92rem;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--sf-text);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.fo-store-page .fo-filters__field select {
+    cursor: pointer;
+}
+
+body.fo-store-page .fo-filters__field input:focus,
+body.fo-store-page .fo-filters__field select:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+}
+
+body.fo-store-page .fo-filters__actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-left: auto;
+}
+
+@media (max-width: 640px) {
+    body.fo-store-page .fo-filters__actions {
+        margin-left: 0;
+        width: 100%;
+    }
+    body.fo-store-page .fo-filters__actions .fo-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+body.fo-store-page .fo-result-hint {
+    margin: 0 0 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--sf-muted);
+}
+
+body.fo-store-page .fo-result-hint--inline {
+    margin: 0;
+}
+
+body.fo-store-page .fo-catalog-supply-banner {
+    padding: 12px 16px;
+    margin: 0 0 14px;
+    border-radius: var(--sf-radius-sm);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--sf-text);
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+body.fo-store-page .fo-product-media {
+    margin: -2px -2px 6px -2px;
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: rgba(248, 250, 252, 0.98);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+body.fo-store-page .fo-product-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+body.fo-store-page .fo-cat-pill {
+    align-self: flex-start;
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: linear-gradient(125deg, rgba(6, 182, 212, 0.15), rgba(124, 58, 237, 0.12));
+    color: #334155;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+body.fo-store-page .fo-stock-signal {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    padding: 5px 10px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    max-width: calc(100% - 24px);
+    text-align: center;
+}
+
+body.fo-store-page .fo-stock-signal--critique {
+    background: rgba(254, 226, 226, 0.95);
+    color: #b91c1c;
+    border: 1px solid rgba(248, 113, 113, 0.45);
+}
+
+body.fo-store-page .fo-stock-signal--vigilance {
+    background: rgba(254, 243, 199, 0.95);
+    color: #b45309;
+    border: 1px solid rgba(251, 191, 36, 0.5);
+}
+
+body.fo-store-page .fo-table-actions .fo-table-actions__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+body.fo-store-page .fo-form-card--wide {
+    max-width: none;
 }
 
 /* ——— Panier : formulaire & résumé ——— */
@@ -330,11 +603,30 @@ body.fo-store-page .fo-table-wrap .table-modern tbody tr:last-child td {
     border-bottom: none;
 }
 
-body.fo-store-page .fo-table-wrap input[type='number'] {
+body.fo-store-page .fo-table-wrap input[type='number'],
+body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty {
     border-radius: 10px;
     border: 1px solid var(--sf-border);
     padding: 8px 10px;
-    font-weight: 600;
+    font-weight: 700;
+}
+
+body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty {
+    width: 88px;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--sf-text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.45);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
 }
 
 /* ——— Badges statut commande ——— */
@@ -463,6 +755,7 @@ html.dark-mode body.fo-store-page .fo-product-card--out .fo-stock-pill {
 }
 
 html.dark-mode body.fo-store-page .fo-form-card,
+html.dark-mode body.fo-store-page .fo-filters,
 html.dark-mode body.fo-store-page .fo-table-wrap,
 html.dark-mode body.fo-store-page .fo-empty {
     background: #151b26 !important;
@@ -474,6 +767,57 @@ html.dark-mode body.fo-store-page .fo-cart-summary {
     background: rgba(30, 41, 59, 0.6) !important;
     border-color: rgba(148, 163, 184, 0.2) !important;
     color: #f1f5f9 !important;
+}
+
+html.dark-mode body.fo-store-page .fo-filters__field input[type='search'],
+html.dark-mode body.fo-store-page .fo-filters__field input[type='text'],
+html.dark-mode body.fo-store-page .fo-filters__field select {
+    background: #0f1724 !important;
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    color: #f8fafc !important;
+}
+
+html.dark-mode body.fo-store-page .fo-catalog-supply-banner {
+    background: rgba(30, 41, 59, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark-mode body.fo-store-page .fo-track-panel {
+    background: rgba(30, 41, 59, 0.65) !important;
+    border-color: rgba(148, 163, 184, 0.25) !important;
+    color: #f1f5f9 !important;
+}
+
+html.dark-mode body.fo-store-page .fo-product-media {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(148, 163, 184, 0.2) !important;
+}
+
+html.dark-mode body.fo-store-page .fo-cat-pill {
+    background: rgba(99, 102, 241, 0.2) !important;
+    border-color: rgba(100, 116, 139, 0.35) !important;
+    color: #cbd5e1 !important;
+}
+
+html.dark-mode body.fo-store-page .fo-stock-signal--critique {
+    background: rgba(127, 29, 29, 0.6) !important;
+    color: #fecaca !important;
+    border-color: rgba(248, 113, 113, 0.35) !important;
+}
+
+html.dark-mode body.fo-store-page .fo-stock-signal--vigilance {
+    background: rgba(120, 53, 15, 0.45) !important;
+    color: #fde68a !important;
+    border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+html.dark-mode body.fo-store-page .fo-btn--ghost.fo-btn--secondary:hover {
+    background: rgba(30, 41, 59, 0.9) !important;
+}
+
+html.dark-mode body.fo-store-page .fo-banner--ok .fo-banner__link {
+    color: #6ee7b7 !important;
 }
 
 html.dark-mode body.fo-store-page .fo-table-wrap .table-modern thead th {
@@ -491,7 +835,8 @@ html.dark-mode body.fo-store-page .fo-table-wrap .table-modern tbody tr:nth-chil
     background: rgba(15, 23, 42, 0.5) !important;
 }
 
-html.dark-mode body.fo-store-page .fo-table-wrap input[type='number'] {
+html.dark-mode body.fo-store-page .fo-table-wrap input[type='number'],
+html.dark-mode body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty {
     background: #1e293b !important;
     border-color: rgba(148, 163, 184, 0.25) !important;
     color: #f1f5f9 !important;

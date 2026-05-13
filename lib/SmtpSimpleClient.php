@@ -1,40 +1,30 @@
 <?php
 /**
- * SMTP minimal (AUTH LOGIN + SSL/465 ou STARTTLS/587) pour Gmail sans class.smtp.php.
+ * Minimal SMTP client (AUTH LOGIN + SSL/TLS).
  */
 class SmtpSimpleClient {
-
-    /**
-     * @return bool
-     */
     public static function sendHtml(
-        $fromEmail,
-        $fromName,
-        $toEmail,
-        $subject,
-        $htmlBody,
-        $altBody,
-        $host,
-        $port,
-        $user,
-        $pass,
-        $secure
-    ) {
-        $secure = strtolower((string) $secure);
+        string $fromEmail,
+        string $fromName,
+        string $toEmail,
+        string $subject,
+        string $htmlBody,
+        string $altBody,
+        string $host,
+        int $port,
+        string $user,
+        string $pass,
+        string $secure
+    ): bool {
+        $secure = strtolower(trim($secure));
         $ctx = stream_context_create([
             'ssl' => [
-                'verify_peer'       => true,
-                'verify_peer_name'  => true,
+                'verify_peer' => true,
+                'verify_peer_name' => true,
                 'allow_self_signed' => false,
             ],
         ]);
-
-        if ($secure === 'ssl') {
-            $uri = 'ssl://' . $host . ':' . (int) $port;
-        } else {
-            $uri = 'tcp://' . $host . ':' . (int) $port;
-        }
-
+        $uri = ($secure === 'ssl' ? 'ssl://' : 'tcp://') . $host . ':' . $port;
         $fp = @stream_socket_client($uri, $errno, $errstr, 25, STREAM_CLIENT_CONNECT, $ctx);
         if (!$fp) {
             return false;
@@ -127,11 +117,7 @@ class SmtpSimpleClient {
         $lines = explode("\r\n", $msg);
         $dotted = [];
         foreach ($lines as $line) {
-            if ($line !== '' && $line[0] === '.') {
-                $dotted[] = '.' . $line;
-            } else {
-                $dotted[] = $line;
-            }
+            $dotted[] = ($line !== '' && $line[0] === '.') ? ('.' . $line) : $line;
         }
         $msg = implode("\r\n", $dotted);
 
@@ -145,19 +131,19 @@ class SmtpSimpleClient {
         return true;
     }
 
-    private static function cleanAddr($e) {
-        return trim(preg_replace('/[\r\n]+/', '', (string) $e));
+    private static function cleanAddr(string $e): string {
+        return trim((string) preg_replace('/[\r\n]+/', '', $e));
     }
 
-    private static function encodeHeaderName($name) {
-        $name = trim((string) $name);
+    private static function encodeHeaderName(string $name): string {
+        $name = trim($name);
         if ($name === '') {
             return '';
         }
         return '=?UTF-8?B?' . base64_encode($name) . '?=';
     }
 
-    private static function readLines($fp) {
+    private static function readLines($fp): string {
         $buf = '';
         while (!feof($fp)) {
             $line = fgets($fp, 2048);
@@ -172,7 +158,7 @@ class SmtpSimpleClient {
         return $buf;
     }
 
-    private static function expect($fp, array $codes) {
+    private static function expect($fp, array $codes): bool {
         $data = self::readLines($fp);
         if ($data === '') {
             return false;
