@@ -1,0 +1,206 @@
+/* ---------------------------------------------------------------------------
+ * Styles dédiés aux pages back-office Formation (ajout / modification / liste).
+ * Construit autour des classes déjà utilisées (.content, .card, .form-grid,
+ * .form-row, .btn) sans casser les autres pages BO.
+ * ------------------------------------------------------------------------- */
+
+.formation-page {
+    --fp-primary: #0073b1;
+    --fp-primary-dark: #005d8f;
+    --fp-accent: #06b6d4;
+    --fp-bg: #f4f8fc;
+    --fp-text: #0f172a;
+    --fp-muted: #64748b;
+    --fp-border: #d6e0eb;
+    --fp-card-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    padding: 28px 24px;
+    background: linear-gradient(180deg, #f6fbff 0%, #eef7ff 100%);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.formation-page .container {
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.formation-page .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.formation-page .page-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #073b4c;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.formation-page .page-subtitle {
+    color: var(--fp-muted);
+    font-size: 0.92rem;
+    margin-top: 4px;
+}
+
+.formation-page .formation-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 28px 24px;
+    box-shadow: var(--fp-card-shadow);
+    border: 1px solid rgba(0, 115, 177, 0.06);
+}
+
+.formation-page .formation-card::before {
+    content: '';
+    display: block;
+    height: 4px;
+    margin: -28px -28px 22px;
+    border-radius: 18px 18px 0 0;
+    background: linear-gradient(90deg, var(--fp-primary), var(--fp-accent));
+}
+
+.formation-page .form-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.formation-page .form-row { display: flex; flex-direction: column; }
+.formation-page .form-row.full { grid-column: 1 / -1; }
+
+.formation-page label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--fp-text);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+.formation-page .form-control {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--fp-border);
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--fp-text);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.formation-page .form-control:focus {
+    outline: none;
+    border-color: var(--fp-primary);
+    box-shadow: 0 0 0 3px rgba(0, 115, 177, 0.18);
+}
+
+.formation-page textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.formation-page select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%230073b1'%3E%3Cpath d='M5.5 7.5L10 12l4.5-4.5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 36px;
+}
+
+.formation-page .help-text {
+    color: var(--fp-muted);
+    font-size: 0.78rem;
+    margin-top: 6px;
+}
+
+.formation-page .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--fp-border);
+}
+
+.formation-page .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.formation-page .btn-primary {
+    background: linear-gradient(135deg, var(--fp-primary), var(--fp-accent));
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(0, 115, 177, 0.25);
+}
+.formation-page .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(0, 115, 177, 0.32); }
+
+.formation-page .btn-secondary {
+    background: #fff;
+    border-color: var(--fp-border);
+    color: var(--fp-text);
+}
+.formation-page .btn-secondary:hover { background: #f1f5f9; }
+
+.formation-page .btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+.formation-page .btn-danger:hover { background: #fecaca; }
+
+.formation-page .badge-cat {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(6, 182, 212, 0.12);
+    color: #0e7490;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid rgba(6, 182, 212, 0.22);
+}
+
+.formation-page table.table-modern {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.formation-page table.table-modern th,
+.formation-page table.table-modern td {
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--fp-border);
+}
+.formation-page table.table-modern thead th {
+    background: #f8fafc;
+    color: var(--fp-muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.formation-page table.table-modern tbody tr:hover { background: #f8fbff; }
+
+@media (max-width: 720px) {
+    .formation-page .form-grid { grid-template-columns: 1fr; }
+    .formation-page .formation-card { padding: 22px; }
+    .formation-page .formation-card::before { margin: -22px -22px 18px; }
+}
