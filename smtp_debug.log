@@ -1,0 +1,20 @@
+[2026-05-13 01:58:41] stream_socket_client failed: -1845417072 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 01:58:42] stream_socket_client failed: -1845417072 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 01:58:42] stream_socket_client failed: -1845417072 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 01:58:43] stream_socket_client failed: -1845417072 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 01:59:18] stream_socket_client failed: -1845415104 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:02:19] stream_socket_client failed: -1857998432 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:03:20] stream_socket_client failed: -1857996928 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:03:47] stream_socket_client failed: -1868485744 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:04:09] stream_socket_client failed: -1857999984 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:04:10] stream_socket_client failed: -1857999984 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:04:10] stream_socket_client failed: -1857999984 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:04:10] stream_socket_client failed: -1857999984 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:04:21] stream_socket_client failed: -1868482688 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 02:06:21] stream_socket_client failed: -1845417072 - Unable to find the socket transport "ssl" - did you forget to enable it when you configured PHP?
+[2026-05-13 14:08:51] stream_socket_client failed: 0 - php_network_getaddresses: getaddrinfo failed: Hôte inconnu. 
+[2026-05-13 15:44:00] stream_socket_client failed: 0 - php_network_getaddresses: getaddrinfo failed: Hôte inconnu. 
+[2026-05-13 15:44:02] stream_socket_client failed: 0 - php_network_getaddresses: getaddrinfo failed: Hôte inconnu. 
+[2026-05-13 17:24:21] No response from SMTP server
+[2026-05-13 17:24:21] SMTP greeting failed
+[2026-05-13 17:24:46] stream_socket_client failed: 0 - 
