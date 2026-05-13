@@ -1,0 +1,3 @@
+
+# Charset HTTP par défaut (Apache / XAMPP)
+AddDefaultCharset UTF-8

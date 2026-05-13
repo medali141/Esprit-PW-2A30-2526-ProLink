@@ -21,6 +21,7 @@ if (!$u) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- Project stylesheet (relative to this file) -->
     <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/storefront.css">
 
     <style>
         :root{
@@ -73,8 +74,8 @@ if (!$u) {
         .feature-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,12,27,0.6) }
 
         .feature-icon{ width:64px; height:64px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; background: linear-gradient(135deg,var(--accent-1),var(--accent-2)); color:#00151b; box-shadow: 0 8px 20px rgba(2,12,27,0.5) }
-    .feature-card h3{ color:#000; margin:0 0 6px; font-size:18px }
-    .feature-card p{ margin:0; color:#000 }
+        .feature-card h3{ color:#e6f0f6; margin:0 0 6px; font-size:18px }
+        .feature-card p{ margin:0; color:#9aa6b2 }
 
         /* subtle entrance animation */
         .feature-card, .stat, .glass-card{ opacity:0; transform: translateY(8px); animation: fadeUp .48s ease forwards; }
@@ -95,13 +96,35 @@ if (!$u) {
 <?php include 'components/navbar.php'; ?>
 
 <!-- MAIN (fills available vertical space so footer stays at bottom) -->
-<main class="main container">
+<main class="main container fo-page">
 
 <!-- HERO -->
+<?php $homeUt = strtolower((string) ($u['type'] ?? '')); ?>
 <section class="hero">
-    <h1>Bienvenue sur ProLink</h1>
-    <p>Connectez-vous avec des professionnels, partagez vos projets et développez votre réseau.</p>
-    <a href="../login.php" class="cta">commencer</a>
+    <div class="hero-left">
+        <h1>Bonjour, <?= htmlspecialchars(trim((string) ($u['prenom'] ?? '') . ' ' . (string) ($u['nom'] ?? ''))) ?></h1>
+        <p>
+            Boutique ProLink : le catalogue affiche les priorités stock définies par la gestion d’achats.
+            <?php if ($homeUt === 'entrepreneur' || $homeUt === 'candidat'): ?>
+                Répondez aux consultations ouvertes depuis « Appels d’offres » dans le menu.
+            <?php endif; ?>
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px">
+            <a href="catalogue.php" class="cta">Ouvrir le catalogue</a>
+            <a href="mesCommandes.php" class="cta" style="background:linear-gradient(90deg,#0c4a6e,#0369a1);color:#ecfeff">Mes commandes</a>
+            <?php if ($homeUt === 'entrepreneur' || $homeUt === 'candidat'): ?>
+                <a href="mesAppelsOffres.php" class="cta" style="background:linear-gradient(90deg,#1e1b4b,#4c1d95);color:#e9d5ff">Appels d’offres</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="glass-card">
+            <strong style="font-size:15px;display:block">Effets du pilotage achats</strong>
+            <p style="margin:10px 0 0;font-size:13px;line-height:1.45;opacity:.92">
+                Pastilles « Priorité réappro » et « Stock surveillé » sur les produits concernés — sans bloquer la commande.
+            </p>
+        </div>
+    </div>
 </section>
 
 <!-- FEATURES -->
@@ -122,7 +145,7 @@ if (!$u) {
         <div class="feature-card">
             <div style="font-size:28px">🛒</div>
             <h3>Achat / Vente</h3>
-            <p class="hint">Catalogue produits, panier, commandes et suivi livraison (module Pro).</p>
+            <p class="hint">Catalogue, panier, commandes, suivi livraison — avec indicateurs stock alignés sur le réapprovisionnement.</p>
             <a href="catalogue.php" class="cta" style="margin-top:12px;display:inline-block;font-size:14px;padding:10px 16px">Voir la boutique</a>
         </div>
     </div>

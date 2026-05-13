@@ -9,12 +9,16 @@ if (!$__dashUser || strtolower($__dashUser['type'] ?? '') !== 'admin') {
     exit;
 }
 $nu = $np = $nc = 0;
+$nrOpen = 0;
 try {
     require_once __DIR__ . '/../../config.php';
+    require_once __DIR__ . '/../../controller/ReclamationCommandeController.php';
     $__db = Config::getConnexion();
     $nu = (int) $__db->query('SELECT COUNT(*) FROM user')->fetchColumn();
     $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
     $nc = (int) $__db->query('SELECT COUNT(*) FROM commande')->fetchColumn();
+    $__rcStats = (new ReclamationCommandeController())->getAdminStats();
+    $nrOpen = (int) ($__rcStats['ouvertes'] ?? 0) + (int) ($__rcStats['en_cours'] ?? 0);
 } catch (Throwable $e) {
 }
 ?>
@@ -70,10 +74,10 @@ try {
     <div class="dashboard-header">
         <div>
             <div class="page-title">Tableau de bord</div>
-            <div class="subtitle">Vue d'ensemble rapide — statistiques et actions</div>
+            <div class="subtitle">Indicateurs et accès directs</div>
         </div>
         <div class="actions">
-            <a class="btn btn-primary" href="commerceHub.php">Achat / vente</a>
+            <a class="btn btn-primary" href="gestionAchats.php">Achats et vente</a>
             <a class="btn btn-secondary" href="listUsers.php">Utilisateurs</a>
         </div>
     </div>
@@ -109,16 +113,17 @@ try {
     <section class="grid-3">
         <div class="card-light">
             <h4>Activité récente</h4>
-            <p style="margin-top:8px; color:#5b6b72">Dernières actions réalisées par les utilisateurs et changements système.</p>
+            <p style="margin-top:8px; color:#5b6b72">Activité utilisateurs et événements système.</p>
         </div>
         <div class="card-light">
             <h4>Commerce</h4>
             <p style="margin-top:8px; color:#5b6b72">Produits, stocks, commandes et livraison.</p>
-            <p style="margin-top:10px"><a href="commerceHub.php">Ouvrir le hub achat / vente</a></p>
+            <p style="margin-top:10px"><a href="gestionAchats.php">Menu achats et vente</a></p>
         </div>
         <div class="card-light">
             <h4>Support</h4>
-            <p style="margin-top:8px; color:#5b6b72">espace des courbes et des analyses.(todo)</p>
+            <p style="margin-top:8px; color:#5b6b72">Réclamations ouvertes: <strong><?= (int) $nrOpen ?></strong></p>
+            <p style="margin-top:10px"><a href="reclamationsCommandes.php">Traiter les réclamations</a></p>
         </div>
     </section>
 

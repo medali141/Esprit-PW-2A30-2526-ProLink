@@ -4,7 +4,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -83,7 +83,7 @@ foreach ($orders as $o) {
     $totalAmount += $mt;
     if ($st !== 'annulee') {
         $amountExcludingCancelled += $mt;
-        $loyaltyPoints += CommerceMetier::pointsFromAmount($mt);
+        $loyaltyPoints += CommerceRegles::pointsFromAmount($mt);
     }
 }
 
@@ -165,7 +165,7 @@ $nOrders = count($orders);
             <a href="mesCommandes.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">← Retour mes commandes</a>
         </div>
     <?php else: ?>
-        <div class="fo-stats-summary" aria-label="Synthèse">
+        <div class="fo-stats-summary" aria-label="Récapitulatif">
             <div class="fo-stats-summary__item">
                 <strong><?= (int) $nOrders ?></strong>
                 <span>Commandes</span>

@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+require_once __DIR__ . '/../../controller/AuthController.php';
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
@@ -22,42 +22,23 @@ $categories = $pp->listCategories();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reference = trim($_POST['reference'] ?? '');
-    $designation = trim($_POST['designation'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $prix = str_replace(',', '.', trim($_POST['prix_unitaire'] ?? '0'));
-    $stockRaw = trim($_POST['stock'] ?? '0');
+    $photo = $prod['photo'] ?? null;
+    $validated = $pp->validateProduitPayload($_POST, $categories);
+    $stockRaw = trim((string) ($_POST['stock'] ?? '0'));
     $stock = ctype_digit($stockRaw) ? (int) $stockRaw : -1;
-    $id_vendeur = (int) ($_POST['id_vendeur'] ?? 0);
-    $idcategorie = (int) ($_POST['idcategorie'] ?? 1);
-    $actif = isset($_POST['actif']) ? 1 : 0;
-    $currentPhoto = $prod['photo'] ?? null;
-    $photo = $currentPhoto;
 
-    if ($reference === '' || strlen($reference) > 50 || $designation === '' || strlen($designation) > 200 || $id_vendeur <= 0) {
-        $error = 'Champs obligatoires manquants.';
-    } elseif (!is_numeric($prix) || (float) $prix < 0) {
-        $error = 'Prix invalide.';
-    } elseif ($stock < 0) {
-        $error = 'Stock invalide (entier positif).';
+    if ($validated['error'] !== null) {
+        $error = $validated['error'];
     } else {
+        $currentPhoto = $prod['photo'] ?? null;
+        $photo = $currentPhoto;
         try {
             if (isset($_POST['remove_photo'])) {
                 $photo = null;
                 $pp->deletePhotoFile($currentPhoto);
             }
             $photo = $pp->savePhotoUpload($_FILES['photo'] ?? [], $photo);
-            $pp->update($id, [
-                'reference' => $reference,
-                'designation' => $designation,
-                'description' => $description !== '' ? $description : null,
-                'idcategorie' => $idcategorie,
-                'prix_unitaire' => (float) $prix,
-                'stock' => $stock,
-                'id_vendeur' => $id_vendeur,
-                'actif' => $actif,
-                'photo' => $photo,
-            ]);
+            $pp->update($id, array_merge($validated['data'], ['photo' => $photo]));
             header('Location: listProduits.php');
             exit;
         } catch (Throwable $e) {
@@ -70,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'description' => $_POST['description'] ?? $prod['description'],
         'prix_unitaire' => $_POST['prix_unitaire'] ?? $prod['prix_unitaire'],
         'stock' => $stock,
-        'id_vendeur' => $id_vendeur,
-        'idcategorie' => $idcategorie,
-        'actif' => $actif,
+        'id_vendeur' => (int) ($_POST['id_vendeur'] ?? $prod['id_vendeur']),
+        'idcategorie' => (int) ($_POST['idcategorie'] ?? $prod['idcategorie']),
+        'actif' => isset($_POST['actif']) ? 1 : 0,
         'photo' => $photo,
     ]);
 }

@@ -14,8 +14,62 @@ class ProduitController {
     /** @return list<array<string,mixed>> */
     public function listCategories(): array {
         $db = Config::getConnexion();
-        return $db->query('SELECT idcategorie, code, libelle, ordre FROM categorie ORDER BY ordre ASC, libelle ASC')
+        $rows = $db->query('SELECT idcategorie, code, libelle, ordre FROM categorie ORDER BY ordre ASC, libelle ASC')
             ->fetchAll(PDO::FETCH_ASSOC);
+        return $this->normalizeCategoryRows($rows);
+    }
+
+    /**
+     * Validation commune formulaires admin produit (création / édition).
+     *
+     * @param list<array<string,mixed>> $categories
+     * @return array{error: non-empty-string, data: null}|array{error: null, data: array<string, mixed>}
+     */
+    public function validateProduitPayload(array $post, array $categories): array {
+        $reference = trim((string) ($post['reference'] ?? ''));
+        $designation = trim((string) ($post['designation'] ?? ''));
+        $description = trim((string) ($post['description'] ?? ''));
+        $prixRaw = str_replace(',', '.', trim((string) ($post['prix_unitaire'] ?? '0')));
+        $stockRaw = trim((string) ($post['stock'] ?? '0'));
+        $stock = ctype_digit($stockRaw) ? (int) $stockRaw : -1;
+        $id_vendeur = (int) ($post['id_vendeur'] ?? 0);
+        $idcategorie = (int) ($post['idcategorie'] ?? 0);
+        $actif = isset($post['actif']) ? 1 : 0;
+
+        $allowedCats = [];
+        foreach ($categories as $c) {
+            $cid = (int) ($c['idcategorie'] ?? 0);
+            if ($cid > 0) {
+                $allowedCats[$cid] = true;
+            }
+        }
+
+        if ($reference === '' || strlen($reference) > 50 || $designation === '' || strlen($designation) > 200 || $id_vendeur <= 0) {
+            return ['error' => 'Référence, désignation et vendeur sont obligatoires.', 'data' => null];
+        }
+        if (!isset($allowedCats[$idcategorie])) {
+            return ['error' => 'Catégorie invalide.', 'data' => null];
+        }
+        if (!is_numeric($prixRaw) || (float) $prixRaw < 0) {
+            return ['error' => 'Prix invalide.', 'data' => null];
+        }
+        if ($stock < 0) {
+            return ['error' => 'Stock invalide (entier positif).', 'data' => null];
+        }
+
+        return [
+            'error' => null,
+            'data' => [
+                'reference' => $reference,
+                'designation' => $designation,
+                'description' => $description !== '' ? $description : null,
+                'idcategorie' => $idcategorie,
+                'prix_unitaire' => (float) $prixRaw,
+                'stock' => $stock,
+                'id_vendeur' => $id_vendeur,
+                'actif' => $actif,
+            ],
+        ];
     }
 
     /**
@@ -30,13 +84,7 @@ class ProduitController {
     public function listAllAdminFiltered(string $q, string $tri, string $ordre, string $actif, int $idcategorie = 0): array {
         $where = ['1=1'];
         $params = [];
-        $q = trim($q);
-        if ($q !== '') {
-            $where[] = '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
-                OR u.nom LIKE :q OR u.prenom LIKE :q OR u.email LIKE :q
-                OR cat.libelle LIKE :q OR cat.code LIKE :q)';
-            $params['q'] = '%' . $q . '%';
-        }
+        $this->appendProduitTextSearch($where, $params, trim($q), 'admin');
         if ($actif === '1' || $actif === '0') {
             $where[] = 'p.actif = :actif';
             $params['actif'] = (int) $actif;
@@ -45,7 +93,7 @@ class ProduitController {
             $where[] = 'p.idcategorie = :idc';
             $params['idc'] = $idcategorie;
         }
-        $orderBy = $this->orderSqlProduitAdmin($tri);
+        $orderBy = $this->orderSqlProduitList($tri, true);
         $dir = strtoupper($ordre) === 'ASC' ? 'ASC' : 'DESC';
         $sql = "SELECT p.*, u.nom AS vendeur_nom, u.prenom AS vendeur_prenom, u.email AS vendeur_email,
                        cat.libelle AS categorie_libelle, cat.code AS categorie_code
@@ -57,7 +105,7 @@ class ProduitController {
         $db = Config::getConnexion();
         $st = $db->prepare($sql);
         $st->execute($params);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+        return $this->normalizeCategoryRows($st->fetchAll(PDO::FETCH_ASSOC), 'categorie_libelle', 'categorie_code');
     }
 
     public function listCatalogueActifs(): array {
@@ -73,12 +121,7 @@ class ProduitController {
     public function listCatalogueFiltered(string $q, string $tri, string $ordre, int $idcategorie = 0): array {
         $where = ['p.actif = 1'];
         $params = [];
-        $q = trim($q);
-        if ($q !== '') {
-            $where[] = '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
-                OR u.nom LIKE :q OR u.prenom LIKE :q OR cat.libelle LIKE :q OR cat.code LIKE :q)';
-            $params['q'] = '%' . $q . '%';
-        }
+        $this->appendProduitTextSearch($where, $params, trim($q), 'catalogue');
         if ($idcategorie > 0) {
             $where[] = 'p.idcategorie = :idc';
             $params['idc'] = $idcategorie;
@@ -94,7 +137,7 @@ class ProduitController {
         $db = Config::getConnexion();
         $st = $db->prepare($sql);
         $st->execute($params);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+        return $this->normalizeCategoryRows($st->fetchAll(PDO::FETCH_ASSOC), 'categorie_libelle', 'categorie_code');
     }
 
     public function listByVendeur(int $idVendeur): array {
@@ -108,12 +151,7 @@ class ProduitController {
     public function listByVendeurFiltered(int $idVendeur, string $q, string $tri, string $ordre, string $actif, int $idcategorie = 0): array {
         $where = ['p.id_vendeur = :v'];
         $params = ['v' => $idVendeur];
-        $q = trim($q);
-        if ($q !== '') {
-            $where[] = '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
-                OR cat.libelle LIKE :q OR cat.code LIKE :q)';
-            $params['q'] = '%' . $q . '%';
-        }
+        $this->appendProduitTextSearch($where, $params, trim($q), 'vendeur');
         if ($actif === '1' || $actif === '0') {
             $where[] = 'p.actif = :actif';
             $params['actif'] = (int) $actif;
@@ -122,7 +160,7 @@ class ProduitController {
             $where[] = 'p.idcategorie = :idc';
             $params['idc'] = $idcategorie;
         }
-        $orderBy = $this->orderSqlProduitSolo($tri);
+        $orderBy = $this->orderSqlProduitList($tri, false);
         $dir = strtoupper($ordre) === 'ASC' ? 'ASC' : 'DESC';
         $sql = "SELECT p.*, cat.libelle AS categorie_libelle, cat.code AS categorie_code
                 FROM produit p
@@ -131,25 +169,11 @@ class ProduitController {
         $db = Config::getConnexion();
         $st = $db->prepare($sql);
         $st->execute($params);
-        return $st->fetchAll(PDO::FETCH_ASSOC);
+        return $this->normalizeCategoryRows($st->fetchAll(PDO::FETCH_ASSOC), 'categorie_libelle', 'categorie_code');
     }
 
-    private function orderSqlProduitAdmin(string $tri): string {
-        $map = [
-            'id' => 'p.idproduit',
-            'reference' => 'p.reference',
-            'designation' => 'p.designation',
-            'prix' => 'p.prix_unitaire',
-            'stock' => 'p.stock',
-            'actif' => 'p.actif',
-            'vendeur' => 'u.nom',
-            'date' => 'p.created_at',
-            'categorie' => 'cat.libelle',
-        ];
-        return $map[$tri] ?? 'p.created_at';
-    }
-
-    private function orderSqlProduitSolo(string $tri): string {
+    /** Tri liste produits admin ou vue vendeur (sans colonne vendeur si $adminJoin false). */
+    private function orderSqlProduitList(string $tri, bool $adminJoin): string {
         $map = [
             'id' => 'p.idproduit',
             'reference' => 'p.reference',
@@ -160,7 +184,31 @@ class ProduitController {
             'date' => 'p.created_at',
             'categorie' => 'cat.libelle',
         ];
+        if ($adminJoin) {
+            $map['vendeur'] = 'u.nom';
+        }
+        if (!$adminJoin && $tri === 'vendeur') {
+            return 'p.created_at';
+        }
         return $map[$tri] ?? 'p.created_at';
+    }
+
+    /** @param list<string> $where */
+    private function appendProduitTextSearch(array &$where, array &$params, string $qTrimmed, string $scope): void {
+        if ($qTrimmed === '') {
+            return;
+        }
+        $clause = match ($scope) {
+            'admin' => '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
+                OR u.nom LIKE :q OR u.prenom LIKE :q OR u.email LIKE :q
+                OR cat.libelle LIKE :q OR cat.code LIKE :q)',
+            'catalogue' => '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
+                OR u.nom LIKE :q OR u.prenom LIKE :q OR cat.libelle LIKE :q OR cat.code LIKE :q)',
+            default => '(p.reference LIKE :q OR p.designation LIKE :q OR IFNULL(p.description, \'\') LIKE :q
+                OR cat.libelle LIKE :q OR cat.code LIKE :q)',
+        };
+        $where[] = $clause;
+        $params['q'] = '%' . $qTrimmed . '%';
     }
 
     /** @return list<string> fragments ORDER BY */
@@ -192,7 +240,48 @@ class ProduitController {
         $st = $db->prepare($sql);
         $st->execute(['id' => $id]);
         $row = $st->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $row = $this->normalizeCategoryRows([$row], 'categorie_libelle', 'categorie_code')[0];
+        }
         return $row ?: null;
+    }
+
+    /**
+     * @param list<array<string,mixed>> $rows
+     * @return list<array<string,mixed>>
+     */
+    private function normalizeCategoryRows(array $rows, string $labelKey = 'libelle', string $codeKey = 'code'): array {
+        foreach ($rows as &$row) {
+            $rawLabel = (string) ($row[$labelKey] ?? '');
+            $code = (string) ($row[$codeKey] ?? '');
+            $row[$labelKey] = $this->normalizeCategoryLabel($rawLabel, $code);
+        }
+        unset($row);
+        return $rows;
+    }
+
+    private function normalizeCategoryLabel(string $label, string $code): string {
+        $trimmed = trim($label);
+        $codeNorm = strtolower(trim($code));
+        $canonicalByCode = [
+            'peripheriques' => 'Périphériques (claviers, souris, micros)',
+            'pc' => 'PC & ordinateurs',
+            'telephones' => 'Téléphones & smartphones',
+            'tablettes' => 'Tablettes',
+            'chaises' => 'Chaises & sièges',
+            'accessoires' => 'Accessoires & câbles',
+        ];
+
+        if (isset($canonicalByCode[$codeNorm]) && $this->looksCorruptedText($trimmed)) {
+            return $canonicalByCode[$codeNorm];
+        }
+        return $trimmed;
+    }
+
+    private function looksCorruptedText(string $text): bool {
+        if ($text === '') return true;
+        if (strpos($text, '?') !== false) return true;
+        return preg_match('/Ã.|Â|�/u', $text) === 1;
     }
 
     public function add(array $data): void {

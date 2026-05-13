@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../controller/AuthController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 
 $auth = new AuthController();
 // logout handler
@@ -18,7 +18,9 @@ if (!$user) {
     exit;
 }
 $points = (int) ($user['points_fidelite'] ?? 0);
-$pointsTnd = CommerceMetier::dinarFromPoints($points);
+$pointsTnd = CommerceRegles::dinarFromPoints($points);
+$hasTotp = trim((string) ($user['totp_secret'] ?? '')) !== '';
+$hasFaceId = ((int) ($user['face_photo_enabled'] ?? 0) === 1) && trim((string) ($user['face_photo_hash'] ?? '')) !== '';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -175,6 +177,14 @@ $pointsTnd = CommerceMetier::dinarFromPoints($points);
             <article class="fo-profile-stat">
                 <p class="k">Âge</p>
                 <p class="v"><?= htmlspecialchars((string) ($user['age'] ?? '—')) ?> ans</p>
+            </article>
+            <article class="fo-profile-stat">
+                <p class="k">2FA Authenticator</p>
+                <p class="v"><?= $hasTotp ? 'Actif' : 'Non configuré' ?></p>
+            </article>
+            <article class="fo-profile-stat">
+                <p class="k">Face ID / Photo visage</p>
+                <p class="v"><?= $hasFaceId ? 'Actif' : 'Non configuré' ?></p>
             </article>
         </div>
 

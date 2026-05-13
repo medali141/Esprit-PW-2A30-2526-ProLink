@@ -4,7 +4,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -40,11 +40,11 @@ if ($statut !== '' && !in_array($statut, $allowedStatuts, true)) {
     $statut = '';
 }
 $list = $cp->listByVendeurFiltered((int) $u['iduser'], $q, $tri, $ordre, $statut);
-$page = CommerceMetier::sanitizePage((int) ($_GET['page'] ?? 1));
+$page = CommerceRegles::sanitizePage((int) ($_GET['page'] ?? 1));
 $perPage = 10;
 $totalRows = count($list);
 $totalPages = max(1, (int) ceil($totalRows / $perPage));
-$page = CommerceMetier::sanitizePage($page, $totalPages);
+$page = CommerceRegles::sanitizePage($page, $totalPages);
 $start = ($page - 1) * $perPage;
 $rows = array_slice($list, $start, $perPage);
 ?>

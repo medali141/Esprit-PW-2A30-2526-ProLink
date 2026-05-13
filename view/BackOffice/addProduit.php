@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+require_once __DIR__ . '/../../controller/AuthController.php';
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
@@ -16,37 +16,14 @@ $categories = $pp->listCategories();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reference = trim($_POST['reference'] ?? '');
-    $designation = trim($_POST['designation'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $prix = str_replace(',', '.', trim($_POST['prix_unitaire'] ?? '0'));
-    $stockRaw = trim($_POST['stock'] ?? '0');
-    $stock = ctype_digit($stockRaw) ? (int) $stockRaw : -1;
-    $id_vendeur = (int) ($_POST['id_vendeur'] ?? 0);
-    $idcategorie = (int) ($_POST['idcategorie'] ?? 1);
-    $actif = isset($_POST['actif']) ? 1 : 0;
-    $photo = null;
-
-    if ($reference === '' || strlen($reference) > 50 || $designation === '' || strlen($designation) > 200 || $id_vendeur <= 0) {
-        $error = 'Référence, désignation et vendeur sont obligatoires.';
-    } elseif (!is_numeric($prix) || (float) $prix < 0) {
-        $error = 'Prix invalide.';
-    } elseif ($stock < 0) {
-        $error = 'Stock invalide (entier positif).';
+    $validated = $pp->validateProduitPayload($_POST, $categories);
+    if ($validated['error'] !== null) {
+        $error = $validated['error'];
     } else {
+        $photo = null;
         try {
             $photo = $pp->savePhotoUpload($_FILES['photo'] ?? []);
-            $pp->add([
-                'reference' => $reference,
-                'designation' => $designation,
-                'description' => $description !== '' ? $description : null,
-                'idcategorie' => $idcategorie,
-                'prix_unitaire' => (float) $prix,
-                'stock' => $stock,
-                'id_vendeur' => $id_vendeur,
-                'actif' => $actif,
-                'photo' => $photo,
-            ]);
+            $pp->add(array_merge($validated['data'], ['photo' => $photo]));
             header('Location: listProduits.php');
             exit;
         } catch (Throwable $e) {

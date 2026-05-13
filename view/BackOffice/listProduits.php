@@ -10,7 +10,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     exit;
 }
 require_once __DIR__ . '/../../controller/ProduitController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 $pp = new ProduitController();
 $q = trim((string) ($_GET['q'] ?? ''));
 $tri = (string) ($_GET['tri'] ?? 'date');
@@ -26,11 +26,11 @@ if (!in_array($actif, ['', '0', '1'], true)) {
 $idcategorie = (int) ($_GET['cat'] ?? 0);
 $categories = $pp->listCategories();
 $list = $pp->listAllAdminFiltered($q, $tri, $ordre, $actif, $idcategorie);
-$page = CommerceMetier::sanitizePage((int) ($_GET['page'] ?? 1));
+$page = CommerceRegles::sanitizePage((int) ($_GET['page'] ?? 1));
 $perPage = 12;
 $totalRows = count($list);
 $totalPages = max(1, (int) ceil($totalRows / $perPage));
-$page = CommerceMetier::sanitizePage($page, $totalPages);
+$page = CommerceRegles::sanitizePage($page, $totalPages);
 $start = ($page - 1) * $perPage;
 $rows = array_slice($list, $start, $perPage);
 $triOpts = [
@@ -88,7 +88,7 @@ if ($ordre !== 'desc') {
                 <p class="hint" style="margin:6px 0 0">Prix en TND · visibilité catalogue</p>
             </div>
             <div class="actions">
-                <a href="commerceHub.php" class="btn btn-secondary">← Hub</a>
+                <a href="gestionAchats.php" class="btn btn-secondary">← Achats</a>
                 <a href="addProduit.php" class="btn btn-primary">+ Produit</a>
             </div>
         </div>
@@ -115,7 +115,7 @@ if ($ordre !== 'desc') {
             <div class="commerce-filters__field">
                 <label for="f-cat">Catégorie</label>
                 <select name="cat" id="f-cat">
-                    <option value="0" <?= $idcategorie === 0 ? 'selected' : '' ?>>Toutes</option>
+                    <option value="0" <?= $idcategorie === 0 ? 'selected' : '' ?>>Toutes les catégories</option>
                     <?php foreach ($categories as $c): ?>
                         <option value="<?= (int) $c['idcategorie'] ?>" <?= $idcategorie === (int) $c['idcategorie'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($c['libelle']) ?>

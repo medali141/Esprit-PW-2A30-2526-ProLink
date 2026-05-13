@@ -24,44 +24,29 @@ if ($id && (!$prod || (int) $prod['id_vendeur'] !== $vid)) {
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $reference = trim($_POST['reference'] ?? '');
-    $designation = trim($_POST['designation'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $prix = str_replace(',', '.', trim($_POST['prix_unitaire'] ?? '0'));
-    $stockRaw = trim($_POST['stock'] ?? '0');
+    $photo = $prod['photo'] ?? null;
+    $validated = $pp->validateProduitPayload(array_merge($_POST, ['id_vendeur' => $vid]), $categories);
+    $stockRaw = trim((string) ($_POST['stock'] ?? '0'));
     $stock = ctype_digit($stockRaw) ? (int) $stockRaw : -1;
-    $idcategorie = (int) ($_POST['idcategorie'] ?? 1);
-    $actif = isset($_POST['actif']) ? 1 : 0;
-    $currentPhoto = $prod['photo'] ?? null;
-    $photo = $currentPhoto;
-    if ($reference === '' || strlen($reference) > 50 || $designation === '' || strlen($designation) > 200) {
-        $error = 'Référence et désignation obligatoires.';
-    } elseif (!is_numeric($prix) || (float) $prix < 0) {
-        $error = 'Prix invalide.';
-    } elseif ($stock < 0) {
-        $error = 'Stock invalide (entier positif).';
+
+    if ($validated['error'] !== null) {
+        $error = $validated['error'];
     } else {
+        $d = $validated['data'];
+        $d['id_vendeur'] = $vid;
+        $currentPhoto = $prod['photo'] ?? null;
+        $photo = $currentPhoto;
         try {
             if (isset($_POST['remove_photo'])) {
                 $photo = null;
                 $pp->deletePhotoFile($currentPhoto);
             }
             $photo = $pp->savePhotoUpload($_FILES['photo'] ?? [], $photo);
-            $data = [
-                'reference' => $reference,
-                'designation' => $designation,
-                'description' => $description !== '' ? $description : null,
-                'idcategorie' => $idcategorie,
-                'prix_unitaire' => (float) $prix,
-                'stock' => $stock,
-                'id_vendeur' => $vid,
-                'actif' => $actif,
-                'photo' => $photo,
-            ];
+            $payload = array_merge($d, ['photo' => $photo]);
             if ($prod) {
-                $pp->update($id, $data);
+                $pp->update($id, $payload);
             } else {
-                $pp->add($data);
+                $pp->add($payload);
             }
             header('Location: mesProduits.php');
             exit;
@@ -71,13 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $prod = $prod ?: [];
     $prod = array_merge($prod, [
-        'reference' => $reference,
-        'designation' => $designation,
-        'description' => $description,
-        'prix_unitaire' => $prix,
+        'reference' => $_POST['reference'] ?? ($prod['reference'] ?? ''),
+        'designation' => $_POST['designation'] ?? ($prod['designation'] ?? ''),
+        'description' => $_POST['description'] ?? ($prod['description'] ?? ''),
+        'prix_unitaire' => $_POST['prix_unitaire'] ?? ($prod['prix_unitaire'] ?? '0'),
         'stock' => $stock,
-        'idcategorie' => $idcategorie,
-        'actif' => $actif,
+        'idcategorie' => (int) ($_POST['idcategorie'] ?? ($prod['idcategorie'] ?? 1)),
+        'actif' => isset($_POST['actif']) ? 1 : 0,
         'photo' => $photo,
     ]);
 } elseif (!$prod) {

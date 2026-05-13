@@ -128,10 +128,8 @@ if (isset($_GET['registered']) && $_GET['registered'] == '1') {
         </form>
 
         <div class="links">
-            <!-- 🔹 Forgot password -->
             <a href="forgotpwd.php">Mot de passe oublié ?</a>
 
-            <!-- 🔹 Register -->
             <a href="register.php">Créer un compte</a>
         </div>
     </div>

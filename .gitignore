@@ -1,3 +1,4 @@
 # Uploads utilisateur (garder uniquement la structure)
 view/uploads/products/*
 !view/uploads/products/.gitkeep
+config/mail.local.php

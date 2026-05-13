@@ -4,7 +4,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -40,11 +40,11 @@ if ($statut !== '' && !in_array($statut, $allowedStatuts, true)) {
     $statut = '';
 }
 $list = $cp->listByAcheteurFiltered((int) $u['iduser'], $q, $tri, $ordre, $statut);
-$page = CommerceMetier::sanitizePage((int) ($_GET['page'] ?? 1));
+$page = CommerceRegles::sanitizePage((int) ($_GET['page'] ?? 1));
 $perPage = 10;
 $totalRows = count($list);
 $totalPages = max(1, (int) ceil($totalRows / $perPage));
-$page = CommerceMetier::sanitizePage($page, $totalPages);
+$page = CommerceRegles::sanitizePage($page, $totalPages);
 $start = ($page - 1) * $perPage;
 $rows = array_slice($list, $start, $perPage);
 $newId = isset($_GET['new']) ? (int) $_GET['new'] : 0;
@@ -57,7 +57,7 @@ foreach ($list as $cmdRow) {
     if ($stat === 'annulee') {
         continue;
     }
-    $pointsTotalVisible += CommerceMetier::pointsFromAmount((float) ($cmdRow['montant_total'] ?? 0));
+    $pointsTotalVisible += CommerceRegles::pointsFromAmount((float) ($cmdRow['montant_total'] ?? 0));
 }
 ?>
 <!DOCTYPE html>
@@ -83,6 +83,7 @@ foreach ($list as $cmdRow) {
     </div>
     <div class="fo-actions" style="margin-top:-10px;margin-bottom:10px">
         <a href="mesCommandesStats.php" target="_blank" rel="noopener" class="fo-btn fo-btn--secondary" style="text-decoration:none">Voir les statistiques (graphiques)</a>
+        <a href="reclamationsCommandes.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">Mes réclamations commandes</a>
     </div>
     <?php if ($newId > 0): ?>
         <p class="fo-banner fo-banner--ok" role="status">
@@ -149,7 +150,7 @@ foreach ($list as $cmdRow) {
                 $st = $c['statut'] ?? '';
                 $payMode = (string) ($c['mode_paiement'] ?? 'cash_on_delivery');
                 $badgeClass = 'fo-badge fo-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
-                $pointsLigne = CommerceMetier::pointsFromAmount((float) ($c['montant_total'] ?? 0));
+                $pointsLigne = CommerceRegles::pointsFromAmount((float) ($c['montant_total'] ?? 0));
                 $canInvoice = !in_array($st, ['brouillon', 'annulee'], true);
             ?>
                 <tr>
@@ -166,6 +167,7 @@ foreach ($list as $cmdRow) {
                     <td>
                         <div style="display:flex;gap:6px;flex-wrap:wrap">
                             <a class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:6px 12px;font-size:0.82rem" href="suiviCommande.php?id=<?= (int) $c['idcommande'] ?>">Suivi</a>
+                            <a class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:6px 12px;font-size:0.82rem" href="reclamationsCommandes.php?commande=<?= (int) $c['idcommande'] ?>">Réclamation</a>
                             <?php if ($canInvoice): ?>
                                 <a class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:6px 12px;font-size:0.82rem" href="factureCommande.php?id=<?= (int) $c['idcommande'] ?>">Facture</a>
                             <?php endif; ?>

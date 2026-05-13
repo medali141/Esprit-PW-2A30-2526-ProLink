@@ -1,4 +1,59 @@
-<?php require_once __DIR__ . '/../init.php'; ?>
+<?php
+require_once __DIR__ . '/../init.php';
+require_once __DIR__ . '/../controller/AuthController.php';
+require_once __DIR__ . '/../config/mail.php';
+require_once __DIR__ . '/../lib/MailOtpService.php';
+
+if (!isset($_SESSION['pwd_reset_otp']) || !is_array($_SESSION['pwd_reset_otp'])) {
+    $_SESSION['pwd_reset_otp'] = [];
+}
+
+$error = '';
+$success = '';
+$step = 'request';
+$emailInput = trim((string) ($_POST['email'] ?? ''));
+$newPwdInput = (string) ($_POST['mdp'] ?? '');
+$otpInput = trim((string) ($_POST['otp_code'] ?? ''));
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = (string) ($_POST['forgot_action'] ?? 'send_otp');
+    if (!filter_var($emailInput, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Email invalide.';
+    } elseif ($newPwdInput === '' || strlen($newPwdInput) < 6) {
+        $error = 'Nouveau mot de passe: au moins 6 caracteres.';
+    } elseif ($action === 'send_otp') {
+        $otpCode = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $_SESSION['pwd_reset_otp'][$emailInput] = [
+            'hash' => hash('sha256', $otpCode),
+            'expires_at' => time() + (int) PROLINK_PWD_RESET_OTP_TTL,
+            'new_password' => $newPwdInput,
+        ];
+        $sent = MailOtpService::sendPasswordResetOtp($emailInput, $otpCode, (int) PROLINK_PWD_RESET_OTP_TTL);
+        if ($sent) {
+            $success = 'Code de verification envoye sur votre email.';
+            $step = 'verify';
+        } else {
+            $error = 'Impossible d envoyer le code email. Verifiez la config SMTP.';
+        }
+    } elseif ($action === 'verify_otp') {
+        $step = 'verify';
+        $payload = $_SESSION['pwd_reset_otp'][$emailInput] ?? null;
+        if (!$payload || !is_array($payload)) {
+            $error = 'Aucun code actif. Cliquez sur "Envoyer le code".';
+        } elseif ((int) ($payload['expires_at'] ?? 0) < time()) {
+            $error = 'Code expire. Demandez un nouveau code.';
+        } elseif (!preg_match('/^\d{6}$/', $otpInput) || !hash_equals((string) ($payload['hash'] ?? ''), hash('sha256', $otpInput))) {
+            $error = 'Code OTP invalide.';
+        } else {
+            $auth = new AuthController();
+            $auth->forgotPassword($emailInput, (string) ($payload['new_password'] ?? $newPwdInput));
+            unset($_SESSION['pwd_reset_otp'][$emailInput]);
+            $success = 'Mot de passe reinitialise avec succes. Vous pouvez vous connecter.';
+            $step = 'done';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -91,13 +146,29 @@
             Entrez votre email pour réinitialiser votre mot de passe
         </p>
 
-        <!-- Validation JavaScript : view/assets/forms-validation.js (forgot-form) -->
+        <?php if ($error !== ''): ?>
+            <p style="color:#b00020; font-size:13px; margin:0 0 8px;"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
+        <?php if ($success !== ''): ?>
+            <p style="color:#166534; font-size:13px; margin:0 0 8px;"><?= htmlspecialchars($success) ?></p>
+        <?php endif; ?>
+
         <form method="post" action="#" novalidate data-validate="forgot-form">
-            <input type="email" name="email" placeholder="Votre email" required maxlength="150" autocomplete="email">
+            <input type="email" name="email" placeholder="Votre email" required maxlength="150" autocomplete="email"
+                   value="<?= htmlspecialchars($emailInput) ?>">
 
-            <input type="password" name="mdp" placeholder="Nouveau mot de passe" required minlength="6" maxlength="128" autocomplete="new-password">
+            <input type="password" name="mdp" placeholder="Nouveau mot de passe" required minlength="6" maxlength="128" autocomplete="new-password"
+                   value="<?= htmlspecialchars($newPwdInput) ?>">
 
-            <button type="submit">Réinitialiser</button>
+            <?php if ($step === 'verify' || $step === 'done'): ?>
+                <input type="text" name="otp_code" placeholder="Code OTP (6 chiffres)" inputmode="numeric"
+                       value="<?= htmlspecialchars($otpInput) ?>">
+                <?php if ($step !== 'done'): ?>
+                    <button type="submit" name="forgot_action" value="verify_otp">Valider le code OTP</button>
+                <?php endif; ?>
+            <?php else: ?>
+                <button type="submit" name="forgot_action" value="send_otp">Envoyer le code OTP</button>
+            <?php endif; ?>
         </form>
 
         <a href="login.php">Retour à la connexion</a>

@@ -106,7 +106,7 @@ if (!empty($lines)) {
         <p class="fo-banner fo-banner--err">Session expirée. Rechargez la page puis réessayez.</p>
     <?php endif; ?>
     <?php if (empty($lines)): ?>
-        <div class="fo-empty">
+        <div class="fo-empty fo-empty--cart">
             <p class="hint" style="margin:0 0 12px">Votre panier est vide.</p>
             <a href="catalogue.php">Voir le catalogue</a>
         </div>

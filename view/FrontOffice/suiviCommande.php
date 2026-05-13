@@ -52,7 +52,7 @@ $fullAddress = trim(
 $mapStatuses = ['payee', 'en_preparation', 'expediee', 'livree'];
 $showCourierMap = in_array($st, $mapStatuses, true);
 $isLiveTracking = in_array($st, ['payee', 'en_preparation', 'expediee'], true);
-$stockName = 'Entrepot central Lac 2';
+$stockName = 'Entrepôt principal — Lac 2';
 $stockLat = 36.8442;
 $stockLng = 10.2722;
 $adrLine = trim((string) ($cmd['adresse_livraison'] ?? ''));
@@ -79,7 +79,7 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
             <div>
                 <p class="fo-track-kicker">Suivi logistique</p>
                 <h1>Commande #<?= $id ?></h1>
-                <p class="fo-lead">État en temps quasi réel après validation du paiement : stock, préparation, livreur et livraison.</p>
+                <p class="fo-lead">Étapes après validation du paiement : préparation de commande, expédition, livraison.</p>
             </div>
             <div class="fo-track-head-meta">
                 <span id="trackStatusBadge" class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($labels[$st] ?? $st) ?></span>
@@ -154,11 +154,12 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
 
     <?php if ($showCourierMap): ?>
         <section class="fo-track-map-wrap">
-            <h2 class="fo-track-section-title">Course livreur en temps reel</h2>
+            <h2 class="fo-track-section-title">Tournée de livraison</h2>
             <p class="hint fo-track-map-hint">
-                Itineraire reel: prise en charge au <strong><?= htmlspecialchars($stockName) ?></strong> puis livraison a votre adresse.
+                Enlèvement au dépôt <strong><?= htmlspecialchars($stockName) ?></strong>, puis livraison à l’adresse indiquée.
             </p>
             <div id="foLiveRideMeta" class="fo-track-live-meta">Initialisation du suivi...</div>
+            <div id="foArrivalTimerBox" class="fo-track-live-meta" hidden></div>
             <div
                 id="foDeliveryMap"
                 class="fo-track-map"
@@ -178,9 +179,9 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         </section>
     <?php else: ?>
         <section class="fo-track-map-wrap">
-            <h2 class="fo-track-section-title">Course livreur</h2>
+            <h2 class="fo-track-section-title">Carte de livraison</h2>
             <p class="fo-track-live-meta">
-                La carte s'affichera des que le paiement est valide et qu'un livreur commence la prise en charge au <?= htmlspecialchars($stockName) ?>.
+                Affichage après confirmation du paiement et enlèvement au dépôt <?= htmlspecialchars($stockName) ?>.
             </p>
         </section>
     <?php endif; ?>
@@ -267,6 +268,31 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         if (box) box.innerHTML = html;
     }
 
+    function setArrivalCard(html, isAlert) {
+        var box = document.getElementById('foArrivalTimerBox');
+        if (!box) return;
+        box.hidden = false;
+        box.innerHTML = html;
+        box.style.background = isAlert ? 'rgba(239, 68, 68, 0.12)' : 'rgba(16, 185, 129, 0.12)';
+        box.style.borderColor = isAlert ? 'rgba(248, 113, 113, 0.45)' : 'rgba(74, 222, 128, 0.45)';
+        box.style.color = isAlert ? '#7f1d1d' : '#14532d';
+    }
+
+    function notifyDelivery(title, body) {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'granted') {
+            try { new Notification(title, { body: body }); } catch (e) {}
+            return;
+        }
+        if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(function (perm) {
+                if (perm === 'granted') {
+                    try { new Notification(title, { body: body }); } catch (e) {}
+                }
+            }).catch(function () {});
+        }
+    }
+
     function timelineIndexForStatus(status) {
         var map = {
             brouillon: 0,
@@ -319,7 +345,7 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
             var trackNumber = trackNumberEl ? trackNumberEl.textContent.trim() : '';
             transitStep.textContent = trackNumber !== ''
                 ? ('En cours de livraison — suivi transporteur : ' + trackNumber)
-                : 'Le colis est pris en charge par le van et en route vers votre adresse.';
+                : 'Colis pris en charge par le transporteur, acheminement en cours.';
         }
     }
 
@@ -335,7 +361,7 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         }).then(function (r) { return r.json(); }).then(function (res) {
             if (!res || !res.ok) return;
             applyTrackingStatusUI('expediee');
-            setStatusCard('<strong>Pickup confirme</strong> · la van a pris le colis, statut passe a <strong>En cours de livraison</strong>.');
+            setStatusCard('<strong>Enlèvement confirmé</strong> · colis pris en charge au dépôt, passage à <strong>En cours de livraison</strong>.');
         }).catch(function () {});
     }
 
@@ -365,21 +391,21 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         });
 
         var stockMarker = L.marker([stockLat, stockLng], {icon: stockIcon}).addTo(map).bindPopup(stockName);
-        var destMarker = L.marker([destLat, destLng], {icon: deliveryIcon}).addTo(map).bindPopup('Point a livrer');
+        var destMarker = L.marker([destLat, destLng], {icon: deliveryIcon}).addTo(map).bindPopup('Adresse de livraison');
         destMarker.openPopup();
 
         var courierLat = riderStartLat;
         var courierLng = riderStartLng;
 
-        var vanIcon = L.divIcon({
-            className: 'fo-van-marker-wrap',
-            html: '<div class="fo-van-marker">🚚</div>',
+        var courierMapIcon = L.divIcon({
+            className: 'fo-courier-marker-wrap',
+            html: '<div class="fo-courier-marker"><span class="fo-courier-pointer" aria-hidden="true">▶</span></div>',
             iconSize: [34, 34],
             iconAnchor: [17, 17]
         });
-        var courierMarker = L.marker([courierLat, courierLng], {icon: vanIcon})
+        var courierMarker = L.marker([courierLat, courierLng], {icon: courierMapIcon})
             .addTo(map)
-            .bindPopup(isLive ? 'Livreur proche (van)' : 'Van non assigne');
+            .bindPopup(isLive ? 'Véhicule de livraison (position estimée)' : 'Transporteur non renseigné');
 
         var route = L.polyline([[riderStartLat, riderStartLng], [stockLat, stockLng], [destLat, destLng]], {
             color: '#38bdf8',
@@ -396,13 +422,13 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         var group = L.featureGroup([stockMarker, destMarker, courierMarker, route, progress]);
         map.fitBounds(group.getBounds().pad(0.35));
 
-        function updateVanAngle(from, to) {
+        function updateCourierHeading(from, to) {
             var angle = Math.atan2(to[1] - from[1], to[0] - from[0]) * 180 / Math.PI;
             var el = courierMarker.getElement();
             if (!el) return;
-            var van = el.querySelector('.fo-van-marker');
-            if (!van) return;
-            van.style.transform = 'rotate(' + angle + 'deg)';
+            var pointer = el.querySelector('.fo-courier-pointer');
+            if (!pointer) return;
+            pointer.style.transform = 'rotate(' + angle + 'deg)';
         }
 
         function clamp(v, min, max) {
@@ -412,12 +438,12 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         function trafficProfile() {
             var hour = new Date().getHours();
             if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 20)) {
-                return {factor: 0.62 + seeded(orderId * hour) * 0.18, label: 'embouteillage fort'};
+                return {factor: 0.62 + seeded(orderId * hour) * 0.18, label: 'forte densité'};
             }
             if ((hour >= 10 && hour <= 16) || (hour >= 21 && hour <= 22)) {
-                return {factor: 0.78 + seeded(orderId + hour * 5) * 0.2, label: 'trafic modere'};
+                return {factor: 0.78 + seeded(orderId + hour * 5) * 0.2, label: 'circulation modérée'};
             }
-            return {factor: 0.9 + seeded(orderId + hour * 9) * 0.12, label: 'trafic fluide'};
+            return {factor: 0.9 + seeded(orderId + hour * 9) * 0.12, label: 'circulation fluide'};
         }
 
         function animateAlongRoute(coords, routeDurationSec, routeDistanceM, startIndex, stockIndex) {
@@ -433,8 +459,55 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
             var profile = trafficProfile();
             var trafficFactor = profile.factor;
             var trafficLabel = profile.label;
-            var pickupStatusSynced = false;
+            var depotHandoffSynced = false;
             var preparationUiApplied = false;
+            var arrivalThresholdMeters = 95;
+            var arrivalWindowMs = 15 * 60 * 1000;
+            var arrivalStartedAt = 0;
+            var arrivalTimer = null;
+            var arrivalNotified = false;
+            var departureNotified = false;
+
+            function formatCountdown(ms) {
+                var total = Math.max(0, Math.floor(ms / 1000));
+                var mm = Math.floor(total / 60);
+                var ss = total % 60;
+                return String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
+            }
+
+            function renderArrivalCountdown() {
+                if (!arrivalStartedAt) return;
+                var elapsed = Date.now() - arrivalStartedAt;
+                var remainingMs = Math.max(0, arrivalWindowMs - elapsed);
+                if (remainingMs <= 0) {
+                    setArrivalCard('<strong>Le transporteur est reparti.</strong> Le créneau de récupération (15 min) est dépassé.', true);
+                    setStatusCard('<strong>Créneau dépassé</strong> · le transporteur n a pas pu remettre le colis et repart.');
+                    if (!departureNotified) {
+                        notifyDelivery('ProLink livraison', 'Le transporteur est reparti car le colis n a pas été récupéré à temps.');
+                        departureNotified = true;
+                    }
+                    if (arrivalTimer) {
+                        clearInterval(arrivalTimer);
+                        arrivalTimer = null;
+                    }
+                    return;
+                }
+                setArrivalCard(
+                    '<strong>Livreur arrivé au point de livraison.</strong> Merci de récupérer votre colis avant <strong>' + formatCountdown(remainingMs) + '</strong>.',
+                    false
+                );
+            }
+
+            function startArrivalWindow() {
+                if (arrivalStartedAt) return;
+                arrivalStartedAt = Date.now();
+                renderArrivalCountdown();
+                arrivalTimer = setInterval(renderArrivalCountdown, 1000);
+                if (!arrivalNotified) {
+                    notifyDelivery('ProLink livraison', 'Votre livraison est arrivée. Vous avez 15 minutes pour récupérer le colis.');
+                    arrivalNotified = true;
+                }
+            }
 
             if (i > 0) {
                 for (var p = 0; p <= i && p < coords.length; p++) {
@@ -451,7 +524,8 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
                 var speedMps = clamp(baseSpeedMps * trafficFactor, 3.6, 14.0);
 
                 if (i >= coords.length - 1) {
-                    setStatusCard('<strong>Livreur arrive</strong> · destination atteinte.');
+                    startArrivalWindow();
+                    setStatusCard('<strong>Le transporteur est sur place</strong> · fenêtre de récupération en cours (15 min).');
                     return;
                 }
 
@@ -468,7 +542,7 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
                 if (traveled.length > 1) progress.setLatLngs(traveled);
                 courierMarker.setLatLng([lat, lng]);
                 if (i < coords.length - 1) {
-                    updateVanAngle([lat, lng], [coords[i + 1][1], coords[i + 1][0]]);
+                    updateCourierHeading([lat, lng], [coords[i + 1][1], coords[i + 1][0]]);
                 }
 
                 var remaining = 0;
@@ -476,26 +550,29 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
                     remaining += metersBetween([coords[k][1], coords[k][0]], [coords[k + 1][1], coords[k + 1][0]]);
                 }
                 var etaMin = remaining / Math.max(1, speedMps) / 60;
-                var phase = 'pickup au stock';
+                var phase = 'enlèvement dépôt';
                 if (i < stockIndex) {
                     if (!preparationUiApplied && (orderStatus === 'payee' || orderStatus === 'en_attente_paiement')) {
-                        // Tant que la van n'a pas atteint le stock, on reste en préparation/pick-up.
+                        // Tant que le véhicule n’a pas atteint le dépôt : étape préparation.
                         applyTrackingStatusUI('en_preparation');
                         preparationUiApplied = true;
                     }
                 } else if (i >= stockIndex) {
-                    phase = 'en livraison vers client';
-                    if (!pickupStatusSynced) {
+                    phase = 'livraison client';
+                    if (!depotHandoffSynced) {
                         syncStatusToInDelivery();
-                        pickupStatusSynced = true;
+                        depotHandoffSynced = true;
                     }
                 }
                 if (i >= coords.length - 1) phase = 'livre';
-                setStatusCard('<strong>Distance restante:</strong> ' + formatKm(remaining) +
-                    ' · <strong>ETA:</strong> ' + formatEta(etaMin) +
+                if (phase === 'livraison client' && remaining <= arrivalThresholdMeters) {
+                    startArrivalWindow();
+                }
+                setStatusCard('<strong>Distance restante :</strong> ' + formatKm(remaining) +
+                    ' · <strong>Temps estimé :</strong> ' + formatEta(etaMin) +
                     ' · <strong>Vitesse:</strong> ' + Math.round(speedMps * 3.6) + ' km/h' +
-                    ' · <strong>Etat trafic:</strong> ' + trafficLabel +
-                    ' · <strong>Phase:</strong> ' + phase);
+                    ' · <strong>État circulation :</strong> ' + trafficLabel +
+                    ' · <strong>Étape :</strong> ' + phase);
 
                 requestAnimationFrame(step);
             }
@@ -511,11 +588,11 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
         }
 
         if (!isLive) {
-            setStatusCard('<strong>Points definis:</strong> stock -> livraison · suivi live actif quand la commande est en preparation/expedition.');
+            setStatusCard('<strong>Trajet chargé</strong> : dépôt puis adresse de livraison (suivi actif si commande en préparation ou expédiée).');
             return;
         }
 
-        setStatusCard('Calcul de l\'itineraire livreur (pickup puis livraison)...');
+        setStatusCard('Calcul du trajet (dépôt puis livraison)…');
         var leg1Url = 'https://router.project-osrm.org/route/v1/driving/' +
             encodeURIComponent(riderStartLng + ',' + riderStartLat + ';' + stockLng + ',' + stockLat) +
             '?overview=full&geometries=geojson';
@@ -551,7 +628,7 @@ $adrCountry = trim((string) ($cmd['pays'] ?? 'Tunisie'));
             }
             animateAlongRoute(merged, totalDuration, totalDistance, startAt, stockIndex);
         }).catch(function () {
-            setStatusCard('<strong>Reseau route indisponible</strong> · suivi simplifie active (pickup -> livraison).');
+            setStatusCard('<strong>Service d’itinéraire indisponible</strong> · suivi approximatif (dépôt puis livraison).');
             var d1 = metersBetween([riderStartLat, riderStartLng], [stockLat, stockLng]);
             var d2 = metersBetween([stockLat, stockLng], [destLat, destLng]);
             var fallbackCoords = [[riderStartLng, riderStartLat], [stockLng, stockLat], [destLng, destLat]];

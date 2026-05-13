@@ -1,0 +1,555 @@
+/**
+ * Styles appliqués uniquement dans le clone html2canvas (html.pl-pdf-snapshot-html).
+ * Rendu toujours clair — contraste lisible pour PDF / impression, quel que soit le thème IDE.
+ */
+
+html.pl-pdf-snapshot-html {
+    color-scheme: light only !important;
+}
+
+/* ── Zone export : fond « papier », texte lisible ── */
+html.pl-pdf-snapshot-html .pl-pdf-snapshot-root,
+html.pl-pdf-snapshot-html .pl-pdf-export-root.pl-pdf-snapshot-root,
+html.pl-pdf-snapshot-html #commerceStatsPdfRoot.pl-pdf-snapshot-root {
+    background: #fafbfc !important;
+    border: 1px solid #dce3ed !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    color: #1e293b !important;
+    font-family: "Inter", system-ui, sans-serif !important;
+    font-size: 14.5px !important;
+    line-height: 1.55 !important;
+    font-weight: 400 !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-snapshot-root.pl-pdf-export-root {
+    padding: 18px 20px 22px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-snapshot-root strong,
+html.pl-pdf-snapshot-html #commerceStatsPdfRoot.pl-pdf-snapshot-root strong {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+/* ── Bandeau métier (achats) : en-tête clair, aucun bloc sombre ── */
+html.pl-pdf-snapshot-html .pl-pdf-banner {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    color: #0f172a !important;
+    border: 1px solid #cfd8e3 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06) inset !important;
+    margin-bottom: 20px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__grid {
+    align-items: center !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__brand {
+    border-left: 4px solid #1d64d8 !important;
+    padding-left: 16px !important;
+    margin-left: 2px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__kicker {
+    color: #64748b !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.12em !important;
+    opacity: 1 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__title {
+    color: #0f172a !important;
+    font-size: 1.42rem !important;
+    font-weight: 750 !important;
+    line-height: 1.25 !important;
+    margin: 4px 0 6px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__lead {
+    color: #475569 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    opacity: 1 !important;
+    max-width: 640px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-pdf-banner__time {
+    background: #eff6ff !important;
+    color: #334155 !important;
+    border: 1px solid #bfdbfe !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+}
+
+/* ── Statistiques commerce : même logique document ── */
+html.pl-pdf-snapshot-html .pl-report-hero {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    color: #0f172a !important;
+    border: 1px solid #cfd8e3 !important;
+    border-radius: 14px !important;
+    box-shadow: none !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-hero-inner {
+    border-left: 4px solid #1d64d8 !important;
+    padding-left: 16px !important;
+    margin: 0 2px !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-mark {
+    background: #eff6ff !important;
+    border: 1px solid #93c5fd !important;
+    color: #1e40af !important;
+    font-weight: 800 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-kicker {
+    color: #64748b !important;
+    opacity: 1 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-title {
+    color: #0f172a !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-lead {
+    color: #475569 !important;
+    opacity: 1 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-report-meta {
+    background: #eff6ff !important;
+    color: #334155 !important;
+    border: 1px solid #bfdbfe !important;
+}
+
+/* Intros & sections */
+html.pl-pdf-snapshot-html .commerce-hub-intro,
+html.pl-pdf-snapshot-html .commerce-hub-intro.pl-gestion-intro,
+html.pl-pdf-snapshot-html .pl-gestion-intro__text {
+    background: transparent !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-hub-intro p,
+html.pl-pdf-snapshot-html .pl-gestion-intro__text p,
+html.pl-pdf-snapshot-html .commerce-hub-intro h1:not(.pl-pdf-banner__title) {
+    color: #334155 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-section__title {
+    color: #0f172a !important;
+    font-size: 1.05rem !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-section__lead {
+    color: #475569 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-section__bar {
+    border-bottom-color: #cbd5e1 !important;
+}
+
+/* ── Cartes KPI / hub / bloc ── */
+html.pl-pdf-snapshot-html .commerce-kpi-card,
+html.pl-pdf-snapshot-html .commerce-hub-card,
+html.pl-pdf-snapshot-html .commerce-form-card {
+    background: #ffffff !important;
+    border: 1px solid #d8dee8 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+    color: #1e293b !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-kpi-card h2,
+html.pl-pdf-snapshot-html .commerce-hub-card h2 {
+    color: #0f172a !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-kpi-label {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-hub-card .hub-icon {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #1e40af !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: #1e40af !important;
+    font-weight: 800 !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-kpi-value,
+html.pl-pdf-snapshot-html .commerce-hub-card .commerce-hub-stat {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: #0369a1 !important;
+    color: #0369a1 !important;
+    font-weight: 800 !important;
+}
+
+html.pl-pdf-snapshot-html .hub-hint,
+html.pl-pdf-snapshot-html .commerce-hub-card .hub-hint {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-kpi-hint {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-kpi--accent .commerce-kpi-value {
+    background: none !important;
+    -webkit-text-fill-color: #0f766e !important;
+    color: #0f766e !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-kpis .commerce-kpi-card::after {
+    background: transparent !important;
+}
+
+html.pl-pdf-snapshot-html .pl-gestion-kpi--warn {
+    border-color: rgba(234, 88, 12, 0.4) !important;
+    box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.12) inset !important;
+}
+
+html.pl-pdf-snapshot-html .pl-card-stat-caption {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .pl-metier-fo {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-metier-fo__tag--int {
+    background: rgba(71, 85, 105, 0.12) !important;
+    color: #334155 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-metier-fo__tag--pub {
+    background: rgba(21, 128, 61, 0.12) !important;
+    color: #166534 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-ref-sub {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-cat-pill {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #334155 !important;
+}
+
+/* ── Pastilles statuts (commerce, scores, DA, réappro) ── */
+html.pl-pdf-snapshot-html .commerce-badge {
+    border: 1px solid transparent !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--brouillon {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border-color: #e2e8f0 !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--payee,
+html.pl-pdf-snapshot-html .commerce-badge--livree {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+    border-color: #bbf7d0 !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--en_attente_paiement {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--annulee {
+    background: #ffe4e6 !important;
+    color: #9f1239 !important;
+    border-color: #fecdd3 !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--en_preparation {
+    background: #e0e7ff !important;
+    color: #3730a3 !important;
+    border-color: #c7d2fe !important;
+}
+html.pl-pdf-snapshot-html .commerce-badge--expediee {
+    background: #cffafe !important;
+    color: #155e75 !important;
+    border-color: #a5f3fc !important;
+}
+
+html.pl-pdf-snapshot-html .pl-score-badge--excellent {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+html.pl-pdf-snapshot-html .pl-score-badge--bon {
+    background: #cffafe !important;
+    color: #155e75 !important;
+    border: 1px solid #a5f3fc !important;
+}
+html.pl-pdf-snapshot-html .pl-score-badge--watch {
+    background: #ffedd5 !important;
+    color: #9a3412 !important;
+    border: 1px solid #fdba74 !important;
+}
+html.pl-pdf-snapshot-html .pl-score-badge--pending {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+html.pl-pdf-snapshot-html .pl-score-badge--ref {
+    background: #ede9fe !important;
+    color: #5b21b6 !important;
+    border: 1px solid #ddd6fe !important;
+}
+
+html.pl-pdf-snapshot-html .pl-alert-pill--crit {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fecaca !important;
+}
+html.pl-pdf-snapshot-html .pl-alert-pill--warn {
+    background: #ffedd5 !important;
+    color: #9a3412 !important;
+    border: 1px solid #fdba74 !important;
+}
+html.pl-pdf-snapshot-html .pl-alert-pill--ok {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-da-tag {
+    font-size: 0.72rem !important;
+}
+html.pl-pdf-snapshot-html .pl-da-tag--brouillon {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+}
+html.pl-pdf-snapshot-html .pl-da-tag--soumise {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+}
+html.pl-pdf-snapshot-html .pl-da-tag--validee {
+    background: #dcfce7 !important;
+    color: #14532d !important;
+}
+html.pl-pdf-snapshot-html .pl-da-tag--rejetee {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+html.pl-pdf-snapshot-html .pl-chip-best {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+}
+
+/* ── Tableaux ── */
+html.pl-pdf-snapshot-html .table-modern {
+    background: #ffffff !important;
+    box-shadow: none !important;
+    font-size: 13px !important;
+}
+
+html.pl-pdf-snapshot-html .table-modern thead th {
+    background: #eef2f6 !important;
+    color: #0f172a !important;
+    border: 1px solid #cdd6e4 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em !important;
+    padding: 10px 12px !important;
+}
+
+html.pl-pdf-snapshot-html .table-modern tbody td {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #e8edf4 !important;
+    padding: 9px 12px !important;
+    vertical-align: top !important;
+}
+
+html.pl-pdf-snapshot-html .table-modern tbody tr:nth-child(even) td {
+    background: #f8fafc !important;
+}
+
+html.pl-pdf-snapshot-html .table-modern--dense td,
+html.pl-pdf-snapshot-html .table-modern--dense th {
+    font-size: 12.75px !important;
+    padding: 8px 10px !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-table-wrap {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid #d8dee8 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-row-active td {
+    background: #eff6ff !important;
+}
+
+html.pl-pdf-snapshot-html .pl-row-alert td {
+    background: #fef2f2 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-ao-row-best td {
+    background: #eff6ff !important;
+}
+html.pl-pdf-snapshot-html .pl-ao-row-win td {
+    background: #ecfdf5 !important;
+}
+
+/* Liens dans tableaux — visibles après capture plate */
+html.pl-pdf-snapshot-html .table-modern tbody a {
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+}
+
+/* ── Jauges budget / fournisseur ── */
+html.pl-pdf-snapshot-html .pl-meter {
+    background: #e8edf4 !important;
+}
+html.pl-pdf-snapshot-html .pl-meter__fill {
+    background: #0284c7 !important;
+}
+html.pl-pdf-snapshot-html .pl-meter__fill--alert {
+    background: #dc2626 !important;
+}
+html.pl-pdf-snapshot-html .pl-meter-label {
+    color: #475569 !important;
+    font-size: 0.76rem !important;
+}
+
+html.pl-pdf-snapshot-html .pl-score-ring {
+    background: conic-gradient(#0ea5e9 calc(var(--score, 70) * 1%), #e2e8f0 0) !important;
+}
+html.pl-pdf-snapshot-html .pl-score-ring > span {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-weight: 800 !important;
+}
+
+html.pl-pdf-snapshot-html .pl-supplier-mail {
+    color: #64748b !important;
+}
+
+/* Filtres & champs encore visibles (hors blocs masqués) */
+html.pl-pdf-snapshot-html .commerce-filters {
+    background: #ffffff !important;
+    border: 1px solid #d8dee8 !important;
+}
+html.pl-pdf-snapshot-html .commerce-filters__field label {
+    color: #475569 !important;
+    font-weight: 600 !important;
+}
+html.pl-pdf-snapshot-html input,
+html.pl-pdf-snapshot-html select,
+html.pl-pdf-snapshot-html textarea {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #94a3b8 !important;
+}
+
+html.pl-pdf-snapshot-html .hint {
+    color: #64748b !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-card-title,
+html.pl-pdf-snapshot-html .commerce-form-card h3 {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-alert {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #14532d !important;
+}
+html.pl-pdf-snapshot-html .commerce-alert--err {
+    background: #fef2f2 !important;
+    border: 1px solid #fecaca !important;
+    color: #991b1b !important;
+}
+html.pl-pdf-snapshot-html .alert-success {
+    background: #f0fdf4 !important;
+    color: #14532d !important;
+    border: 1px solid #bbf7d0 !important;
+}
+html.pl-pdf-snapshot-html .alert-danger {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fecaca !important;
+}
+
+/* ── Audit JSON ── */
+html.pl-pdf-snapshot-html .pl-audit-code {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 3px 7px !important;
+    font-family: ui-monospace, monospace !important;
+    font-size: 0.74rem !important;
+}
+html.pl-pdf-snapshot-html .pl-audit-payload pre {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+    color: #334155 !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+    max-width: none !important;
+}
+
+/* ── Sections animées ── */
+html.pl-pdf-snapshot-html .pl-gestion-section--fade,
+html.pl-pdf-snapshot-html .pl-gestion-card {
+    opacity: 1 !important;
+    animation: none !important;
+}
+
+/* Masqués à l’export */
+html.pl-pdf-snapshot-html .pl-pdf-hide {
+    display: none !important;
+}
+html.pl-pdf-snapshot-html .pl-gestion-wrap .commerce-hub-actions {
+    display: none !important;
+}
+html.pl-pdf-snapshot-html .pl-gestion-wrap .pl-metier-fo {
+    display: none !important;
+}
+html.pl-pdf-snapshot-html .pl-gestion-wrap .commerce-hub-stat[aria-hidden="true"] {
+    display: none !important;
+}
+html.pl-pdf-snapshot-html .pl-gestion-wrap .pl-gestion-intro__text {
+    display: none !important;
+}
+
+html.pl-pdf-snapshot-html .commerce-addr-block {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #334155 !important;
+    padding: 12px 14px !important;
+}
+
+/* Facture FO */
+html.pl-pdf-snapshot-html .commerce-hub-card .hub-icon {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #1e40af !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: #1e40af !important;
+}
+
+/* Facture FO */
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-color: rgba(15, 23, 42, 0.1) !important;
+}

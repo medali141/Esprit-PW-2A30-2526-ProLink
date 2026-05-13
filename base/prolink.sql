@@ -19,7 +19,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `commande_produit`;
 DROP TABLE IF EXISTS `commande`;
+DROP TABLE IF EXISTS `appel_offre_reponse`;
+DROP TABLE IF EXISTS `appel_offre`;
+DROP TABLE IF EXISTS `demande_achat_ligne`;
+DROP TABLE IF EXISTS `demande_achat`;
+DROP TABLE IF EXISTS `tarif_cadre`;
+DROP TABLE IF EXISTS `achat_audit`;
+DROP TABLE IF EXISTS `reappro_config`;
 DROP TABLE IF EXISTS `produit`;
+DROP TABLE IF EXISTS `budget_achat`;
 DROP TABLE IF EXISTS `categorie`;
 DROP TABLE IF EXISTS `user`;
 
@@ -30,10 +38,19 @@ CREATE TABLE `user` (
   `nom` varchar(100) NOT NULL,
   `prenom` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `payment_email` varchar(150) DEFAULT NULL,
   `mdp` varchar(255) NOT NULL,
   `type` enum('admin','candidat','entrepreneur') NOT NULL,
   `age` int(11) NOT NULL,
   `points_fidelite` int(11) NOT NULL DEFAULT 0,
+  `financial_account_name` varchar(120) DEFAULT NULL,
+  `financial_account_number` varchar(80) DEFAULT NULL,
+  `financial_bank_name` varchar(120) DEFAULT NULL,
+  `totp_secret` varchar(64) DEFAULT NULL,
+  `face_id_credential_id` varchar(255) DEFAULT NULL,
+  `face_id_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `face_photo_hash` varchar(128) DEFAULT NULL,
+  `face_photo_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`iduser`),
   UNIQUE KEY `email` (`email`)
@@ -54,12 +71,30 @@ CREATE TABLE `categorie` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `categorie` (`idcategorie`, `code`, `libelle`, `ordre`) VALUES
-(1, 'peripheriques', 'Périphériques (claviers, souris, micros…)', 10),
-(2, 'pc', 'PC & ordinateurs', 20),
-(3, 'telephones', 'Téléphones & smartphones', 30),
-(4, 'tablettes', 'Tablettes', 40),
-(5, 'chaises', 'Chaises & sièges', 50),
-(6, 'accessoires', 'Accessoires & câbles', 60);
+(1, 'peripheriques', 'Périphériques - saisie et audio', 10),
+(2, 'pc', 'Ordinateurs bureau et portables', 20),
+(3, 'telephones', 'Smartphones et téléphones mobiles', 30),
+(4, 'tablettes', 'Tablettes tactiles', 40),
+(5, 'chaises', 'Sièges et mobilier de bureau', 50),
+(6, 'accessoires', 'Connectique et accessoires', 60);
+
+CREATE TABLE `budget_achat` (
+  `idbudget` int(11) NOT NULL AUTO_INCREMENT,
+  `libelle` varchar(150) NOT NULL,
+  `annee` int(11) NOT NULL,
+  `idcategorie` int(11) DEFAULT NULL COMMENT 'NULL = enveloppe globale',
+  `montant_alloue` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idbudget`),
+  KEY `idx_budget_annee` (`annee`),
+  KEY `idx_budget_categorie` (`idcategorie`),
+  CONSTRAINT `fk_budget_categorie` FOREIGN KEY (`idcategorie`) REFERENCES `categorie` (`idcategorie`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `budget_achat` (`idbudget`, `libelle`, `annee`, `idcategorie`, `montant_alloue`) VALUES
+(1, 'Enveloppe achats globale', 2026, NULL, 95000.00),
+(2, 'Budget ordinateurs et postes', 2026, 2, 42000.00),
+(3, 'Budget mobilier & sièges', 2026, 5, 8000.00);
 
 CREATE TABLE `produit` (
   `idproduit` int(11) NOT NULL AUTO_INCREMENT,
@@ -132,7 +167,7 @@ INSERT INTO `produit` (`idproduit`, `reference`, `designation`, `description`, `
 (17, 'CHR-BUR-01', 'Chaise de bureau tissu', 'Réglable hauteur, accoudoirs fixes, noir.', 5, 279.00, 23, 7, 1),
 (18, 'CHR-GAM-02', 'Siège gaming cuir PU', 'Appui-tête, bascule, accoudoirs 3D.', 5, 429.00, 17, 7, 1),
 (19, 'ACC-MAT-01', 'Tapis de souris XXL', 'Surface tissu, base antidérapante 900×400 mm.', 6, 45.00, 98, 7, 1),
-(20, 'ACC-HDM-02', 'Câble HDMI 2.0 — 2 m', '4K 60 Hz, Ethernet canal.', 6, 24.90, 32, 7, 1),
+(20, 'ACC-HDM-02', 'Câble HDMI 2.0 - 2 m', '4K 60 Hz, Ethernet canal.', 6, 24.90, 32, 7, 1),
 (21, 'ACC-HUB-03', 'Hub USB-C 4 ports', 'USB 3.2, compatible Mac / PC.', 6, 89.00, 40, 7, 1),
 (22, 'CAS-AUD-01', 'Écouteurs filaires intra-auriculaires', 'Jack 3,5 mm, télécommande micro.', 1, 39.00, 50, 7, 1);
 
@@ -158,9 +193,138 @@ INSERT INTO `commande_produit` (`idcommande`, `idproduit`, `quantite`, `prix_uni
 (8, 16, 1, 1249.00), (8, 18, 1, 429.00), (8, 20, 3, 24.90),
 (9, 14, 1, 1199.00), (9, 12, 1, 149.00), (9, 19, 2, 45.00);
 
+CREATE TABLE `reappro_config` (
+  `idproduit` int(11) NOT NULL,
+  `stock_minimum` int(11) NOT NULL DEFAULT 10,
+  `stock_cible` int(11) NOT NULL DEFAULT 40,
+  `lead_time_jours` int(11) NOT NULL DEFAULT 14,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`idproduit`),
+  CONSTRAINT `fk_reappro_produit` FOREIGN KEY (`idproduit`) REFERENCES `produit` (`idproduit`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `appel_offre` (
+  `idao` int(11) NOT NULL AUTO_INCREMENT,
+  `titre` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `date_limite` date NOT NULL,
+  `statut` enum('brouillon','publie','attribue','annule') NOT NULL DEFAULT 'brouillon',
+  `id_reponse_retenue` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idao`),
+  KEY `idx_ao_statut` (`statut`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `appel_offre_reponse` (
+  `idr` int(11) NOT NULL AUTO_INCREMENT,
+  `idao` int(11) NOT NULL,
+  `id_vendeur` int(11) NOT NULL,
+  `prix_propose` decimal(12,2) NOT NULL,
+  `delai_jours` int(11) NOT NULL DEFAULT 7,
+  `notes` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idr`),
+  UNIQUE KEY `uq_ao_vendeur` (`idao`,`id_vendeur`),
+  KEY `idx_aor_ao` (`idao`),
+  CONSTRAINT `fk_aor_ao` FOREIGN KEY (`idao`) REFERENCES `appel_offre` (`idao`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_aor_user` FOREIGN KEY (`id_vendeur`) REFERENCES `user` (`iduser`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `reappro_config` (`idproduit`, `stock_minimum`, `stock_cible`, `lead_time_jours`) VALUES
+(4, 40, 90, 10),
+(7, 6, 18, 21),
+(16, 10, 28, 14);
+
+INSERT INTO `appel_offre` (`idao`, `titre`, `description`, `date_limite`, `statut`, `id_reponse_retenue`) VALUES
+(1, 'Lot sièges ergo - open space', '24 sièges certifiés ergonomie, options accoudoirs 3D. Livraison Grand Tunis.', DATE_ADD(CURDATE(), INTERVAL 18 DAY), 'publie', NULL),
+(2, 'Renouvellement souris optique USB', 'Besoin indicatif 180 unités, qualité bureau.', DATE_ADD(CURDATE(), INTERVAL 35 DAY), 'brouillon', NULL);
+
+INSERT INTO `appel_offre_reponse` (`idr`, `idao`, `id_vendeur`, `prix_propose`, `delai_jours`, `notes`) VALUES
+(1, 1, 7, 11850.00, 12, 'Offre catalogue ProLink - montant global indicatif TND.'),
+(2, 1, 8, 10990.00, 19, 'Variant fournisseur alternatif, délai rallongé.');
+
+CREATE TABLE `achat_audit` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action` varchar(80) NOT NULL,
+  `entity` varchar(64) NOT NULL,
+  `entity_id` int(11) DEFAULT NULL,
+  `payload` longtext DEFAULT NULL COMMENT 'JSON',
+  `id_user` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_audit_created` (`created_at`),
+  KEY `idx_audit_entity` (`entity`,`entity_id`),
+  CONSTRAINT `fk_audit_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`iduser`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `tarif_cadre` (
+  `idtarif` int(11) NOT NULL AUTO_INCREMENT,
+  `id_vendeur` int(11) NOT NULL,
+  `idproduit` int(11) NOT NULL,
+  `prix_negocie` decimal(12,2) NOT NULL,
+  `date_debut` date NOT NULL,
+  `date_fin` date NOT NULL,
+  `reference_contrat` varchar(120) DEFAULT NULL,
+  `commentaire` varchar(400) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idtarif`),
+  KEY `idx_tc_vp` (`id_vendeur`,`idproduit`),
+  KEY `idx_tc_dates` (`date_debut`,`date_fin`),
+  CONSTRAINT `fk_tc_vendeur` FOREIGN KEY (`id_vendeur`) REFERENCES `user` (`iduser`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_tc_produit` FOREIGN KEY (`idproduit`) REFERENCES `produit` (`idproduit`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `demande_achat` (
+  `idda` int(11) NOT NULL AUTO_INCREMENT,
+  `libelle` varchar(200) NOT NULL,
+  `notes` text DEFAULT NULL,
+  `statut` enum('brouillon','soumise','validee','rejetee') NOT NULL DEFAULT 'brouillon',
+  `motif_rejet` varchar(500) DEFAULT NULL,
+  `id_createur` int(11) NOT NULL,
+  `validated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`idda`),
+  KEY `idx_da_statut` (`statut`),
+  CONSTRAINT `fk_da_user` FOREIGN KEY (`id_createur`) REFERENCES `user` (`iduser`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `demande_achat_ligne` (
+  `iddal` int(11) NOT NULL AUTO_INCREMENT,
+  `idda` int(11) NOT NULL,
+  `idproduit` int(11) NOT NULL,
+  `quantite` int(11) NOT NULL,
+  `prix_estime` decimal(12,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (`iddal`),
+  KEY `idx_dal_da` (`idda`),
+  KEY `idx_dal_p` (`idproduit`),
+  CONSTRAINT `fk_dal_da` FOREIGN KEY (`idda`) REFERENCES `demande_achat` (`idda`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_dal_prod` FOREIGN KEY (`idproduit`) REFERENCES `produit` (`idproduit`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `tarif_cadre` (`idtarif`, `id_vendeur`, `idproduit`, `prix_negocie`, `date_debut`, `date_fin`, `reference_contrat`, `commentaire`) VALUES
+(1, 7, 7, 6190.00, '2026-01-01', '2026-12-31', 'CC-DEMO-PC-2026', 'Prix plateau négocié - démo pédagogique.');
+
+INSERT INTO `demande_achat` (`idda`, `libelle`, `notes`, `statut`, `motif_rejet`, `id_createur`, `validated_at`) VALUES
+(1, 'Lot souris open space - pilotage Q1', NULL, 'soumise', NULL, 5, NULL);
+
+INSERT INTO `demande_achat_ligne` (`iddal`, `idda`, `idproduit`, `quantite`, `prix_estime`) VALUES
+(1, 1, 4, 30, 57.50),
+(2, 1, 6, 10, 289.00);
+
+INSERT INTO `achat_audit` (`id`, `action`, `entity`, `entity_id`, `payload`, `id_user`, `created_at`) VALUES
+(1, 'demande_soumise', 'demande_achat', 1, '{"nb_lignes":2}', 5, NOW()),
+(2, 'tarif_cadre_cree', 'tarif_cadre', 1, '{"idproduit":7,"id_vendeur":7,"prix_negocie":6190,"periode":["2026-01-01","2026-12-31"]}', 5, NOW());
+
 ALTER TABLE `user` AUTO_INCREMENT = 9;
 ALTER TABLE `categorie` AUTO_INCREMENT = 7;
+ALTER TABLE `budget_achat` AUTO_INCREMENT = 4;
 ALTER TABLE `produit` AUTO_INCREMENT = 23;
 ALTER TABLE `commande` AUTO_INCREMENT = 10;
+ALTER TABLE `appel_offre` AUTO_INCREMENT = 3;
+ALTER TABLE `appel_offre_reponse` AUTO_INCREMENT = 3;
+ALTER TABLE `achat_audit` AUTO_INCREMENT = 3;
+ALTER TABLE `tarif_cadre` AUTO_INCREMENT = 2;
+ALTER TABLE `demande_achat` AUTO_INCREMENT = 2;
+ALTER TABLE `demande_achat_ligne` AUTO_INCREMENT = 3;
 
 COMMIT;

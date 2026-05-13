@@ -10,7 +10,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     exit;
 }
 require_once __DIR__ . '/../../controller/CommandeController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 $cp = new CommandeController();
 $q = trim((string) ($_GET['q'] ?? ''));
 $tri = (string) ($_GET['tri'] ?? 'date');
@@ -28,11 +28,11 @@ if ($statut !== '' && !in_array($statut, $allowedStatuts, true)) {
     $statut = '';
 }
 $list = $cp->listAllAdminFiltered($q, $tri, $ordre, $statut);
-$page = CommerceMetier::sanitizePage((int) ($_GET['page'] ?? 1));
+$page = CommerceRegles::sanitizePage((int) ($_GET['page'] ?? 1));
 $perPage = 12;
 $totalRows = count($list);
 $totalPages = max(1, (int) ceil($totalRows / $perPage));
-$page = CommerceMetier::sanitizePage($page, $totalPages);
+$page = CommerceRegles::sanitizePage($page, $totalPages);
 $start = ($page - 1) * $perPage;
 $rows = array_slice($list, $start, $perPage);
 
@@ -88,7 +88,8 @@ if ($ordre !== 'desc') {
                 <p class="hint" style="margin:6px 0 0">Montants TND · statuts · livraison</p>
             </div>
             <div class="actions">
-                <a href="commerceHub.php" class="btn btn-secondary">← Hub</a>
+                <a href="reclamationsCommandes.php" class="btn btn-secondary">Réclamations</a>
+                <a href="gestionAchats.php" class="btn btn-secondary">← Achats</a>
             </div>
         </div>
         <form method="get" class="commerce-filters" action="listCommandes.php" aria-label="Recherche et tri commandes" data-enhanced="1">

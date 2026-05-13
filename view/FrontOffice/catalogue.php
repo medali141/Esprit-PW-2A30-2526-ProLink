@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../../init.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -6,6 +7,7 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 require_once __DIR__ . '/../../controller/ProduitController.php';
+require_once __DIR__ . '/../../controller/AchatsStockOffresController.php';
 $pp = new ProduitController();
 $q = trim((string) ($_GET['q'] ?? ''));
 $tri = (string) ($_GET['tri'] ?? 'designation');
@@ -17,6 +19,16 @@ $ordre = strtolower((string) ($_GET['ordre'] ?? 'asc')) === 'desc' ? 'desc' : 'a
 $idcategorie = (int) ($_GET['cat'] ?? 0);
 $categories = $pp->listCategories();
 $produits = $pp->listCatalogueFiltered($q, $tri, $ordre, $idcategorie);
+
+$stockCtl = new AchatsStockOffresController();
+$stockSignals = [];
+foreach ($stockCtl->getReapproDashboard(90) as $row) {
+    $pid = (int) ($row['idproduit'] ?? 0);
+    $nv = (string) ($row['niveau_alerte'] ?? '');
+    if ($pid > 0 && ($nv === 'critique' || $nv === 'vigilance')) {
+        $stockSignals[$pid] = $nv;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -33,8 +45,11 @@ $produits = $pp->listCatalogueFiltered($q, $tri, $ordre, $idcategorie);
 <main class="container fo-page">
     <header class="fo-hero">
         <h1>Catalogue produits</h1>
-        <p class="fo-lead">Ajoutez au panier puis validez la commande (livraison en Tunisie par défaut). Prix affichés en dinar tunisien (TND).</p>
+        <p class="fo-lead">Ajoutez au panier puis validez la commande (livraison en Tunisie par défaut). Prix affichés en dinar tunisien (TND). Les pastilles de pilotage stock proviennent de la gestion d’achats.</p>
     </header>
+    <p class="fo-catalog-supply-banner" role="note">
+        <strong>Pilotage entrepôt</strong> — « Priorité réappro » et « Stock surveillé » reprennent seuils, rotation et délais d’approvisionnement configurés dans le back-office (sans bloquer l’achat).
+    </p>
     <?php if (isset($_GET['added'])): ?>
         <p class="fo-banner fo-banner--ok fade-in" role="status">Produit ajouté au panier.</p>
     <?php endif; ?>
@@ -49,7 +64,7 @@ $produits = $pp->listCatalogueFiltered($q, $tri, $ordre, $idcategorie);
         <div class="fo-filters__field">
             <label for="cat-famille">Catégorie</label>
             <select name="cat" id="cat-famille">
-                <option value="0" <?= $idcategorie === 0 ? 'selected' : '' ?>>Toutes</option>
+                <option value="0" <?= $idcategorie === 0 ? 'selected' : '' ?>>Toutes les catégories</option>
                 <?php foreach ($categories as $c): ?>
                     <option value="<?= (int) $c['idcategorie'] ?>" <?= $idcategorie === (int) $c['idcategorie'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($c['libelle']) ?>
@@ -90,8 +105,16 @@ $produits = $pp->listCatalogueFiltered($q, $tri, $ordre, $idcategorie);
             $stock = (int) $p['stock'];
             $out = $stock <= 0;
             $low = $stock > 0 && $stock <= 5;
+            $pid = (int) $p['idproduit'];
+            $niveauSig = $stockSignals[$pid] ?? null;
+            $detailRelativeUrl = 'produitDetails.php?id=' . $pid;
         ?>
             <article class="fo-product-card<?= $out ? ' fo-product-card--out' : '' ?>">
+                <?php if (!$out && $niveauSig === 'critique'): ?>
+                    <span class="fo-stock-signal fo-stock-signal--critique">Priorité réappro</span>
+                <?php elseif (!$out && $niveauSig === 'vigilance'): ?>
+                    <span class="fo-stock-signal fo-stock-signal--vigilance">Stock surveillé</span>
+                <?php endif; ?>
                 <?php $photo = trim((string) ($p['photo'] ?? '')); ?>
                 <div class="fo-product-media">
                     <img src="<?= htmlspecialchars($photo !== '' ? '../' . ltrim($photo, '/') : '../assets/product-placeholder.svg') ?>" alt="Photo <?= htmlspecialchars($p['designation']) ?>" loading="lazy">
@@ -112,6 +135,9 @@ $produits = $pp->listCatalogueFiltered($q, $tri, $ordre, $idcategorie);
                         <span class="fo-stock-pill<?= $low ? ' fo-stock-pill--low' : '' ?>">Stock <?= $stock ?></span>
                         · <?= htmlspecialchars(trim(($p['vendeur_prenom'] ?? '') . ' ' . ($p['vendeur_nom'] ?? ''))) ?>
                     <?php endif; ?>
+                </div>
+                <div class="fo-product-actions">
+                    <a href="<?= htmlspecialchars($detailRelativeUrl) ?>" class="fo-btn fo-btn--secondary fo-btn--product-spec" style="text-decoration:none">Caractéristiques produit</a>
                 </div>
                 <?php if (!$out): ?>
                     <form method="post" action="cart_add.php" style="margin-top:auto">

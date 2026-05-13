@@ -3,7 +3,7 @@
  * Contrôleur commandes — tables `commande` et `commande_produit`.
  */
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../model/CommerceMetier.php';
+require_once __DIR__ . '/../model/CommerceRegles.php';
 
 class CommandeController {
     private ?bool $hasProduitPhotoColumn = null;
@@ -31,7 +31,7 @@ class CommandeController {
                 OR c.ville LIKE :q OR IFNULL(c.adresse_livraison,\'\') LIKE :q OR IFNULL(c.code_postal,\'\') LIKE :q)';
             $params['q'] = '%' . $q . '%';
         }
-        $allowedStatuts = CommerceMetier::allowedStatuts();
+        $allowedStatuts = CommerceRegles::allowedStatuts();
         if ($statut !== '' && in_array($statut, $allowedStatuts, true)) {
             $where[] = 'c.statut = :st';
             $params['st'] = $statut;
@@ -69,7 +69,7 @@ class CommandeController {
                 OR IFNULL(c.numero_suivi,\'\') LIKE :q OR CAST(c.montant_total AS CHAR) LIKE :q)';
             $params['q'] = '%' . $q . '%';
         }
-        $allowedStatuts = CommerceMetier::allowedStatuts();
+        $allowedStatuts = CommerceRegles::allowedStatuts();
         if ($statut !== '' && in_array($statut, $allowedStatuts, true)) {
             $where[] = 'c.statut = :st';
             $params['st'] = $statut;
@@ -159,18 +159,18 @@ class CommandeController {
             ],
             [
                 'key' => 'stock',
-                'title' => 'Stock & disponibilité',
-                'subtitle' => 'Contrôle des quantités en entrepôt et réservation des articles.',
+                'title' => 'Stock et disponibilité',
+                'subtitle' => 'Contrôle des quantités et réservation des articles.',
             ],
             [
                 'key' => 'preparation',
-                'title' => 'Préparation & pick-up',
-                'subtitle' => 'Emballage, étiquetage et prise en charge par l’équipe logistique.',
+                'title' => 'Préparation et enlèvement',
+                'subtitle' => 'Emballage, étiquetage et mise à disposition pour transport.',
             ],
             [
                 'key' => 'transit',
                 'title' => 'En cours de livraison',
-                'subtitle' => 'Le livreur a pris en charge le colis et se dirige vers votre adresse.',
+                'subtitle' => 'Le colis est en cours d’acheminement vers votre adresse.',
             ],
             [
                 'key' => 'livree',
@@ -227,12 +227,12 @@ class CommandeController {
                 $meta = 'Les articles sont disponibles ; préparation du colis à venir.';
             }
             if ($p['key'] === 'preparation' && $st === 'en_preparation') {
-                $meta = 'Pick-up et contrôle qualité en cours en entrepôt.';
+                $meta = 'Contrôle qualité et mise à disposition pour enlèvement en entrepôt.';
             }
             if ($p['key'] === 'transit') {
                 $ns = trim((string) ($cmd['numero_suivi'] ?? ''));
                 if ($st === 'expediee') {
-                    $meta = $ns !== '' ? ('En cours de livraison — suivi transporteur : ' . $ns) : 'Le colis est pris en charge par le van et en route vers votre adresse.';
+                    $meta = $ns !== '' ? ('En cours de livraison — suivi transporteur : ' . $ns) : 'Colis pris en charge par le transporteur, acheminement en cours.';
                 }
                 if ($st === 'livree' && $ns !== '') {
                     $meta = 'Transport : ' . $ns;
@@ -261,7 +261,17 @@ class CommandeController {
 
     /**
      * @param array<int,int> $cart idproduit => quantite
-     * @param array{adresse_livraison:string,code_postal:string,ville:string,pays?:string,telephone_livraison?:string,notes?:string,use_points?:bool,payment_method?:string} $livraison
+     * @param array{
+     *   adresse_livraison:string,
+     *   code_postal:string,
+     *   ville:string,
+     *   pays?:string,
+     *   telephone_livraison?:string,
+     *   notes?:string,
+     *   use_points?:bool,
+     *   payment_method?:string,
+     *   card_verified?:bool
+     * } $livraison
      */
     public function createFromCart(int $acheteurId, array $cart, array $livraison): int {
         if (empty($cart)) {
@@ -269,6 +279,7 @@ class CommandeController {
         }
         $usePoints = !empty($livraison['use_points']);
         $paymentMethod = strtolower(trim((string) ($livraison['payment_method'] ?? 'cash_on_delivery')));
+        $cardVerified = !empty($livraison['card_verified']);
         $allowedPaymentMethods = ['card', 'cash_on_delivery'];
         if (!in_array($paymentMethod, $allowedPaymentMethods, true)) {
             throw new InvalidArgumentException('Mode de paiement invalide');
@@ -320,13 +331,22 @@ class CommandeController {
                 $ptsRow = $stPts->fetch(PDO::FETCH_ASSOC);
                 $availablePoints = max(0, (int) ($ptsRow['points_fidelite'] ?? 0));
                 if ($availablePoints > 0 && $total > 0) {
-                    $maxSpendableByTotal = (int) floor(($total / CommerceMetier::DINAR_PER_POINT) + 1e-9);
+                    $maxSpendableByTotal = (int) floor(($total / CommerceRegles::DINAR_PER_POINT) + 1e-9);
                     $spentPoints = min($availablePoints, $maxSpendableByTotal);
-                    $discountAmount = CommerceMetier::dinarFromPoints($spentPoints);
+                    $discountAmount = CommerceRegles::dinarFromPoints($spentPoints);
                 }
             }
             $finalTotal = max(0.0, round($total - $discountAmount, 2));
-            $initialStatut = $paymentMethod === 'card' ? 'payee' : 'en_attente_paiement';
+            // Si les points couvrent integralement la commande, aucun paiement externe n'est requis.
+            if ($finalTotal <= 0.00001) {
+                $initialStatut = 'payee';
+            } else {
+                if ($paymentMethod === 'card') {
+                    $initialStatut = $cardVerified ? 'payee' : 'en_attente_paiement';
+                } else {
+                    $initialStatut = 'en_attente_paiement';
+                }
+            }
 
             $insertColumns = "id_acheteur, statut, montant_total, notes, adresse_livraison, code_postal, ville, pays";
             $insertValues = ":acheteur, :st, :total, :notes, :adr, :cp, :ville, :pays";
@@ -374,14 +394,14 @@ class CommandeController {
                 $upd->execute(['q' => $line['qte'], 'id' => $line['id']]);
             }
 
-            $earnedPoints = CommerceMetier::pointsFromAmount($finalTotal);
             if ($hasPoints) {
-                $deltaPoints = $earnedPoints - $spentPoints;
-                if ($deltaPoints !== 0) {
+                // Les points utilises sont debités a la commande.
+                // Les points gagnés sont credites uniquement a la livraison.
+                if ($spentPoints > 0) {
                     $upPts = $db->prepare("UPDATE user SET points_fidelite = GREATEST(0, COALESCE(points_fidelite, 0) + :p) WHERE iduser = :id");
-                    $upPts->execute(['p' => $deltaPoints, 'id' => $acheteurId]);
+                    $upPts->execute(['p' => -$spentPoints, 'id' => $acheteurId]);
                     if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user']) && (int) ($_SESSION['user']['iduser'] ?? 0) === $acheteurId) {
-                        $_SESSION['user']['points_fidelite'] = max(0, (int) ($_SESSION['user']['points_fidelite'] ?? 0) + $deltaPoints);
+                        $_SESSION['user']['points_fidelite'] = max(0, (int) ($_SESSION['user']['points_fidelite'] ?? 0) - $spentPoints);
                     }
                 }
             }
@@ -402,7 +422,7 @@ class CommandeController {
         ?string $dateEffective,
         ?string $notes
     ): void {
-        $allowed = CommerceMetier::allowedStatuts();
+        $allowed = CommerceRegles::allowedStatuts();
         if (!in_array($statut, $allowed, true)) {
             throw new InvalidArgumentException('Statut invalide');
         }
@@ -429,14 +449,14 @@ class CommandeController {
         $db->beginTransaction();
 
         try {
-            $st = $db->prepare("SELECT statut FROM commande WHERE idcommande = :id FOR UPDATE");
+            $st = $db->prepare("SELECT statut, id_acheteur, montant_total FROM commande WHERE idcommande = :id FOR UPDATE");
             $st->execute(['id' => $id]);
             $old = $st->fetch(PDO::FETCH_ASSOC);
             if (!$old) {
                 throw new RuntimeException('Commande introuvable');
             }
             $oldStatut = $old['statut'];
-            if (!CommerceMetier::canTransitionStatut((string) $oldStatut, $statut)) {
+            if (!CommerceRegles::canTransitionStatut((string) $oldStatut, $statut)) {
                 throw new InvalidArgumentException('Transition de statut non autorisée');
             }
 
@@ -462,6 +482,15 @@ class CommandeController {
                 'id' => $id,
             ]);
 
+            // Credit des points fidelite seulement lors du passage vers "livree".
+            if ($oldStatut !== 'livree' && $statut === 'livree') {
+                $this->creditLoyaltyPointsOnDelivery(
+                    $db,
+                    (int) ($old['id_acheteur'] ?? 0),
+                    (float) ($old['montant_total'] ?? 0)
+                );
+            }
+
             $db->commit();
         } catch (Throwable $e) {
             $db->rollBack();
@@ -476,6 +505,21 @@ class CommandeController {
         $upd = $db->prepare("UPDATE produit SET stock = stock + :q WHERE idproduit = :idp");
         foreach ($rows as $r) {
             $upd->execute(['q' => (int) $r['quantite'], 'idp' => (int) $r['idproduit']]);
+        }
+    }
+
+    private function creditLoyaltyPointsOnDelivery(PDO $db, int $idAcheteur, float $montantTotal): void {
+        if ($idAcheteur <= 0 || !$this->hasUserPointsColumn()) {
+            return;
+        }
+        $earnedPoints = CommerceRegles::pointsFromAmount(max(0.0, $montantTotal));
+        if ($earnedPoints <= 0) {
+            return;
+        }
+        $upPts = $db->prepare("UPDATE user SET points_fidelite = GREATEST(0, COALESCE(points_fidelite, 0) + :p) WHERE iduser = :id");
+        $upPts->execute(['p' => $earnedPoints, 'id' => $idAcheteur]);
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user']) && (int) ($_SESSION['user']['iduser'] ?? 0) === $idAcheteur) {
+            $_SESSION['user']['points_fidelite'] = max(0, (int) ($_SESSION['user']['points_fidelite'] ?? 0) + $earnedPoints);
         }
     }
 
@@ -626,7 +670,7 @@ class CommandeController {
                 OR c.ville LIKE :q OR IFNULL(c.numero_suivi,\'\') LIKE :q)';
             $params['q'] = '%' . $q . '%';
         }
-        $allowedStatuts = CommerceMetier::allowedStatuts();
+        $allowedStatuts = CommerceRegles::allowedStatuts();
         if ($statut !== '' && in_array($statut, $allowedStatuts, true)) {
             $where[] = 'c.statut = :st';
             $params['st'] = $statut;
@@ -658,7 +702,7 @@ class CommandeController {
     }
 
     /**
-     * Passe automatiquement la commande en "expediee" quand le pickup est terminé au stock.
+     * Passe la commande en « expediee » lorsque l’enlèvement au dépôt est terminé (parcours simulé côté acheteur).
      * Retourne true si statut mis à jour (ou déjà expediee/livree), false sinon.
      */
     public function markAsInDeliveryByAcheteur(int $idCommande, int $idAcheteur): bool {
@@ -684,6 +728,48 @@ class CommandeController {
             }
 
             $up = $db->prepare("UPDATE commande SET statut = 'expediee' WHERE idcommande = :id");
+            $up->execute(['id' => $idCommande]);
+            $db->commit();
+            return true;
+        } catch (Throwable $e) {
+            $db->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Confirme le paiement carte apres verification (OTP + 2FA), cote acheteur.
+     */
+    public function confirmCardPayment(int $idCommande, int $idAcheteur): bool {
+        $db = Config::getConnexion();
+        $hasPaymentMode = $this->hasCommandePaymentModeColumn();
+        $db->beginTransaction();
+        try {
+            $modeSelect = $hasPaymentMode ? ", mode_paiement" : "";
+            $st = $db->prepare("SELECT id_acheteur, statut" . $modeSelect . " FROM commande WHERE idcommande = :id FOR UPDATE");
+            $st->execute(['id' => $idCommande]);
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            if (!$row || (int) ($row['id_acheteur'] ?? 0) !== $idAcheteur) {
+                $db->rollBack();
+                return false;
+            }
+            $currentStatut = (string) ($row['statut'] ?? '');
+            if ($hasPaymentMode) {
+                $mode = (string) ($row['mode_paiement'] ?? '');
+                if ($mode !== 'card') {
+                    $db->rollBack();
+                    return false;
+                }
+            }
+            if ($currentStatut === 'payee' || $currentStatut === 'en_preparation' || $currentStatut === 'expediee' || $currentStatut === 'livree') {
+                $db->commit();
+                return true;
+            }
+            if ($currentStatut !== 'en_attente_paiement') {
+                $db->rollBack();
+                return false;
+            }
+            $up = $db->prepare("UPDATE commande SET statut = 'payee' WHERE idcommande = :id");
             $up->execute(['id' => $idCommande]);
             $db->commit();
             return true;

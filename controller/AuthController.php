@@ -6,7 +6,7 @@ class AuthController {
     /** Email déjà présent en base (MySQL 1062). */
     public const ERR_DUPLICATE_EMAIL = 'duplicate_email';
 
-    // 🔹 LOGIN
+    // Login
     public function login($email, $mdp) {
         $sql = "SELECT * FROM user WHERE email = :email";
         $db = Config::getConnexion();
@@ -31,7 +31,7 @@ class AuthController {
         }
     }
 
-    // 🔹 REGISTER
+    // Register
     public function register($user) {
         $sql = "INSERT INTO user (nom, prenom, email, mdp, type, age)
                 VALUES (:nom, :prenom, :email, :mdp, :type, :age)";
@@ -55,7 +55,7 @@ class AuthController {
         }
     }
 
-    // 🔹 PROFILE
+    // Profile
     public function profile() {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
@@ -79,7 +79,7 @@ class AuthController {
         return $sessionUser;
     }
 
-    // 🔹 FORGOT PASSWORD
+    // Forgot password
     public function forgotPassword($email, $newPassword) {
         $sql = "UPDATE user SET mdp = :mdp WHERE email = :email";
         $db = Config::getConnexion();

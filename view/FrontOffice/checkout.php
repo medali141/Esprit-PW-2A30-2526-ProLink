@@ -8,7 +8,7 @@ if (empty($_SESSION['csrf_token'])) {
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ProduitController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
-require_once __DIR__ . '/../../model/CommerceMetier.php';
+require_once __DIR__ . '/../../model/CommerceRegles.php';
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -23,6 +23,7 @@ if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart']) || !array_sum($_SE
 }
 
 $error = '';
+$info = '';
 $usePointsInput = isset($_POST['use_points']) ? (string) $_POST['use_points'] === '1' : false;
 $paymentMethodInput = (string) ($_POST['payment_method'] ?? 'cash_on_delivery');
 if (!in_array($paymentMethodInput, ['cash_on_delivery', 'card'], true)) {
@@ -64,7 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!preg_match('/^\d{3,4}$/', $cardCvc)) {
             $error = 'CVC invalide.';
         }
-    } elseif ($error === '') {
+    }
+    if ($error === '') {
         try {
             $cmdP = new CommandeController();
             $idCmd = $cmdP->createFromCart((int) $u['iduser'], $_SESSION['cart'], [
@@ -76,8 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'notes' => $notes !== '' ? $notes : null,
                 'use_points' => $usePointsInput,
                 'payment_method' => $paymentMethodInput,
+                'card_verified' => $paymentMethodInput !== 'card',
             ]);
             $_SESSION['cart'] = [];
+            if ($paymentMethodInput === 'card') {
+                $created = $cmdP->getById($idCmd);
+                if ((string) ($created['statut'] ?? '') !== 'payee') {
+                    if (!isset($_SESSION['pending_card_verification']) || !is_array($_SESSION['pending_card_verification'])) {
+                        $_SESSION['pending_card_verification'] = [];
+                    }
+                    $_SESSION['pending_card_verification'][$idCmd] = [
+                        'id_user' => (int) $u['iduser'],
+                        'created_at' => time(),
+                    ];
+                    header('Location: cardVerification.php?order=' . $idCmd);
+                    exit;
+                }
+            }
             header('Location: mesCommandes.php?new=' . $idCmd);
             exit;
         } catch (Throwable $e) {
@@ -95,10 +112,10 @@ foreach ($_SESSION['cart'] as $pid => $qte) {
     }
 }
 $currentPoints = (int) ($u['points_fidelite'] ?? 0);
-$currentPointsTnd = CommerceMetier::dinarFromPoints($currentPoints);
+$currentPointsTnd = CommerceRegles::dinarFromPoints($currentPoints);
 $discountPreview = $usePointsInput ? min($currentPointsTnd, $total) : 0.0;
 $payablePreview = max(0.0, $total - $discountPreview);
-$earnedAfterDiscount = CommerceMetier::pointsFromAmount($payablePreview);
+$earnedAfterDiscount = CommerceRegles::pointsFromAmount($payablePreview);
 $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la livraison (cash)';
 ?>
 <!DOCTYPE html>
@@ -123,6 +140,9 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
     </header>
     <?php if ($error): ?>
         <p class="fo-banner fo-banner--err"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+    <?php if ($info): ?>
+        <p class="fo-banner"><?= htmlspecialchars($info) ?></p>
     <?php endif; ?>
     <form method="post" class="fo-checkout-card" novalidate data-validate="checkout-form">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string) $_SESSION['csrf_token']) ?>">
@@ -158,7 +178,9 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
                     <input type="text" name="card_exp" placeholder="MM/AA" inputmode="numeric" autocomplete="cc-exp" value="<?= htmlspecialchars((string) ($_POST['card_exp'] ?? '')) ?>">
                     <input type="text" name="card_cvc" placeholder="CVC" inputmode="numeric" autocomplete="cc-csc" value="<?= htmlspecialchars((string) ($_POST['card_cvc'] ?? '')) ?>">
                 </div>
-                <p class="hint" style="margin:8px 0 0">Les données carte ne sont pas stockées en base. Seul le mode de paiement est conservé.</p>
+                <p class="hint" style="margin:8px 0 0">
+                    Etape suivante: page dediee pour verification de paiement (code Gmail + Authenticator ou Face ID).
+                </p>
             </div>
         </div>
         <label>Adresse de livraison *</label>
@@ -174,7 +196,7 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
         <label>Notes (optionnel)</label>
         <textarea name="notes" rows="2"><?= htmlspecialchars($_POST['notes'] ?? '') ?></textarea>
         <div class="fo-actions" style="margin-top:20px">
-            <button type="submit" class="fo-btn fo-btn--primary">Confirmer la commande</button>
+            <button type="submit" class="fo-btn fo-btn--primary"><?= $paymentMethodInput === 'card' ? 'Continuer vers verification carte' : 'Confirmer la commande' ?></button>
             <a href="panier.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">Retour panier</a>
         </div>
     </form>
@@ -190,11 +212,14 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
     var elPayable = document.getElementById('sumPayable');
     var elPayment = document.getElementById('sumPayment');
     var elPointsHint = document.getElementById('sumPointsHint');
+    var cardNumberInput = document.querySelector('input[name="card_number"]');
+    var cardExpInput = document.querySelector('input[name="card_exp"]');
+    var cardCvcInput = document.querySelector('input[name="card_cvc"]');
     if (!radios.length || !cardWrap || !elDiscount || !elPayable || !elPayment || !elPointsHint) return;
 
     var subtotal = <?= json_encode((float) $total) ?>;
     var pointsValueTnd = <?= json_encode((float) $currentPointsTnd) ?>;
-    var dinarPerPoint = <?= json_encode((float) CommerceMetier::DINAR_PER_POINT) ?>;
+    var dinarPerPoint = <?= json_encode((float) CommerceRegles::DINAR_PER_POINT) ?>;
 
     function formatTnd(v) {
         return Number(v).toLocaleString('fr-FR', {minimumFractionDigits: 3, maximumFractionDigits: 3});
@@ -231,6 +256,48 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
     }
     if (usePoints) {
         usePoints.addEventListener('change', refreshEstimate);
+    }
+
+    function digitsOnly(v) {
+        return String(v || '').replace(/\D+/g, '');
+    }
+
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function () {
+            var d = digitsOnly(cardNumberInput.value).slice(0, 19);
+            cardNumberInput.value = d.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+        });
+    }
+
+    if (cardCvcInput) {
+        cardCvcInput.addEventListener('input', function () {
+            cardCvcInput.value = digitsOnly(cardCvcInput.value).slice(0, 4);
+        });
+    }
+
+    if (cardExpInput) {
+        cardExpInput.addEventListener('input', function () {
+            var d = digitsOnly(cardExpInput.value).slice(0, 4);
+            if (d.length === 1) {
+                var n = parseInt(d, 10);
+                if (!isNaN(n) && n > 1) {
+                    cardExpInput.value = '0' + d + '/';
+                    return;
+                }
+            }
+            if (d.length >= 2) {
+                var mm = d.slice(0, 2);
+                var month = parseInt(mm, 10);
+                if (!isNaN(month)) {
+                    if (month <= 0) mm = '01';
+                    if (month > 12) mm = '12';
+                }
+                var yy = d.slice(2, 4);
+                cardExpInput.value = yy ? (mm + '/' + yy) : (mm + '/');
+                return;
+            }
+            cardExpInput.value = d;
+        });
     }
     refreshCardFields();
     refreshEstimate();

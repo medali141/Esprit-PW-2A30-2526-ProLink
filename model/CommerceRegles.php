@@ -1,8 +1,8 @@
 <?php
 /**
- * Règles métier du module commerce (achats/ventes).
+ * Règles fonctionnelles du commerce catalogue / commandes.
  */
-class CommerceMetier {
+class CommerceRegles {
     public const POINTS_PER_10_TND = 1; // 1000 TND => 100 points
     public const DINAR_PER_POINT = 0.1; // 100 points => 10 TND
     /** @return list<string> */
