@@ -170,7 +170,7 @@ if ($chartJson === false) {
             <div class="subtitle">Vue d'ensemble rapide — statistiques et actions</div>
         </div>
         <div class="actions">
-            <a class="btn btn-primary" href="../achat/vente/commerceHub.php">Achat / vente</a>
+            <a class="btn btn-primary" href="../achat/vente/gestionAchats.php">Achat / vente</a>
             <a class="btn btn-secondary" href="../user/listUsers.php">Utilisateurs</a>
         </div>
     </div>
@@ -235,7 +235,7 @@ if ($chartJson === false) {
         <div class="card-light">
             <h4>Commerce</h4>
             <p style="margin-top:8px; color:#5b6b72">Produits, stocks, commandes et livraison.</p>
-            <p style="margin-top:10px"><a href="../achat/vente/commerceHub.php">Ouvrir le hub achat / vente</a></p>
+            <p style="margin-top:10px"><a href="../achat/vente/gestionAchats.php">Ouvrir le hub achat / vente</a></p>
         </div>
         <div class="card-light">
             <h4>Analyses</h4>
