@@ -81,6 +81,11 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     <meta charset="UTF-8">
     <title>Forum — sujets</title>
     <link rel="stylesheet" href="<?= htmlspecialchars(bo_url('commerce.css')) ?>">
+    <style>
+        .fs-search { display:flex; gap:10px; align-items:center; max-width:1100px; margin: 0 auto 14px; }
+        .fs-search input { flex: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
+        .fs-search .fs-count { color:#64748b; font-size:0.85rem; white-space:nowrap; }
+    </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
@@ -112,8 +117,12 @@ $sortMark = static function (string $col) use ($sort, $dir) {
             <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
         </form>
     </div>
+    <div class="fs-search">
+        <input type="text" id="fsSearch" placeholder="Rechercher un sujet (titre, catégorie, auteur, date)..." autocomplete="off">
+        <span class="fs-count" id="fsCount"><?= count($liste) ?> ligne<?= count($liste) > 1 ? 's' : '' ?></span>
+    </div>
     <div class="card" style="max-width:1100px;margin:0 auto;overflow-x:auto">
-        <table class="table-modern" style="width:100%;border-collapse:collapse;font-size:0.9rem">
+        <table id="fsTable" class="table-modern" style="width:100%;border-collapse:collapse;font-size:0.9rem">
             <thead>
             <tr>
                 <th><a href="<?= htmlspecialchars($sortUrl('id_sujet')) ?>">#<?= $sortMark('id_sujet') ?></a></th>
@@ -150,5 +159,35 @@ $sortMark = static function (string $col) use ($sort, $dir) {
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+(function () {
+    var input = document.getElementById('fsSearch');
+    var table = document.getElementById('fsTable');
+    var count = document.getElementById('fsCount');
+    if (!input || !table) return;
+
+    var allRows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+
+    function updateCount(visible) {
+        if (!count) return;
+        count.textContent = visible + ' ligne' + (visible > 1 ? 's' : '');
+    }
+
+    function filter() {
+        var q = input.value.trim().toLowerCase();
+        var visible = 0;
+        allRows.forEach(function (row) {
+            var txt = row.innerText.toLowerCase();
+            var match = q === '' || txt.indexOf(q) !== -1;
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        updateCount(visible);
+    }
+
+    input.addEventListener('input', filter);
+})();
+</script>
 </body>
 </html>
