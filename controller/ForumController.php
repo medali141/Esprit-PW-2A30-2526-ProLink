@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../lib/ForumImageHelper.php';
+require_once __DIR__ . '/../lib/ProfanityFilter.php';
 
 /**
  * Back-office : catégories, sujets et messages du forum.
@@ -15,11 +16,29 @@ class ForumController
     {
         return $this->lastPublicError;
     }
-    /** @return list<array<string, mixed>> */
-    public function listCategories(): array
+    /**
+     * Liste les catégories. Sans argument : tri par défaut (ordre asc, id asc),
+     * utilisé partout pour la rétro-compatibilité. Avec $sort/$order on autorise
+     * un tri dynamique côté back-office (colonnes cliquables du tableau).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function listCategories(?string $sort = null, string $order = 'asc'): array
     {
         $db = Config::getConnexion();
-        $st = $db->query('SELECT * FROM `forum_categorie` ORDER BY `ordre` ASC, `id_categorie` ASC');
+        if ($sort === null) {
+            $st = $db->query('SELECT * FROM `forum_categorie` ORDER BY `ordre` ASC, `id_categorie` ASC');
+            return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
+        }
+        $allowed = [
+            'id_categorie' => '`id_categorie`',
+            'titre'        => '`titre`',
+            'description'  => '`description`',
+            'ordre'        => '`ordre`',
+        ];
+        $col   = $allowed[$sort] ?? '`ordre`';
+        $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+        $st = $db->query("SELECT * FROM `forum_categorie` ORDER BY {$col} {$order}, `id_categorie` ASC");
         return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
@@ -38,8 +57,15 @@ class ForumController
 
     public function addCategory(string $titre, string $description, int $ordre): bool
     {
+        $this->lastPublicError = '';
         $titre = trim($titre);
         if ($titre === '') {
+            $this->lastPublicError = 'Titre requis.';
+            return false;
+        }
+        $err = ProfanityFilter::checkAll(['Titre' => $titre, 'Description' => $description]);
+        if ($err !== null) {
+            $this->lastPublicError = $err;
             return false;
         }
         $db = Config::getConnexion();
@@ -49,11 +75,18 @@ class ForumController
 
     public function updateCategory(int $id, string $titre, string $description, int $ordre): bool
     {
+        $this->lastPublicError = '';
         if ($id < 1) {
             return false;
         }
         $titre = trim($titre);
         if ($titre === '') {
+            $this->lastPublicError = 'Titre requis.';
+            return false;
+        }
+        $err = ProfanityFilter::checkAll(['Titre' => $titre, 'Description' => $description]);
+        if ($err !== null) {
+            $this->lastPublicError = $err;
             return false;
         }
         $db = Config::getConnexion();
@@ -146,6 +179,14 @@ class ForumController
         }
         if (strlen($contenu) < 2 && $path === null) {
             $this->lastPublicError = 'Écrivez un message d’au moins 2 caractères ou ajoutez une photo.';
+            return false;
+        }
+        $profanity = ProfanityFilter::checkAll(['Titre' => $titre, 'Message' => $contenu]);
+        if ($profanity !== null) {
+            if ($path !== null) {
+                ForumImageHelper::removeFileIfSafe($path);
+            }
+            $this->lastPublicError = $profanity;
             return false;
         }
         $db = Config::getConnexion();
@@ -315,6 +356,13 @@ class ForumController
         }
         if (strlen($contenu) < 2 && $path === null) {
             return 'Message trop court, ou ajoutez une photo.';
+        }
+        $profanity = ProfanityFilter::firstMatch($contenu);
+        if ($profanity !== null) {
+            if ($path !== null) {
+                ForumImageHelper::removeFileIfSafe($path);
+            }
+            return 'Votre message contient un terme interdit (« ' . $profanity . ' »). Reformulez s\'il vous plaît.';
         }
         $s = $this->getSujet($idSujet);
         if (!$s) {
