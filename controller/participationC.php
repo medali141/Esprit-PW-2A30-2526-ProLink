@@ -3,10 +3,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../model/participation.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../config/mailer.php';   // ← ajoute cette ligne
 
 class ParticipationC
 {
+=======
+
+class ParticipationC
+{
+    /** Inscriptions comptant pour la capacité (hors annulé). */
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
     public function recomputeEventStatut(int $idEvent): void
     {
         $db = Config::getConnexion();
@@ -21,7 +28,11 @@ class ParticipationC
             return;
         }
         $stC = $db->prepare(
+<<<<<<< HEAD
             "SELECT COUNT(*) AS c FROM `participation` WHERE `id_event` = :id AND `statut` = 'confirmé'"
+=======
+            "SELECT COUNT(*) AS c FROM `participation` WHERE `id_event` = :id AND `statut` <> 'annulé'"
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
         );
         $stC->execute(['id' => $idEvent]);
         $cnt = (int) ($stC->fetch(PDO::FETCH_ASSOC)['c'] ?? 0);
@@ -39,6 +50,10 @@ class ParticipationC
         return is_array($rows) ? $rows : [];
     }
 
+<<<<<<< HEAD
+=======
+    /** @return list<array<string, mixed>> */
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
     public function listeParticipation(string $sort = 'date_inscription', string $order = 'desc'): array
     {
         $order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
@@ -67,6 +82,7 @@ class ParticipationC
         return is_array($rows) ? $rows : [];
     }
 
+<<<<<<< HEAD
     /** Count participations with status 'en attente' */
     public function countEnAttente(): int
     {
@@ -129,6 +145,9 @@ class ParticipationC
         return true;
     }
 
+=======
+    /** @return true|string */
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
     public function addParticipation(Participation $p)
     {
         $idEvent = (int) $p->getIdEvent();
@@ -150,24 +169,40 @@ class ParticipationC
         if ($stDup->fetch()) {
             return 'Cet email est déjà inscrit à cet événement.';
         }
+<<<<<<< HEAD
         // ✅ Default statut is always 'en attente'
+=======
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
         $sql = 'INSERT INTO `participation` (
             `id_event`, `nom`, `prenom`, `email`, `telephone`, `statut`
         ) VALUES (:id_event, :nom, :prenom, :email, :telephone, :statut)';
         try {
             $st = $db->prepare($sql);
             $st->execute([
+<<<<<<< HEAD
                 'id_event'  => $idEvent,
                 'nom'       => $p->getNom(),
                 'prenom'    => $p->getPrenom(),
                 'email'     => $p->getEmail(),
                 'telephone' => $p->getTelephone(),
                 'statut'    => 'en attente',   // ← always 'en attente' on creation
+=======
+                'id_event' => $idEvent,
+                'nom' => $p->getNom(),
+                'prenom' => $p->getPrenom(),
+                'email' => $p->getEmail(),
+                'telephone' => $p->getTelephone(),
+                'statut' => $p->getStatut(),
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
             ]);
         } catch (Exception $e) {
             return 'Erreur : ' . $e->getMessage();
         }
+<<<<<<< HEAD
         // Do NOT mark event Complet yet (only confirmed count matters)
+=======
+        $this->recomputeEventStatut($idEvent);
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
         return true;
     }
 
@@ -194,6 +229,14 @@ class ParticipationC
         $this->recomputeEventStatut($eid);
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * GET : retourne la participation pour le formulaire.
+     * POST : met à jour et redirige.
+     * @return array<string, mixed>|null
+     */
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
     public function updateParticipation($id)
     {
         $id = (int) $id;
@@ -204,12 +247,21 @@ class ParticipationC
         $db = Config::getConnexion();
 
         if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+<<<<<<< HEAD
             $nom       = trim((string) ($_POST['nom']       ?? ''));
             $prenom    = trim((string) ($_POST['prenom']    ?? ''));
             $email     = trim((string) ($_POST['email']     ?? ''));
             $telephone = trim((string) ($_POST['telephone'] ?? ''));
             $statut    = (string) ($_POST['statut']  ?? '');
             $idEvent   = (int)   ($_POST['id_event'] ?? 0);
+=======
+            $nom = trim((string) ($_POST['nom'] ?? ''));
+            $prenom = trim((string) ($_POST['prenom'] ?? ''));
+            $email = trim((string) ($_POST['email'] ?? ''));
+            $telephone = trim((string) ($_POST['telephone'] ?? ''));
+            $statut = (string) ($_POST['statut'] ?? '');
+            $idEvent = (int) ($_POST['id_event'] ?? 0);
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
             if ($nom !== '' && $prenom !== '' && $email !== '' && $telephone !== '' && $statut !== '') {
                 $dup = $db->prepare(
                     'SELECT 1 FROM `participation` WHERE `id_event` = :eid AND LOWER(`email`) = LOWER(:em) AND `id_participation` <> :id LIMIT 1'
@@ -221,12 +273,21 @@ class ParticipationC
                         WHERE `id_participation` = :id');
                     try {
                         $q->execute([
+<<<<<<< HEAD
                             'id'     => $id,
                             'nom'    => $nom,
                             'prenom' => $prenom,
                             'email'  => $email,
                             'tel'    => $telephone,
                             'st'     => $statut,
+=======
+                            'id' => $id,
+                            'nom' => $nom,
+                            'prenom' => $prenom,
+                            'email' => $email,
+                            'tel' => $telephone,
+                            'st' => $statut,
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
                         ]);
                     } catch (Exception $e) {
                         // keep form
@@ -253,6 +314,10 @@ class ParticipationC
         return $row;
     }
 
+<<<<<<< HEAD
+=======
+    /** @return array<string, string> */
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
     private static function listeReturnFromPost(): array
     {
         $eAllowed = ['id_event', 'titre_event', 'description_event', 'type_event', 'date_debut', 'date_fin', 'lieu_event', 'capacite_max', 'statut', 'created_at'];
@@ -272,4 +337,8 @@ class ParticipationC
         }
         return $q;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839

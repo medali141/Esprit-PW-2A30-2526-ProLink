@@ -1,5 +1,8 @@
 <?php
+<<<<<<< HEAD
 date_default_timezone_set('Africa/Tunis');
+=======
+>>>>>>> 2e69571f221ab3f69eb82da93a61caf94ba48839
 class Config {
     private static $host = "localhost";
     private static $db_name = "prolink";
