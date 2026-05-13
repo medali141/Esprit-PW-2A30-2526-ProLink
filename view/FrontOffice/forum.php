@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour accéder au forum.');
 require_once __DIR__ . '/../../controller/ForumController.php';
 
 $fc = new ForumController();

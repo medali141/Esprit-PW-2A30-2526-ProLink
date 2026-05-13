@@ -1,16 +1,11 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour consulter vos commandes.');
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
 
 $auth = new AuthController();
-$u = $auth->profile();
-if (!$u) {
-    header('Location: ../login.php');
-    exit;
-}
+$u = $auth->profile() ?: currentUser();
 
 $cp = new CommandeController();
 $list = $cp->listByAcheteur((int) $u['iduser']);

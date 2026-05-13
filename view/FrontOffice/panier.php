@@ -1,7 +1,6 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour accéder à votre panier.');
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {

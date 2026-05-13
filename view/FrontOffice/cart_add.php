@@ -1,7 +1,6 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour ajouter un article au panier.');
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
 $id = (int) ($_GET['id'] ?? 0);

@@ -1,16 +1,11 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireRole('entrepreneur', 'Connectez-vous en tant qu\'entrepreneur pour gérer vos produits.');
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
 $auth = new AuthController();
-$u = $auth->profile();
-if (!$u || strtolower($u['type'] ?? '') !== 'entrepreneur') {
-    header('Location: ../login.php');
-    exit;
-}
+$u = $auth->profile() ?: currentUser();
 
 $pp = new ProduitController();
 $vid = (int) $u['iduser'];

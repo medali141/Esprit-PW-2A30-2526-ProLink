@@ -1,7 +1,6 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour accéder à la boutique.');
 require_once __DIR__ . '/../../controller/ProduitController.php';
 $pp = new ProduitController();
 $produits = $pp->listCatalogueActifs();
