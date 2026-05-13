@@ -10,6 +10,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
 }
 
 require_once __DIR__ . '/../../../controller/FormationP.php';
+require_once __DIR__ . '/../../../controller/NotificationP.php';
 $fp = new FormationP();
 $categories = $fp->categories();
 $err = '';
@@ -23,8 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($dateDebut !== '' && $dateFin !== '' && $dateFin < $dateDebut) {
         $err = 'La date de fin doit être après la date de début.';
     } else {
-        $ok = $fp->add($_POST);
-        header('Location: liste.php' . ($ok ? '?added=1' : '?error=1'));
+        $newId = $fp->add($_POST);
+        if ($newId !== false) {
+            $titreNotif = trim((string) ($_POST['titre'] ?? ''));
+            (new NotificationP())->broadcastToAllUsers(
+                'formation_ajoutee',
+                'Nouvelle formation sur ProLink',
+                $titreNotif !== '' ? ('La formation « ' . $titreNotif . ' » est ouverte aux inscriptions.') : 'Une nouvelle formation est disponible.',
+                'view/FrontOffice/formation_detail.php?id=' . $newId
+            );
+        }
+        header('Location: liste.php' . ($newId !== false ? '?added=1' : '?error=1'));
         exit;
     }
 }

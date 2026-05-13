@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_start();
             }
             $_SESSION['user'] = $user;
+            $_SESSION['__just_logged_in'] = true;
 
             // 1) Honor an intended URL captured by requireLogin() before redirecting here.
             $intended = $_SESSION['intended_url'] ?? '';

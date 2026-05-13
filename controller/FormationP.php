@@ -30,16 +30,28 @@ class FormationP {
         } catch (Exception $e) { return []; }
     }
 
-    public function add(array $data): bool {
+    /**
+     * @return int|false id_formation créé, ou false en cas d’échec
+     */
+    public function add(array $data): int|false {
         $db = Config::getConnexion();
-        $st = $db->prepare('INSERT INTO Formation (titre, categorie, description, date_debut, date_fin) VALUES (:titre, :cat, :desc, :dd, :df)');
-        return $st->execute([
-            'titre' => trim((string) ($data['titre'] ?? '')),
-            'cat'   => $this->normalizeCategorie($data['categorie'] ?? null),
-            'desc'  => $data['description'] ?? null,
-            'dd'    => $data['date_debut'] ?? null,
-            'df'    => $data['date_fin'] ?? null,
-        ]);
+        try {
+            $st = $db->prepare('INSERT INTO Formation (titre, categorie, description, date_debut, date_fin) VALUES (:titre, :cat, :desc, :dd, :df)');
+            $ok = $st->execute([
+                'titre' => trim((string) ($data['titre'] ?? '')),
+                'cat'   => $this->normalizeCategorie($data['categorie'] ?? null),
+                'desc'  => $data['description'] ?? null,
+                'dd'    => $data['date_debut'] ?? null,
+                'df'    => $data['date_fin'] ?? null,
+            ]);
+            if (!$ok) {
+                return false;
+            }
+            $id = (int) $db->lastInsertId();
+            return $id > 0 ? $id : false;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function get(int $id) {
