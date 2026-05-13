@@ -3,26 +3,35 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../../controller/AuthController.php';
+require_once __DIR__ . '/../../../controller/ForumController.php';
 $__dashUser = (new AuthController())->profile();
 if (!$__dashUser || strtolower($__dashUser['type'] ?? '') !== 'admin') {
     header('Location: ../../login.php');
     exit;
 }
 $nu = $np = $nc = 0;
+$nFCat = $nFSuj = $nFMsg = 0;
 $dateKeys = [];
 $labelsFr = [];
 $seriesOrders = [];
 $seriesRevenue = [];
 $seriesUsers = [];
+$seriesForumMsg = [];
 $dataOrders = [];
 $dataRevenue = [];
 $dataUsers = [];
+$dataForumMsg = [];
 try {
     require_once __DIR__ . '/../../../config.php';
     $__db = Config::getConnexion();
     $nu = (int) $__db->query('SELECT COUNT(*) FROM user')->fetchColumn();
     $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
     $nc = (int) $__db->query('SELECT COUNT(*) FROM commande')->fetchColumn();
+
+    $__fc = new ForumController();
+    $nFCat = $__fc->countCategories();
+    $nFSuj = $__fc->countSujets();
+    $nFMsg = $__fc->countMessages();
 
     $days = 14;
     $endD = new DateTimeImmutable('today');
@@ -36,6 +45,7 @@ try {
     $seriesOrders = array_fill_keys($dateKeys, 0);
     $seriesRevenue = array_fill_keys($dateKeys, 0.0);
     $seriesUsers = array_fill_keys($dateKeys, 0);
+    $seriesForumMsg = array_fill_keys($dateKeys, 0);
 
     $a = $startD->format('Y-m-d');
     $b = $endD->format('Y-m-d');
@@ -62,21 +72,34 @@ try {
             $seriesUsers[$dk] = (int) $row['cnt'];
         }
     }
+    $st3 = $__db->prepare(
+        'SELECT DATE(created_at) AS d, COUNT(*) AS cnt FROM `forum_message`
+         WHERE DATE(created_at) BETWEEN :a AND :b GROUP BY DATE(created_at)'
+    );
+    $st3->execute(['a' => $a, 'b' => $b]);
+    while ($row = $st3->fetch(PDO::FETCH_ASSOC)) {
+        $dk = $row['d'] ?? '';
+        if ($dk !== '' && array_key_exists($dk, $seriesForumMsg)) {
+            $seriesForumMsg[$dk] = (int) $row['cnt'];
+        }
+    }
 } catch (Throwable $e) {
 }
 foreach ($dateKeys as $k) {
     $dataOrders[] = (int) ($seriesOrders[$k] ?? 0);
     $dataRevenue[] = round((float) ($seriesRevenue[$k] ?? 0), 3);
     $dataUsers[] = (int) ($seriesUsers[$k] ?? 0);
+    $dataForumMsg[] = (int) ($seriesForumMsg[$k] ?? 0);
 }
 $chartJson = json_encode([
     'labels' => $labelsFr,
     'orders' => $dataOrders,
     'revenue' => $dataRevenue,
     'users' => $dataUsers,
+    'forumMsg' => $dataForumMsg,
 ], JSON_UNESCAPED_UNICODE);
 if ($chartJson === false) {
-    $chartJson = '{"labels":[],"orders":[],"revenue":[],"users":[]}';
+    $chartJson = '{"labels":[],"orders":[],"revenue":[],"users":[],"forumMsg":[]}';
 }
 ?>
 <!DOCTYPE html>
@@ -176,6 +199,30 @@ if ($chartJson === false) {
                 <p>Commandes</p>
             </div>
         </div>
+
+        <a class="stat-card stat-card--link" href="../forum/liste_categories.php" style="background: linear-gradient(135deg,#06b6d4,#0e7490); text-decoration:none;">
+            <div class="icon">🗂️</div>
+            <div>
+                <h3><?= (int) $nFCat ?></h3>
+                <p>Catégories forum</p>
+            </div>
+        </a>
+
+        <a class="stat-card stat-card--link" href="../forum/liste_sujets.php" style="background: linear-gradient(135deg,#10b981,#047857); text-decoration:none;">
+            <div class="icon">💬</div>
+            <div>
+                <h3><?= (int) $nFSuj ?></h3>
+                <p>Sujets forum</p>
+            </div>
+        </a>
+
+        <a class="stat-card stat-card--link" href="../forum/forum_index.php" style="background: linear-gradient(135deg,#f59e0b,#b45309); text-decoration:none;">
+            <div class="icon">✉️</div>
+            <div>
+                <h3><?= (int) $nFMsg ?></h3>
+                <p>Messages forum</p>
+            </div>
+        </a>
     </section>
 
     <div style="height:18px"></div>
@@ -210,6 +257,10 @@ if ($chartJson === false) {
             <div class="chart-card">
                 <h4>Nouveaux utilisateurs</h4>
                 <div class="chart-wrap"><canvas id="chartUsers" aria-label="Graphique inscriptions"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h4>Messages du forum par jour</h4>
+                <div class="chart-wrap"><canvas id="chartForumMsg" aria-label="Graphique messages du forum"></canvas></div>
             </div>
         </div>
     </section>
@@ -306,6 +357,36 @@ if ($chartJson === false) {
             }
         }
     });
+
+    var forumCanvas = document.getElementById('chartForumMsg');
+    if (forumCanvas) {
+        new Chart(forumCanvas, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Messages forum',
+                    data: data.forumMsg || [],
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6, 182, 212, 0.18)',
+                    fill: true,
+                    ...curve,
+                    borderWidth: 2.5,
+                    pointRadius: 3,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: ticks },
+                    y: { beginAtZero: true, grid: grid, ticks: { ...ticks, precision: 0 } }
+                }
+            }
+        });
+    }
 })();
 </script>
 
