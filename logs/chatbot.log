@@ -1,0 +1,6 @@
+2026-05-06T18:03:08+02:00 | incoming_prompt | snippet=cariere en informatique
+2026-05-06T18:03:10+02:00 | provider=openai | model=gpt-3.5-turbo | http=429 | curl_err=-
+2026-05-06T18:03:10+02:00 | openai_error_raw={"error":{"message":"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https:\/\/platform.openai.com\/docs\/guides\/error-codes\/api-errors.","type":"insufficient_quota","param":null,"code":"insufficient_quota"}}
+2026-05-06T18:13:06+02:00 | incoming_prompt | snippet=cariere en informatique
+2026-05-06T18:13:07+02:00 | provider=openai | model=gpt-3.5-turbo | http=429 | curl_err=-
+2026-05-06T18:13:07+02:00 | openai_error_raw={"error":{"message":"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https:\/\/platform.openai.com\/docs\/guides\/error-codes\/api-errors.","type":"insufficient_quota","param":null,"code":"insufficient_quota"}}
