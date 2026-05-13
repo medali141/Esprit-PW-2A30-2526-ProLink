@@ -3,7 +3,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../controller/ProduitController.php';
+=======
+require_once __DIR__ . '/../../controller/ProduitP.php';
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -16,7 +20,11 @@ if (strtolower($u['type'] ?? '') !== 'entrepreneur') {
     exit;
 }
 
+<<<<<<< HEAD
 $pp = new ProduitController();
+=======
+$pp = new ProduitP();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 $list = $pp->listByVendeur((int) $u['iduser']);
 ?>
 <!DOCTYPE html>
@@ -25,6 +33,7 @@ $list = $pp->listByVendeur((int) $u['iduser']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mes produits — ProLink</title>
+<<<<<<< HEAD
     <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="../assets/storefront.css">
@@ -61,11 +70,40 @@ $list = $pp->listByVendeur((int) $u['iduser']);
                         <span class="fo-badge fo-badge--brouillon">Masqué</span>
                     <?php endif; ?></td>
                     <td><a href="vendeurProduit.php?id=<?= (int) $p['idproduit'] ?>" class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:8px 12px;font-size:0.85rem">Modifier</a></td>
+=======
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<?php include __DIR__ . '/components/navbar.php'; ?>
+<main class="container">
+    <h1>Mes produits (vente)</h1>
+    <p class="hint">Gérez votre catalogue. Les commandes clients passent par le panier ProLink.</p>
+    <a href="vendeurProduit.php" class="btn register" style="display:inline-block;padding:10px 16px;border-radius:10px;text-decoration:none;margin:12px 0">+ Nouveau produit</a>
+    <?php if (empty($list)): ?>
+        <p class="hint">Aucun produit pour l’instant.</p>
+    <?php else: ?>
+        <table class="table-modern card" style="margin-top:12px;padding:0">
+            <thead><tr><th>Réf.</th><th>Désignation</th><th>Prix</th><th>Stock</th><th>Actif</th><th></th></tr></thead>
+            <tbody>
+            <?php foreach ($list as $p): ?>
+                <tr>
+                    <td><?= htmlspecialchars($p['reference']) ?></td>
+                    <td><?= htmlspecialchars($p['designation']) ?></td>
+                    <td><?= number_format((float) $p['prix_unitaire'], 3, ',', ' ') ?> TND</td>
+                    <td><?= (int) $p['stock'] ?></td>
+                    <td><?= (int) $p['actif'] ? 'Oui' : 'Non' ?></td>
+                    <td>
+                        <a href="vendeurProduit.php?id=<?= (int) $p['idproduit'] ?>">Modifier</a>
+                    </td>
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
+<<<<<<< HEAD
         </div>
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
     <?php endif; ?>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>

@@ -1,14 +1,21 @@
 <?php
 require_once __DIR__ . '/../config.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../config/mail.php';
 require_once __DIR__ . '/../lib/MailOtpService.php';
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
 class AuthController {
 
     // 🔹 LOGIN
     public function login($email, $mdp) {
         $sql = "SELECT * FROM user WHERE email = :email";
+<<<<<<< HEAD
         $db = Config::getConnexion();
+=======
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
         try {
             $query = $db->prepare($sql);
@@ -34,7 +41,11 @@ class AuthController {
     public function register($user) {
         $sql = "INSERT INTO user (nom, prenom, email, mdp, type, age)
                 VALUES (:nom, :prenom, :email, :mdp, :type, :age)";
+<<<<<<< HEAD
         $db = Config::getConnexion();
+=======
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
         try {
             $query = $db->prepare($sql);
@@ -59,10 +70,17 @@ class AuthController {
         return $_SESSION['user'] ?? null;
     }
 
+<<<<<<< HEAD
     // 🔹 FORGOT PASSWORD — returns true if a user row was updated
     public function forgotPassword($email, $newPassword) {
         $sql = "UPDATE user SET mdp = :mdp WHERE email = :email";
         $db = Config::getConnexion();
+=======
+    // 🔹 FORGOT PASSWORD
+    public function forgotPassword($email, $newPassword) {
+        $sql = "UPDATE user SET mdp = :mdp WHERE email = :email";
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
         try {
             $query = $db->prepare($sql);
@@ -70,12 +88,16 @@ class AuthController {
                 'email' => $email,
                 'mdp' => password_hash($newPassword, PASSWORD_DEFAULT)
             ]);
+<<<<<<< HEAD
             return $query->rowCount() > 0;
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());
         }
     }
 
+<<<<<<< HEAD
     /**
      * Génère un OTP (15 min), le stocke haché en base et l’envoie par e-mail.
      * @return int|null id utilisateur si le compte existe, null sinon (message générique côté vue)
@@ -129,6 +151,8 @@ class AuthController {
         return $u->rowCount() > 0;
     }
 
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
     //update profile    
     // A implémenter : updateProfile($user, $id)

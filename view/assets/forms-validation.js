@@ -268,6 +268,7 @@
         return ok;
     }
 
+<<<<<<< HEAD
     function validateForgotSendForm(form) {
         clearErrors(form);
         var ok = true;
@@ -388,6 +389,8 @@
         return ok;
     }
 
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
     function validatePanierForm(form) {
         clearErrors(form);
         var ok = true;
@@ -426,10 +429,13 @@
         bindForm('form[data-validate="panier-form"]', validatePanierForm);
         bindForm('form[data-validate="login-form"]', validateLoginForm);
         bindForm('form[data-validate="forgot-form"]', validateLoginForm);
+<<<<<<< HEAD
         bindForm('form[data-validate="forgot-send-form"]', validateForgotSendForm);
         bindForm('form[data-validate="forgot-reset-form"]', validateForgotResetForm);
         bindForm('form[data-validate="event-inscription-form"]', validateEventInscriptionForm);
         bindForm('form[data-validate="forum-reply-form"]', validateForumReplyForm);
         bindForm('form[data-validate="forum-new-topic-form"]', validateForumNewTopicForm);
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
     });
 })();

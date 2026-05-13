@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../controller/AuthController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../lib/MailOtpService.php';
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
 error_reporting(E_ALL);
 $error = '';
@@ -21,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Email ou mot de passe incorrect.';
         }
         // ensure session stores the logged user (AuthController::login already does this,
+<<<<<<< HEAD
         // but for admin we require a second factor code first)
         if ($user) {
             $role = strtolower($user['type'] ?? '');
@@ -56,11 +60,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Non-admin: finalize session and redirect as before
+=======
+        // but be defensive in case it's changed)
+        if ($user) {
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
             if (session_status() !== PHP_SESSION_ACTIVE) {
                 session_start();
             }
             $_SESSION['user'] = $user;
 
+<<<<<<< HEAD
             $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
             if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
                 header('Location: ' . $next);
@@ -68,6 +77,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             header('Location: FrontOffice/home.php');
             exit;
+=======
+            // redirect admin to backoffice, others to frontoffice
+            $role = strtolower($user['type'] ?? '');
+            if ($role === 'admin') {
+                header('Location: BackOffice/dashboard.php');
+                exit;
+            } else {
+                header('Location: FrontOffice/home.php');
+                exit;
+            }
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         }
     }
 }
@@ -76,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     $success = 'Inscription réussie. Vous pouvez vous connecter.';
 }
+<<<<<<< HEAD
 
 $nextParam = '';
 if (isset($_GET['next'])) {
@@ -84,6 +105,8 @@ if (isset($_GET['next'])) {
         $nextParam = $cand;
     }
 }
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 ?>
 
 
@@ -187,9 +210,12 @@ if (isset($_GET['next'])) {
         <?php endif; ?>
 
         <form method="POST" novalidate data-validate="login-form">
+<<<<<<< HEAD
             <?php if ($nextParam !== ''): ?>
                 <input type="hidden" name="next" value="<?= htmlspecialchars($nextParam) ?>">
             <?php endif; ?>
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
             <input type="email" name="email" placeholder="Email" autocomplete="username">
             <input type="password" name="mdp" placeholder="Mot de passe" autocomplete="current-password">
 
