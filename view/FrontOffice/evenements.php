@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour consulter les événements.');
 require_once __DIR__ . '/../../controller/eventC.php';
 
 $ec = new EventC();

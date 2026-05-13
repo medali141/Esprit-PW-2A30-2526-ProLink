@@ -1,5 +1,6 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour accéder aux formations.');
 require_once __DIR__ . '/../../controller/FormationP.php';
 $fp = new FormationP();
 $list = $fp->listAll();

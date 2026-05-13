@@ -1,10 +1,12 @@
 <?php
+require_once __DIR__ . '/../init.php';
 require_once __DIR__ . '/../controller/AuthController.php';
 require_once __DIR__ . '/../lib/MailOtpService.php';
 
 error_reporting(E_ALL);
 $error = '';
 $success = '';
+$authFlash = flashGet('auth');
 // Handle POST login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -55,12 +57,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
-            // Non-admin: finalize session and redirect as before
+            // Non-admin: finalize session and redirect.
             if (session_status() !== PHP_SESSION_ACTIVE) {
                 session_start();
             }
             $_SESSION['user'] = $user;
 
+            // 1) Honor an intended URL captured by requireLogin() before redirecting here.
+            $intended = $_SESSION['intended_url'] ?? '';
+            unset($_SESSION['intended_url']);
+            if (is_string($intended) && $intended !== ''
+                && strpos($intended, '..') === false
+                && stripos($intended, '://') === false
+                && $intended[0] === '/') {
+                header('Location: ' . $intended);
+                exit;
+            }
+
+            // 2) Backward-compat: explicit ?next= for forum deep-links.
             $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
             if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
                 header('Location: ' . $next);
@@ -182,6 +196,11 @@ if (isset($_GET['next'])) {
     <div class="login-box">
         <h2>Connexion</h2>
 
+        <?php if ($authFlash): ?>
+            <div style="background:#fff4e5; border:1px solid #f0b27a; color:#8a4b00; padding:8px 10px; border-radius:6px; margin-bottom:10px; font-size:14px;">
+                <?= htmlspecialchars($authFlash) ?>
+            </div>
+        <?php endif; ?>
         <?php if ($error): ?>
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>

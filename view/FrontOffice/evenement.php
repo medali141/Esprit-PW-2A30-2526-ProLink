@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour consulter cet événement.');
 require_once __DIR__ . '/../../controller/eventC.php';
 require_once __DIR__ . '/../../controller/participationC.php';
 require_once __DIR__ . '/../../model/participation.php';

@@ -59,20 +59,77 @@ $host = $_SERVER['HTTP_HOST'] ?? '';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 
-// Expose small helper functions
-function requireLogin() {
-    global $baseUrl;
-    if (empty($_SESSION['user'])) {
-        header('Location: ' . ($baseUrl ?? '') . '/FrontOffice/login.php');
-        exit;
-    }
-}
+// --- Session helpers ---------------------------------------------------------
 
 function isLoggedIn() {
     return !empty($_SESSION['user']);
 }
 
-// mark as included so other components can check
-if (!defined('APP_INIT')) define('APP_INIT', true);
+function currentUser() {
+    return $_SESSION['user'] ?? null;
+}
 
-// End of init.php
+function currentRole() {
+    $u = $_SESSION['user'] ?? null;
+    return $u ? strtolower((string) ($u['type'] ?? '')) : '';
+}
+
+function hasRole($role) {
+    return currentRole() === strtolower((string) $role);
+}
+
+/**
+ * One-shot flash messages stored in the session. flashSet() writes a value
+ * under a key, flashGet() reads and clears it. Used to surface auth messages
+ * (e.g. "Veuillez vous connecter") on the login page after a redirect.
+ */
+function flashSet($key, $message) {
+    if (!isset($_SESSION['__flash']) || !is_array($_SESSION['__flash'])) {
+        $_SESSION['__flash'] = [];
+    }
+    $_SESSION['__flash'][$key] = (string) $message;
+}
+
+function flashGet($key) {
+    if (!isset($_SESSION['__flash'][$key])) return null;
+    $v = $_SESSION['__flash'][$key];
+    unset($_SESSION['__flash'][$key]);
+    return $v;
+}
+
+/**
+ * Redirect the user to the login page if not authenticated. The current URL
+ * is saved as `intended_url` so login.php can send the user back here after
+ * a successful login.
+ */
+function requireLogin($message = null) {
+    global $baseUrl;
+    if (!empty($_SESSION['user'])) return;
+
+    $intended = $_SERVER['REQUEST_URI'] ?? '';
+    if ($intended !== '' && stripos($intended, '/login.php') === false
+        && stripos($intended, '/register.php') === false) {
+        $_SESSION['intended_url'] = $intended;
+    }
+
+    flashSet('auth', $message ?? 'Veuillez vous connecter pour accéder à cette page.');
+    header('Location: ' . ($baseUrl ?? '') . '/login.php');
+    exit;
+}
+
+/**
+ * Require an authenticated user with a specific role (e.g. 'entrepreneur',
+ * 'admin'). If not logged in, redirects to login. If logged in but with the
+ * wrong role, redirects to the front-office home with a flash message.
+ */
+function requireRole($role, $message = null) {
+    requireLogin($message);
+    if (!hasRole($role)) {
+        global $baseUrl;
+        flashSet('auth', $message ?? 'Accès refusé : cette page est réservée aux ' . htmlspecialchars((string) $role) . 's.');
+        header('Location: ' . ($baseUrl ?? '') . '/FrontOffice/home.php');
+        exit;
+    }
+}
+
+if (!defined('APP_INIT')) define('APP_INIT', true);

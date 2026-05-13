@@ -1,16 +1,11 @@
 <?php
 require_once __DIR__ . '/../../init.php';
+requireLogin('Connectez-vous pour publier un nouveau sujet.');
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ForumController.php';
 
 $auth = new AuthController();
-$user = $auth->profile();
-if (!$user) {
-    $cat = isset($_GET['cat']) ? (int) $_GET['cat'] : 0;
-    $next = 'FrontOffice/forum/forum_nouveau_sujet.php' . ($cat > 0 ? '?cat=' . $cat : '');
-    header('Location: ../login.php?next=' . urlencode($next));
-    exit;
-}
+$user = $auth->profile() ?: currentUser();
 
 $fc = new ForumController();
 $catId = isset($_GET['cat']) ? (int) $_GET['cat'] : 0;

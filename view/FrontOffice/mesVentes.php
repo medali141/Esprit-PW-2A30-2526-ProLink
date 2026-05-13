@@ -1,20 +1,11 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
+require_once __DIR__ . '/../../init.php';
+requireRole('entrepreneur', 'Connectez-vous en tant qu\'entrepreneur pour consulter vos ventes.');
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
 
 $auth = new AuthController();
-$u = $auth->profile();
-if (!$u) {
-    header('Location: ../login.php');
-    exit;
-}
-if (strtolower($u['type'] ?? '') !== 'entrepreneur') {
-    header('Location: home.php');
-    exit;
-}
+$u = $auth->profile() ?: currentUser();
 
 $cp = new CommandeController();
 $list = $cp->listByVendeur((int) $u['iduser']);
