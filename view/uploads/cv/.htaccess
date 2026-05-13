@@ -1,0 +1,14 @@
+# CVs uploadés par les candidats.
+# - Désactive l'exécution de tout script (PHP, CGI, etc.) qui pourrait y
+#   être déposé via un fichier malveillant renommé en .pdf.
+# - Empêche la navigation dans le dossier (listing désactivé).
+
+Options -Indexes -ExecCGI
+RemoveHandler .php .php3 .php4 .php5 .php7 .phtml .phar
+RemoveType    .php .php3 .php4 .php5 .php7 .phtml .phar
+
+<FilesMatch "\.(php|phtml|phar|php[3-7])$">
+    Require all denied
+</FilesMatch>
+
+php_flag engine off

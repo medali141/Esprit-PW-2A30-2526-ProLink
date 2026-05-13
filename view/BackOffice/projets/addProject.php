@@ -25,11 +25,19 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
         <div class="card">
             <?php
             require_once __DIR__ . '/../../../controller/ProjectP.php';
+            require_once __DIR__ . '/../../../controller/NotificationP.php';
             $pp = new ProjectP();
             $msg = '';
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $ok = $pp->add(['title'=>$_POST['title'] ?? '', 'description'=>$_POST['description'] ?? '', 'owner_id'=>$_POST['owner_id'] ?? null, 'status'=>$_POST['status'] ?? 'draft']);
-                if ($ok) {
+                $newId = $pp->add(['title'=>$_POST['title'] ?? '', 'description'=>$_POST['description'] ?? '', 'owner_id'=>$_POST['owner_id'] ?? null, 'status'=>$_POST['status'] ?? 'draft']);
+                if ($newId !== false) {
+                    $title = trim((string) ($_POST['title'] ?? ''));
+                    (new NotificationP())->broadcastToAllUsers(
+                        'projet_publie',
+                        'Nouveau projet sur ProLink',
+                        $title !== '' ? ('« ' . $title . ' » est disponible. Découvrez-le dans le catalogue.') : 'Un nouveau projet vient d’être ajouté au catalogue.',
+                        'view/FrontOffice/project.php?id=' . $newId
+                    );
                     header('Location: listProjects.php'); exit;
                 }
                 $msg = 'Erreur lors de l\'ajout.';
