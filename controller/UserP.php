@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../model/User.php';
 
 class UserP {
@@ -21,6 +22,18 @@ class UserP {
             }
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
             return is_array($rows) ? $rows : [];
+=======
+require_once __DIR__ . '/../Model/User.php';
+
+class UserP {
+
+    // 🔹 LIST USERS
+    public function listUsers() {
+        $sql = "SELECT * FROM user";
+        $db = config::getConnexion();
+        try {
+            return $db->query($sql);
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());
         }
@@ -30,7 +43,11 @@ class UserP {
     public function addUser($user) {
         $sql = "INSERT INTO user (nom, prenom, email, mdp, type, age)
                 VALUES (:nom, :prenom, :email, :mdp, :type, :age)";
+<<<<<<< HEAD
         $db = Config::getConnexion();
+=======
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
         try {
             $query = $db->prepare($sql);
@@ -50,7 +67,11 @@ class UserP {
     // 🔹 DELETE
     public function deleteUser($id) {
         $sql = "DELETE FROM user WHERE iduser = :id";
+<<<<<<< HEAD
         $db = Config::getConnexion();
+=======
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         $req = $db->prepare($sql);
         $req->bindValue(':id', $id);
 
@@ -61,6 +82,7 @@ class UserP {
         }
     }
 
+<<<<<<< HEAD
     // 🔹 CHECK IF USER HAS COMMANDES (orders)
     public function hasCommandes($id) {
         $sql = "SELECT COUNT(*) as cnt FROM commande WHERE id_acheteur = :id";
@@ -79,6 +101,11 @@ class UserP {
     // 🔹 UPDATE
     public function updateUser($user, $id) {
         $db = Config::getConnexion();
+=======
+    // 🔹 UPDATE
+    public function updateUser($user, $id) {
+        $db = config::getConnexion();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
         try {
             $query = $db->prepare(
@@ -105,6 +132,7 @@ class UserP {
         }
     }
 
+<<<<<<< HEAD
     /** Chemin relatif au dossier view, ex. uploads/profiles/user_7.jpg, ou null pour retirer la photo. */
     public function setUserPhoto(?string $relativePathFromView, int $id): void {
         $db = Config::getConnexion();
@@ -120,6 +148,16 @@ class UserP {
         try {
             $query = $db->prepare($sql);
             $query->execute(['id' => $id]);
+=======
+    // 🔹 SHOW USER
+    public function showUser($id) {
+        $sql = "SELECT * FROM user WHERE iduser = $id";
+        $db = config::getConnexion();
+
+        try {
+            $query = $db->prepare($sql);
+            $query->execute();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
             return $query->fetch();
         } catch (Exception $e) {
             die('Error:' . $e->getMessage());

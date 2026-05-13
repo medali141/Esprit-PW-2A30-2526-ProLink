@@ -23,6 +23,7 @@ class User {
     public function getMdp() { return $this->mdp; }
     public function getType() { return $this->type; }
     public function getAge() { return $this->age; }
+<<<<<<< HEAD
 }
 
 // Concrete user types consolidated here to avoid multiple small files.
@@ -42,4 +43,6 @@ class Entrepreneur extends User {
     public function getType() {
         return "entrepreneur";
     }
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 }

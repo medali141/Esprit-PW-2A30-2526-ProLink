@@ -18,8 +18,11 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `commande_produit`;
 DROP TABLE IF EXISTS `commande`;
 DROP TABLE IF EXISTS `produit`;
+<<<<<<< HEAD
 DROP TABLE IF EXISTS `participation`;
 DROP TABLE IF EXISTS `evenement`;
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 DROP TABLE IF EXISTS `user`;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -32,20 +35,32 @@ CREATE TABLE `user` (
   `prenom` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
   `mdp` varchar(255) NOT NULL,
+<<<<<<< HEAD
   `mdp_reset_otp_hash` varchar(255) DEFAULT NULL,
   `mdp_reset_otp_expires` datetime DEFAULT NULL,
   `type` enum('admin','candidat','entrepreneur') NOT NULL,
   `age` int(11) NOT NULL,
   `photo` varchar(255) DEFAULT NULL COMMENT 'Chemin relatif depuis view/, ex. uploads/profiles/user_1.jpg',
+=======
+  `type` enum('admin','candidat','entrepreneur') NOT NULL,
+  `age` int(11) NOT NULL,
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`iduser`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+<<<<<<< HEAD
 INSERT INTO `user` (`iduser`, `nom`, `prenom`, `email`, `mdp`, `type`, `age`, `photo`, `created_at`) VALUES
 (5, 'chihaoui', 'mohammed ali', 'chihaouidali443@gmail.com', '$2y$10$legH0oYVvjIhe4ZLne4sB.c9YW8gctbNfWe5jGmRNTfPkckJp.zAe', 'admin', 75, NULL, '2026-04-15 13:30:47'),
 (7, 'chihaoui', 'mohammed ali', 'chihaouidali44@gmail.com', '$2y$10$NTalhxoL.rH.uSh8sjUJlu1yhfRbg4moZpn3M3qGey03UQ8zUfmwe', 'candidat', 24, NULL, '2026-04-15 13:41:01'),
 (8, 'aissa', 'idouni', 'issado@gmail.com', '$2y$10$7rT5hKUUaUBeuQUYeTkqXuVdu5nIHRn85NU9fjLAsorNAC.P3fdCy', 'candidat', 75, NULL, '2026-04-15 13:44:12');
+=======
+INSERT INTO `user` (`iduser`, `nom`, `prenom`, `email`, `mdp`, `type`, `age`, `created_at`) VALUES
+(5, 'chihaoui', 'mohammed ali', 'chihaouidali443@gmail.com', '$2y$10$legH0oYVvjIhe4ZLne4sB.c9YW8gctbNfWe5jGmRNTfPkckJp.zAe', 'admin', 75, '2026-04-15 13:30:47'),
+(7, 'chihaoui', 'mohammed ali', 'chihaouidali44@gmail.com', '$2y$10$NTalhxoL.rH.uSh8sjUJlu1yhfRbg4moZpn3M3qGey03UQ8zUfmwe', 'candidat', 24, '2026-04-15 13:41:01'),
+(8, 'aissa', 'idouni', 'issado@gmail.com', '$2y$10$7rT5hKUUaUBeuQUYeTkqXuVdu5nIHRn85NU9fjLAsorNAC.P3fdCy', 'candidat', 75, '2026-04-15 13:44:12');
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
 -- -----------------------------------------------------------------------------
 -- Tables commerce : produit, commande, commande_produit
@@ -136,6 +151,7 @@ ALTER TABLE `user` AUTO_INCREMENT = 9;
 ALTER TABLE `produit` AUTO_INCREMENT = 11;
 ALTER TABLE `commande` AUTO_INCREMENT = 6;
 
+<<<<<<< HEAD
 -- Optional projects table used by BackOffice projects scaffold
 CREATE TABLE IF NOT EXISTS `project` (
   `idproject` int(11) NOT NULL AUTO_INCREMENT,
@@ -220,6 +236,8 @@ CREATE TABLE `forum_message` (
   CONSTRAINT `fk_message_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`iduser`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

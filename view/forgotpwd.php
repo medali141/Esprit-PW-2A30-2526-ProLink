@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 require_once __DIR__ . '/../init.php';
 require_once __DIR__ . '/../controller/AuthController.php';
@@ -69,6 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 ?>
+=======
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -112,7 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
         }
 
+<<<<<<< HEAD
         button, .btn-link {
+=======
+        button {
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
             width: 100%;
             padding: 10px;
             background: #0073b1;
@@ -122,6 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
         }
 
+<<<<<<< HEAD
         button:hover, .btn-link:hover {
             background: #005f8d;
         }
@@ -132,6 +140,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-secondary:hover { background: #4b5563; }
 
+=======
+        button:hover {
+            background: #005f8d;
+        }
+
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         a {
             display: block;
             margin-top: 10px;
@@ -164,6 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Mot de passe oublié</h2>
 
         <p class="info">
+<<<<<<< HEAD
             <?php if (!empty($_SESSION['forgot_pwd_user_id']) && !empty($_SESSION['forgot_pwd_email'])): ?>
                 Un code a été demandé pour <?= htmlspecialchars(maskEmailForDisplay($_SESSION['forgot_pwd_email'])) ?>.
             <?php else: ?>
@@ -206,6 +221,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="forgotpwd.php?new=1">Changer d’adresse e-mail</a>
         <?php endif; ?>
 
+=======
+            Entrez votre email pour réinitialiser votre mot de passe
+        </p>
+
+        <form method="post" action="#" novalidate data-validate="forgot-form">
+            <input type="email" name="email" placeholder="Votre email" autocomplete="email">
+
+            <input type="password" name="mdp" placeholder="Nouveau mot de passe" autocomplete="new-password">
+
+            <button type="submit">Réinitialiser</button>
+        </form>
+
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         <a href="login.php">Retour à la connexion</a>
     </div>
 </div>
@@ -215,4 +243,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="assets/forms-validation.js"></script>
 
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5

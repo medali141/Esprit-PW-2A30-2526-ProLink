@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 // Ensure the common init/bootstrap is loaded. init.php sets up session and $baseUrl.
 if (!defined('APP_INIT')) {
     require_once dirname(__DIR__, 3) . '/init.php';
@@ -7,6 +8,25 @@ if (!defined('APP_INIT')) {
 $__nav_user = $_SESSION['user'] ?? null;
 $__nav_type = strtolower($__nav_user['type'] ?? '');
 $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
+=======
+// Ensure session is started before any output. This prevents "headers already sent" warnings
+// and makes session data available to the navbar.
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$__nav_user = $_SESSION['user'] ?? null;
+$__nav_type = strtolower($__nav_user['type'] ?? '');
+$__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
+
+// Try to compute project root (folder inside htdocs). Falls back to empty string.
+$projectFolder = basename(dirname(__DIR__, 3));
+$root = $projectFolder ? '/' . $projectFolder : '';
+$viewRoot = $root . '/view';
+// Build absolute base URL (http(s)://host{projectFolder}/view) to avoid wrong root-relative links
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 ?>
 <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
@@ -24,11 +44,17 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
                 <li><a href="<?= $baseUrl ?>/FrontOffice/mesVentes.php">Mes ventes</a></li>
             <?php endif; ?>
         <?php endif; ?>
+<<<<<<< HEAD
     <li><a href="#">Réseau</a></li>
     <li><a href="<?= $baseUrl ?>/FrontOffice/projects.php">Projets</a></li>
     <li><a href="<?= $baseUrl ?>/FrontOffice/formation.php">Formations</a></li>
         <li><a href="<?= $baseUrl ?>/FrontOffice/evenements.php">Événements</a></li>
         <li><a href="<?= $baseUrl ?>/FrontOffice/forum.php">Forum</a></li>
+=======
+        <li><a href="#">Réseau</a></li>
+        <li><a href="#">Projets</a></li>
+        <li><a href="#">Événements</a></li>
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
     </ul>
 
 <!-- global stylesheet -->
@@ -37,8 +63,13 @@ $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum(
      <div class="auth">
         <button type="button" class="theme-toggle js-theme-toggle" aria-label="Activer le mode sombre" aria-pressed="false">🌙</button>
         <?php if ($__nav_user): ?>
+<<<<<<< HEAD
             <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
             <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php?action=logout" class="btn register">Se déconnecter</a>
+=======
+            <a href="<?= $baseUrl ?>/FrontOffice/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
+            <a href="<?= $baseUrl ?>/FrontOffice/profile.php?action=logout" class="btn register">Se déconnecter</a>
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         <?php else: ?>
             <a href="<?= $baseUrl ?>/login.php" class="btn login">Login</a>
             <a href="<?= $baseUrl ?>/register.php" class="btn register">Register</a>

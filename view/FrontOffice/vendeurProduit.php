@@ -3,7 +3,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../controller/ProduitController.php';
+=======
+require_once __DIR__ . '/../../controller/ProduitP.php';
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -12,7 +16,11 @@ if (!$u || strtolower($u['type'] ?? '') !== 'entrepreneur') {
     exit;
 }
 
+<<<<<<< HEAD
 $pp = new ProduitController();
+=======
+$pp = new ProduitP();
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
 $vid = (int) $u['iduser'];
 $id = (int) ($_GET['id'] ?? 0);
 $prod = $id ? $pp->getById($id) : null;
@@ -81,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $id ? 'Modifier' : 'Nouveau' ?> produit</title>
+<<<<<<< HEAD
     <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="../assets/storefront.css">
@@ -96,6 +105,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="fo-banner fo-banner--err"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
     <form method="post" class="fo-form-card" novalidate data-validate="produit-form">
+=======
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>label{display:block;margin-top:12px;font-weight:600} input,textarea{width:100%;max-width:480px;padding:10px;margin-top:6px}</style>
+</head>
+<body>
+<?php include __DIR__ . '/components/navbar.php'; ?>
+<main class="container">
+    <h1><?= $id ? 'Modifier le produit' : 'Nouveau produit' ?></h1>
+    <?php if ($error): ?><p style="color:#b00020"><?= htmlspecialchars($error) ?></p><?php endif; ?>
+    <form method="post" class="card" style="margin-top:12px;max-width:560px" novalidate data-validate="produit-form">
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
         <label>Référence *</label>
         <input type="text" name="reference" required value="<?= htmlspecialchars((string) ($prod['reference'] ?? '')) ?>">
         <label>Désignation *</label>
@@ -106,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="prix_unitaire" required value="<?= htmlspecialchars((string) ($prod['prix_unitaire'] ?? '0')) ?>">
         <label>Stock *</label>
         <input type="number" name="stock" min="0" required value="<?= (int) ($prod['stock'] ?? 0) ?>">
+<<<<<<< HEAD
         <label class="fo-form-check">
             <input type="checkbox" name="actif" value="1" <?= !empty($prod['actif']) ? 'checked' : '' ?>>
             <span>Visible sur le catalogue</span>
@@ -114,6 +135,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="fo-btn fo-btn--primary">Enregistrer</button>
             <a href="mesProduits.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">Annuler</a>
         </div>
+=======
+        <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
+            <input type="checkbox" name="actif" value="1" <?= !empty($prod['actif']) ? 'checked' : '' ?>> Visible sur le catalogue
+        </label>
+        <button type="submit" style="margin-top:16px">Enregistrer</button>
+        <a href="mesProduits.php" class="hint" style="margin-left:12px">Annuler</a>
+>>>>>>> 96660fcd9ebe09e5096ec93bcc2fbc328e0aeca5
     </form>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>
