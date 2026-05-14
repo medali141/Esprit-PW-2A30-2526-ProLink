@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../init.php';
-requireLogin('Connectez-vous pour consulter cet événement.');
 require_once __DIR__ . '/../../controller/eventC.php';
 require_once __DIR__ . '/../../controller/participationC.php';
 require_once __DIR__ . '/../../model/participation.php';
@@ -37,6 +36,26 @@ if ($ev && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 function fo_format_date2(string $d): string {
     $t = strtotime($d);
     return $t ? date('d/m/Y', $t) : $d;
+}
+
+function fo_event_photo_src2(array $ev): string {
+    $candidates = ['photo_event', 'image_event', 'image', 'photo'];
+    $raw = '';
+    foreach ($candidates as $k) {
+        if (!empty($ev[$k]) && is_string($ev[$k])) {
+            $raw = trim((string) $ev[$k]);
+            if ($raw !== '') {
+                break;
+            }
+        }
+    }
+    if ($raw === '') {
+        return '../assets/event-placeholder.svg';
+    }
+    if (preg_match('#^https?://#i', $raw) || str_starts_with($raw, '../') || str_starts_with($raw, '/')) {
+        return $raw;
+    }
+    return '../' . ltrim($raw, '/');
 }
 
 $defNom = $sessionUser['nom'] ?? '';
@@ -82,6 +101,9 @@ $defEmail = $sessionUser['email'] ?? '';
 
         <div class="fo-event-detail">
             <div class="fo-event-detail__info fo-form-card">
+                <div class="fo-event-media fo-event-media--detail">
+                    <img src="<?= htmlspecialchars(fo_event_photo_src2($ev)) ?>" alt="Photo de l'événement <?= htmlspecialchars((string) ($ev['titre_event'] ?? '')) ?>" loading="lazy">
+                </div>
                 <p class="fo-event-badges">
                     <span class="fo-event-pill"><?= htmlspecialchars($ev['type_event']) ?></span>
                     <?php if ($complet): ?>
