@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../init.php';
-requireLogin('Connectez-vous pour consulter les événements.');
 require_once __DIR__ . '/../../controller/eventC.php';
 
 $ec = new EventC();
@@ -9,6 +8,26 @@ $events = $ec->listeEvenementsPublic();
 function fo_format_date(string $d): string {
     $t = strtotime($d);
     return $t ? date('d/m/Y', $t) : $d;
+}
+
+function fo_event_photo_src(array $ev): string {
+    $candidates = ['photo_event', 'image_event', 'image', 'photo'];
+    $raw = '';
+    foreach ($candidates as $k) {
+        if (!empty($ev[$k]) && is_string($ev[$k])) {
+            $raw = trim((string) $ev[$k]);
+            if ($raw !== '') {
+                break;
+            }
+        }
+    }
+    if ($raw === '') {
+        return '../assets/event-placeholder.svg';
+    }
+    if (preg_match('#^https?://#i', $raw) || str_starts_with($raw, '../') || str_starts_with($raw, '/')) {
+        return $raw;
+    }
+    return '../' . ltrim($raw, '/');
 }
 ?>
 <!DOCTYPE html>
@@ -44,6 +63,9 @@ function fo_format_date(string $d): string {
             $dfin = fo_format_date((string) ($ev['date_fin'] ?? ''));
         ?>
             <article class="fo-product-card<?= $complet ? ' fo-product-card--out' : '' ?>">
+                <div class="fo-event-media">
+                    <img src="<?= htmlspecialchars(fo_event_photo_src($ev)) ?>" alt="Photo de l'événement <?= htmlspecialchars((string) ($ev['titre_event'] ?? '')) ?>" loading="lazy">
+                </div>
                 <h2><?= htmlspecialchars($ev['titre_event'] ?? '') ?></h2>
                 <span class="fo-ref"><?= htmlspecialchars($ev['type_event'] ?? '') ?> · <?= htmlspecialchars($ddeb) ?> → <?= htmlspecialchars($dfin) ?></span>
                 <?php if ($short !== ''): ?>
