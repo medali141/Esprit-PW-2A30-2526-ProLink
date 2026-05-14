@@ -22,7 +22,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         header('Location: liste_categories.php?ok=1');
         exit;
     }
+<<<<<<< HEAD
     $err = $fc->getLastPublicError() ?: 'Titre requis.';
+=======
+    $err = 'Titre requis.';
+>>>>>>> formation
 }
 ?>
 <!DOCTYPE html>
@@ -42,9 +46,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         </div>
     </div>
     <div class="card" style="max-width:560px;margin:0 auto">
+<<<<<<< HEAD
         <?php if ($err): ?>
             <p style="color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin:0 0 12px"><?= htmlspecialchars($err) ?></p>
         <?php endif; ?>
+=======
+        <?php if ($err): ?><p style="color:#b91c1c"><?= htmlspecialchars($err) ?></p><?php endif; ?>
+>>>>>>> formation
         <form method="post" style="display:grid;gap:12px">
             <div>
                 <label for="titre">Titre *</label>

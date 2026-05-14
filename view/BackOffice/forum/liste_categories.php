@@ -7,6 +7,7 @@ $fc = new ForumController();
 if (empty($_SESSION['forum_csrf'])) {
     $_SESSION['forum_csrf'] = bin2hex(random_bytes(16));
 }
+<<<<<<< HEAD
 
 $allowedSort = ['id_categorie', 'titre', 'description', 'ordre'];
 $sort = (string) ($_GET['sort'] ?? 'ordre');
@@ -16,6 +17,8 @@ if (!in_array($sort, $allowedSort, true)) {
 }
 $dir = strtoupper($dir) === 'DESC' ? 'desc' : 'asc';
 
+=======
+>>>>>>> formation
 $err = '';
 $ok = isset($_GET['ok']);
 
@@ -25,14 +28,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['add_cat'])) {
         (string) ($_POST['description'] ?? ''),
         (int) ($_POST['ordre'] ?? 0)
     )) {
+<<<<<<< HEAD
         header('Location: liste_categories.php?ok=1&sort=' . urlencode($sort) . '&dir=' . urlencode($dir));
         exit;
     }
     $err = $fc->getLastPublicError() ?: 'Titre requis.';
+=======
+        header('Location: liste_categories.php?ok=1');
+        exit;
+    }
+    $err = 'Titre requis.';
+>>>>>>> formation
 }
 
 if (isset($_GET['delete'], $_GET['token']) && (string) $_GET['token'] === ($_SESSION['forum_csrf'] ?? '')) {
     $fc->deleteCategory((int) $_GET['delete']);
+<<<<<<< HEAD
     header('Location: liste_categories.php?ok=1&sort=' . urlencode($sort) . '&dir=' . urlencode($dir));
     exit;
 }
@@ -55,6 +66,13 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     }
     return strtolower($dir) === 'asc' ? ' ↑' : ' ↓';
 };
+=======
+    header('Location: liste_categories.php?ok=1');
+    exit;
+}
+
+$liste = $fc->listCategories();
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -62,6 +80,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     <meta charset="UTF-8">
     <title>Forum — catégories</title>
     <link rel="stylesheet" href="<?= htmlspecialchars(bo_url('commerce.css')) ?>">
+<<<<<<< HEAD
     <style>
         .fc-sort-col { cursor: pointer; user-select: none; }
         .fc-sort-col a { color: inherit; text-decoration: none; }
@@ -70,6 +89,8 @@ $sortMark = static function (string $col) use ($sort, $dir) {
         .fc-search input { flex: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
         .fc-search .fc-count { color:#64748b; font-size:0.85rem; white-space:nowrap; }
     </style>
+=======
+>>>>>>> formation
 </head>
 <body>
 <?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
@@ -82,9 +103,13 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     </div>
     <div class="card" style="max-width: 900px; margin: 0 auto 20px;">
         <h2 style="margin-top:0;font-size:1.1rem">Ajouter une catégorie</h2>
+<<<<<<< HEAD
         <?php if ($err): ?>
             <p class="error" style="color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin:0 0 10px"><?= htmlspecialchars($err) ?></p>
         <?php endif; ?>
+=======
+        <?php if ($err): ?><p class="error" style="color:#b91c1c"><?= htmlspecialchars($err) ?></p><?php endif; ?>
+>>>>>>> formation
         <form method="post" class="form-grid" style="display:grid;gap:10px;grid-template-columns:1fr 1fr auto;align-items:end">
             <div>
                 <label for="titre">Titre</label>
@@ -106,6 +131,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     <?php if ($ok): ?>
         <p class="alert" style="max-width:900px;margin:0 auto 16px;padding:10px 14px;border-radius:8px;background:#ecfdf5;color:#047857;font-weight:600">Enregistré.</p>
     <?php endif; ?>
+<<<<<<< HEAD
 
     <div class="fc-search">
         <input type="text" id="fcSearch" placeholder="Rechercher une catégorie (titre, description, ordre)..." autocomplete="off">
@@ -122,19 +148,37 @@ $sortMark = static function (string $col) use ($sort, $dir) {
                     <th class="fc-sort-col"><a href="<?= htmlspecialchars($sortUrl('ordre')) ?>">Ordre<?= $sortMark('ordre') ?></a></th>
                     <th class="fc-sort-col"><a href="<?= htmlspecialchars($sortUrl('titre')) ?>">Titre<?= $sortMark('titre') ?></a></th>
                     <th class="fc-sort-col"><a href="<?= htmlspecialchars($sortUrl('description')) ?>">Description<?= $sortMark('description') ?></a></th>
+=======
+    <div class="card" style="max-width:900px;margin:0 auto">
+        <h2 style="margin-top:0;font-size:1.1rem">Liste</h2>
+        <div style="overflow-x:auto">
+            <table class="table-modern" style="width:100%;border-collapse:collapse">
+                <thead>
+                <tr>
+                    <th>Ordre</th>
+                    <th>Titre</th>
+                    <th>Description</th>
+>>>>>>> formation
                     <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($liste as $c): ?>
                     <tr>
+<<<<<<< HEAD
                         <td><?= (int) $c['id_categorie'] ?></td>
+=======
+>>>>>>> formation
                         <td><?= (int) $c['ordre'] ?></td>
                         <td><strong><?= htmlspecialchars((string) $c['titre']) ?></strong></td>
                         <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis"><?= nl2br(htmlspecialchars((string) ($c['description'] ?? ''))) ?></td>
                         <td>
                             <a class="btn btn-sm btn-secondary" href="<?= htmlspecialchars(bo_url('forum/modifier_categorie.php?id=' . (int) $c['id_categorie'])) ?>">Modifier</a>
+<<<<<<< HEAD
                             <a class="btn btn-sm btn-danger" href="<?= htmlspecialchars(bo_url('forum/liste_categories.php?delete=' . (int) $c['id_categorie'] . '&token=' . urlencode((string) $_SESSION['forum_csrf']) . '&sort=' . urlencode($sort) . '&dir=' . urlencode($dir))) ?>" onclick="return confirm('Supprimer cette catégorie et tous les sujets associés ?');">Suppr.</a>
+=======
+                            <a class="btn btn-sm btn-danger" href="<?= htmlspecialchars(bo_url('forum/liste_categories.php?delete=' . (int) $c['id_categorie'] . '&token=' . urlencode((string) $_SESSION['forum_csrf']))) ?>" onclick="return confirm('Supprimer cette catégorie et tous les sujets associés ?');">Suppr.</a>
+>>>>>>> formation
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -146,6 +190,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
         <?php endif; ?>
     </div>
 </div>
+<<<<<<< HEAD
 
 <script>
 (function () {
@@ -176,5 +221,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     input.addEventListener('input', filter);
 })();
 </script>
+=======
+>>>>>>> formation
 </body>
 </html>

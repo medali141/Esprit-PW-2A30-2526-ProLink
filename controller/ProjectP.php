@@ -13,6 +13,7 @@ class ProjectP {
         }
     }
 
+<<<<<<< HEAD
     /**
      * @return int|false id du projet créé, ou false en cas d’échec
      */
@@ -26,6 +27,13 @@ class ProjectP {
             }
             $id = (int) $db->lastInsertId();
             return $id > 0 ? $id : false;
+=======
+    public function add(array $data): bool {
+        $db = Config::getConnexion();
+        try {
+            $st = $db->prepare('INSERT INTO project (title, description, owner_id, status) VALUES (:title, :desc, :owner, :status)');
+            return $st->execute(['title'=>$data['title'] ?? '', 'desc'=>$data['description'] ?? '', 'owner'=> $data['owner_id'] ?? null, 'status'=>$data['status'] ?? 'draft']);
+>>>>>>> formation
         } catch (Exception $e) { return false; }
     }
 

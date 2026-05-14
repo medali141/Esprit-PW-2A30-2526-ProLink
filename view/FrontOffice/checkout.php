@@ -2,6 +2,7 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+<<<<<<< HEAD
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -9,6 +10,11 @@ require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ProduitController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
 require_once __DIR__ . '/../../model/CommerceRegles.php';
+=======
+require_once __DIR__ . '/../../controller/AuthController.php';
+require_once __DIR__ . '/../../controller/ProduitController.php';
+require_once __DIR__ . '/../../controller/CommandeController.php';
+>>>>>>> formation
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -23,6 +29,7 @@ if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart']) || !array_sum($_SE
 }
 
 $error = '';
+<<<<<<< HEAD
 $info = '';
 $usePointsInput = isset($_POST['use_points']) ? (string) $_POST['use_points'] === '1' : false;
 $paymentMethodInput = (string) ($_POST['payment_method'] ?? 'cash_on_delivery');
@@ -33,10 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_POST['csrf_token']) || !hash_equals((string) $_SESSION['csrf_token'], (string) ($_POST['csrf_token'] ?? ''))) {
         $error = 'Session expirée. Rechargez la page puis recommencez.';
     }
+=======
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+>>>>>>> formation
     $adr = trim($_POST['adresse_livraison'] ?? '');
     $cp = trim($_POST['code_postal'] ?? '');
     $ville = trim($_POST['ville'] ?? '');
     $pays = trim($_POST['pays'] ?? 'Tunisie');
+<<<<<<< HEAD
     $tel = trim($_POST['telephone_livraison'] ?? '');
     $notes = trim($_POST['notes'] ?? '');
     $cardName = trim((string) ($_POST['card_name'] ?? ''));
@@ -67,6 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     if ($error === '') {
+=======
+    $notes = trim($_POST['notes'] ?? '');
+    if ($adr === '' || $cp === '' || $ville === '') {
+        $error = 'Adresse, code postal et ville sont obligatoires.';
+    } else {
+>>>>>>> formation
         try {
             $cmdP = new CommandeController();
             $idCmd = $cmdP->createFromCart((int) $u['iduser'], $_SESSION['cart'], [
@@ -74,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'code_postal' => $cp,
                 'ville' => $ville,
                 'pays' => $pays !== '' ? $pays : 'Tunisie',
+<<<<<<< HEAD
                 'telephone_livraison' => $tel,
                 'notes' => $notes !== '' ? $notes : null,
                 'use_points' => $usePointsInput,
@@ -95,6 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
             }
+=======
+                'notes' => $notes !== '' ? $notes : null,
+            ]);
+            $_SESSION['cart'] = [];
+>>>>>>> formation
             header('Location: mesCommandes.php?new=' . $idCmd);
             exit;
         } catch (Throwable $e) {
@@ -111,12 +134,15 @@ foreach ($_SESSION['cart'] as $pid => $qte) {
         $total += (float) $p['prix_unitaire'] * (int) $qte;
     }
 }
+<<<<<<< HEAD
 $currentPoints = (int) ($u['points_fidelite'] ?? 0);
 $currentPointsTnd = CommerceRegles::dinarFromPoints($currentPoints);
 $discountPreview = $usePointsInput ? min($currentPointsTnd, $total) : 0.0;
 $payablePreview = max(0.0, $total - $discountPreview);
 $earnedAfterDiscount = CommerceRegles::pointsFromAmount($payablePreview);
 $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la livraison (cash)';
+=======
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -133,14 +159,19 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
 <main class="container fo-page">
     <header class="fo-hero">
         <h1>Valider la commande</h1>
+<<<<<<< HEAD
         <p class="fo-lead">Montant articles <strong><?= number_format($total, 3, ',', ' ') ?> TND</strong> — livraison <strong>gratuite</strong> sur toutes les commandes.</p>
         <p class="fo-lead" style="margin-top:8px">
             Fidélité: solde <strong><?= $currentPoints ?> pts</strong> (<?= number_format($currentPointsTnd, 3, ',', ' ') ?> TND).
         </p>
+=======
+        <p class="fo-lead">Montant estimé <strong><?= number_format($total, 3, ',', ' ') ?> TND</strong> — statut « en attente de paiement » jusqu’au traitement par l’administrateur.</p>
+>>>>>>> formation
     </header>
     <?php if ($error): ?>
         <p class="fo-banner fo-banner--err"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
+<<<<<<< HEAD
     <?php if ($info): ?>
         <p class="fo-banner"><?= htmlspecialchars($info) ?></p>
     <?php endif; ?>
@@ -197,12 +228,28 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
         <textarea name="notes" rows="2"><?= htmlspecialchars($_POST['notes'] ?? '') ?></textarea>
         <div class="fo-actions" style="margin-top:20px">
             <button type="submit" class="fo-btn fo-btn--primary"><?= $paymentMethodInput === 'card' ? 'Continuer vers verification carte' : 'Confirmer la commande' ?></button>
+=======
+    <form method="post" class="fo-checkout-card" novalidate data-validate="checkout-form">
+        <label>Adresse de livraison *</label>
+        <input type="text" name="adresse_livraison" required value="<?= htmlspecialchars($_POST['adresse_livraison'] ?? '') ?>">
+        <label>Code postal *</label>
+        <input type="text" name="code_postal" required value="<?= htmlspecialchars($_POST['code_postal'] ?? '') ?>">
+        <label>Ville *</label>
+        <input type="text" name="ville" required value="<?= htmlspecialchars($_POST['ville'] ?? '') ?>">
+        <label>Pays</label>
+        <input type="text" name="pays" value="<?= htmlspecialchars($_POST['pays'] ?? 'Tunisie') ?>">
+        <label>Notes (optionnel)</label>
+        <textarea name="notes" rows="2"><?= htmlspecialchars($_POST['notes'] ?? '') ?></textarea>
+        <div class="fo-actions" style="margin-top:20px">
+            <button type="submit" class="fo-btn fo-btn--primary">Confirmer la commande</button>
+>>>>>>> formation
             <a href="panier.php" class="fo-btn fo-btn--secondary" style="text-decoration:none">Retour panier</a>
         </div>
     </form>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>
 <script src="../assets/forms-validation.js"></script>
+<<<<<<< HEAD
 <script>
 (function () {
     var radios = document.querySelectorAll('input[name="payment_method"]');
@@ -303,5 +350,7 @@ $payLabel = $paymentMethodInput === 'card' ? 'Carte bancaire' : 'Paiement à la 
     refreshEstimate();
 })();
 </script>
+=======
+>>>>>>> formation
 </body>
 </html>

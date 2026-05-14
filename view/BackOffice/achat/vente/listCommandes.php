@@ -10,6 +10,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     exit;
 }
 require_once __DIR__ . '/../../../../controller/CommandeController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../../../model/CommerceRegles.php';
 $cp = new CommandeController();
 $q = trim((string) ($_GET['q'] ?? ''));
@@ -35,6 +36,10 @@ $totalPages = max(1, (int) ceil($totalRows / $perPage));
 $page = CommerceRegles::sanitizePage($page, $totalPages);
 $start = ($page - 1) * $perPage;
 $rows = array_slice($list, $start, $perPage);
+=======
+$cp = new CommandeController();
+$list = $cp->listAllAdmin();
+>>>>>>> formation
 
 $labels = [
     'brouillon' => 'Brouillon',
@@ -45,6 +50,7 @@ $labels = [
     'livree' => 'Livrée',
     'annulee' => 'Annulée',
 ];
+<<<<<<< HEAD
 $paymentLabels = [
     'card' => 'Carte bancaire',
     'cash_on_delivery' => 'Cash livraison',
@@ -69,6 +75,8 @@ if ($tri !== 'date') {
 if ($ordre !== 'desc') {
     $activeFilters[] = ['k' => 'Ordre', 'v' => 'Croissant'];
 }
+=======
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -76,10 +84,17 @@ if ($ordre !== 'desc') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Commandes — Commerce</title>
+<<<<<<< HEAD
 </head>
 <body>
 <?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <link rel="stylesheet" href="../../commerce.css">
+=======
+    <link rel="stylesheet" href="../../commerce.css">
+</head>
+<body>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
+>>>>>>> formation
 <div class="content commerce-page">
     <div class="container">
         <div class="topbar">
@@ -88,6 +103,7 @@ if ($ordre !== 'desc') {
                 <p class="hint" style="margin:6px 0 0">Montants TND · statuts · livraison</p>
             </div>
             <div class="actions">
+<<<<<<< HEAD
                 <a href="reclamationsCommandes.php" class="btn btn-secondary">Réclamations</a>
                 <a href="gestionAchats.php" class="btn btn-secondary">← Achats</a>
             </div>
@@ -136,6 +152,12 @@ if ($ordre !== 'desc') {
         <?php if ($q !== '' || $statut !== ''): ?>
             <p class="commerce-result-hint"><?= $totalRows ?> résultat(s)</p>
         <?php endif; ?>
+=======
+                <input class="search-input" placeholder="Rechercher…" id="searchInput" aria-label="Filtrer le tableau">
+                <a href="commerceHub.php" class="btn btn-secondary">← Hub</a>
+            </div>
+        </div>
+>>>>>>> formation
         <div class="commerce-table-wrap">
         <table class="table-modern" id="dataTable">
             <thead>
@@ -143,29 +165,42 @@ if ($ordre !== 'desc') {
                 <th>#</th>
                 <th>Date</th>
                 <th>Acheteur</th>
+<<<<<<< HEAD
                 <th>Articles</th>
                 <th>Lignes</th>
                 <th>Montant</th>
                 <th>Paiement</th>
+=======
+                <th>Montant</th>
+>>>>>>> formation
                 <th>Statut</th>
                 <th>Ville</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
+<<<<<<< HEAD
             <?php foreach ($rows as $c) {
                 $st = $c['statut'] ?? '';
                 $payMode = (string) ($c['mode_paiement'] ?? 'cash_on_delivery');
+=======
+            <?php foreach ($list as $c) {
+                $st = $c['statut'] ?? '';
+>>>>>>> formation
                 $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
             ?>
                 <tr>
                     <td><strong>#<?= (int) $c['idcommande'] ?></strong></td>
                     <td><?= htmlspecialchars($c['date_commande']) ?></td>
                     <td><?= htmlspecialchars(trim(($c['prenom'] ?? '') . ' ' . ($c['nom'] ?? ''))) ?><br><span class="hint"><?= htmlspecialchars($c['email'] ?? '') ?></span></td>
+<<<<<<< HEAD
                     <td><?= (int) ($c['nb_articles'] ?? 0) ?></td>
                     <td><?= (int) ($c['nb_lignes'] ?? 0) ?></td>
                     <td><strong><?= number_format((float) $c['montant_total'], 3, ',', ' ') ?> TND</strong></td>
                     <td><?= htmlspecialchars($paymentLabels[$payMode] ?? $payMode) ?></td>
+=======
+                    <td><strong><?= number_format((float) $c['montant_total'], 3, ',', ' ') ?> TND</strong></td>
+>>>>>>> formation
                     <td><span class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($labels[$st] ?? $st) ?></span></td>
                     <td><?= htmlspecialchars($c['ville'] ?? '') ?></td>
                     <td><a class="btn btn-secondary" href="detailCommande.php?id=<?= (int) $c['idcommande'] ?>">Détail</a></td>
@@ -174,6 +209,7 @@ if ($ordre !== 'desc') {
             </tbody>
         </table>
         </div>
+<<<<<<< HEAD
         <?php if ($totalPages > 1): ?>
             <div class="commerce-filters__actions" style="margin-top:12px">
                 <?php if ($page > 1): ?>
@@ -196,6 +232,17 @@ if ($ordre !== 'desc') {
         selects[i].addEventListener('change', function () { form.submit(); });
     }
 })();
+=======
+    </div>
+</div>
+<script>
+document.getElementById('searchInput').addEventListener('input', function(e){
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#dataTable tbody tr').forEach(function(r){
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+>>>>>>> formation
 </script>
 </body>
 </html>

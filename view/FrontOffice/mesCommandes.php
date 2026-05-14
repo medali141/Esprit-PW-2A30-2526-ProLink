@@ -4,7 +4,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/CommandeController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../model/CommerceRegles.php';
+=======
+>>>>>>> formation
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -14,6 +17,7 @@ if (!$u) {
 }
 
 $cp = new CommandeController();
+<<<<<<< HEAD
 $q = trim((string) ($_GET['q'] ?? ''));
 $tri = (string) ($_GET['tri'] ?? 'date');
 $triAllowed = ['date', 'id', 'montant', 'statut', 'ville'];
@@ -22,11 +26,16 @@ if (!in_array($tri, $triAllowed, true)) {
 }
 $ordre = strtolower((string) ($_GET['ordre'] ?? 'desc')) === 'asc' ? 'asc' : 'desc';
 $statut = (string) ($_GET['statut'] ?? '');
+=======
+$list = $cp->listByAcheteur((int) $u['iduser']);
+
+>>>>>>> formation
 $labels = [
     'brouillon' => 'Brouillon',
     'en_attente_paiement' => 'En attente paiement',
     'payee' => 'Payée',
     'en_preparation' => 'En préparation',
+<<<<<<< HEAD
     'expediee' => 'En cours de livraison',
     'livree' => 'Livrée',
     'annulee' => 'Annulée',
@@ -59,6 +68,13 @@ foreach ($list as $cmdRow) {
     }
     $pointsTotalVisible += CommerceRegles::pointsFromAmount((float) ($cmdRow['montant_total'] ?? 0));
 }
+=======
+    'expediee' => 'Expédiée',
+    'livree' => 'Livrée',
+    'annulee' => 'Annulée',
+];
+$newId = isset($_GET['new']) ? (int) $_GET['new'] : 0;
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -75,6 +91,7 @@ foreach ($list as $cmdRow) {
 <main class="container fo-page">
     <header class="fo-hero">
         <h1>Mes commandes</h1>
+<<<<<<< HEAD
         <p class="fo-lead">Historique, montants en TND, points fidélité et numéro de suivi communiqué par l’administrateur.</p>
     </header>
     <div class="fo-track-panel" role="status">
@@ -137,6 +154,14 @@ foreach ($list as $cmdRow) {
         <p class="fo-result-hint"><?= $totalRows ?> commande(s)</p>
     <?php endif; ?>
     <?php if (empty($rows)): ?>
+=======
+        <p class="fo-lead">Historique, montants en TND et numéro de suivi communiqué par l’administrateur.</p>
+    </header>
+    <?php if ($newId > 0): ?>
+        <p class="fo-banner fo-banner--ok" role="status">Commande #<?= $newId ?> enregistrée. Suivi et statut sont gérés côté administration.</p>
+    <?php endif; ?>
+    <?php if (empty($list)): ?>
+>>>>>>> formation
         <div class="fo-empty">
             <p class="hint" style="margin:0 0 12px">Aucune commande pour l’instant.</p>
             <a href="catalogue.php">Parcourir le catalogue</a>
@@ -144,6 +169,7 @@ foreach ($list as $cmdRow) {
     <?php else: ?>
         <div class="fo-table-wrap">
         <table class="table-modern">
+<<<<<<< HEAD
             <thead><tr><th>#</th><th>Date</th><th>Articles</th><th>Lignes</th><th>Montant</th><th>Paiement</th><th>Points</th><th>Statut</th><th>Ville</th><th>N° suivi</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($rows as $c):
@@ -152,10 +178,18 @@ foreach ($list as $cmdRow) {
                 $badgeClass = 'fo-badge fo-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
                 $pointsLigne = CommerceRegles::pointsFromAmount((float) ($c['montant_total'] ?? 0));
                 $canInvoice = !in_array($st, ['brouillon', 'annulee'], true);
+=======
+            <thead><tr><th>#</th><th>Date</th><th>Montant</th><th>Statut</th><th>Ville</th><th>Suivi</th></tr></thead>
+            <tbody>
+            <?php foreach ($list as $c):
+                $st = $c['statut'] ?? '';
+                $badgeClass = 'fo-badge fo-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
+>>>>>>> formation
             ?>
                 <tr>
                     <td><strong>#<?= (int) $c['idcommande'] ?></strong></td>
                     <td><?= htmlspecialchars($c['date_commande']) ?></td>
+<<<<<<< HEAD
                     <td><?= (int) ($c['nb_articles'] ?? 0) ?></td>
                     <td><?= (int) ($c['nb_lignes'] ?? 0) ?></td>
                     <td><?= number_format((float) $c['montant_total'], 3, ',', ' ') ?> TND</td>
@@ -173,11 +207,18 @@ foreach ($list as $cmdRow) {
                             <?php endif; ?>
                         </div>
                     </td>
+=======
+                    <td><?= number_format((float) $c['montant_total'], 3, ',', ' ') ?> TND</td>
+                    <td><span class="<?= htmlspecialchars($badgeClass) ?>"><?= htmlspecialchars($labels[$st] ?? $st) ?></span></td>
+                    <td><?= htmlspecialchars($c['ville'] ?? '') ?></td>
+                    <td><?= htmlspecialchars((string) ($c['numero_suivi'] ?? '—')) ?></td>
+>>>>>>> formation
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
         </div>
+<<<<<<< HEAD
         <?php if ($totalPages > 1): ?>
             <div class="fo-actions fo-actions--pager">
                 <?php if ($page > 1): ?>
@@ -189,6 +230,8 @@ foreach ($list as $cmdRow) {
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+=======
+>>>>>>> formation
     <?php endif; ?>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>

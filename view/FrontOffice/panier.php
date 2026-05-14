@@ -2,15 +2,19 @@
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
+<<<<<<< HEAD
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
+=======
+>>>>>>> formation
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
+<<<<<<< HEAD
 $allowedPanierTri = ['designation', 'prix_asc', 'prix_desc', 'ligne_asc', 'ligne_desc'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
@@ -22,6 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
     if (!in_array($triRedirect, $allowedPanierTri, true)) {
         $triRedirect = 'designation';
     }
+=======
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
+>>>>>>> formation
     foreach ($_POST['qty'] as $pid => $q) {
         $pid = (int) $pid;
         $q = max(0, (int) $q);
@@ -31,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
             $_SESSION['cart'][$pid] = $q;
         }
     }
+<<<<<<< HEAD
     header('Location: panier.php?tri=' . rawurlencode($triRedirect));
     exit;
 }
@@ -38,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['qty'])) {
 $triPanier = (string) ($_GET['tri'] ?? 'designation');
 if (!in_array($triPanier, $allowedPanierTri, true)) {
     $triPanier = 'designation';
+=======
+>>>>>>> formation
 }
 
 $pp = new ProduitController();
@@ -64,6 +74,7 @@ foreach ($_SESSION['cart'] as $pid => $qte) {
     $total += $sub;
     $lines[] = ['p' => $p, 'qte' => $qte, 'sub' => $sub];
 }
+<<<<<<< HEAD
 
 if (!empty($lines)) {
     usort($lines, static function (array $a, array $b) use ($triPanier): int {
@@ -84,6 +95,8 @@ if (!empty($lines)) {
         }
     });
 }
+=======
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -102,15 +115,21 @@ if (!empty($lines)) {
         <h1>Panier</h1>
         <p class="fo-lead">Ajustez les quantités puis passez commande ou continuez vos achats sur le catalogue.</p>
     </header>
+<<<<<<< HEAD
     <?php if (isset($_GET['csrf'])): ?>
         <p class="fo-banner fo-banner--err">Session expirée. Rechargez la page puis réessayez.</p>
     <?php endif; ?>
     <?php if (empty($lines)): ?>
         <div class="fo-empty fo-empty--cart">
+=======
+    <?php if (empty($lines)): ?>
+        <div class="fo-empty">
+>>>>>>> formation
             <p class="hint" style="margin:0 0 12px">Votre panier est vide.</p>
             <a href="catalogue.php">Voir le catalogue</a>
         </div>
     <?php else: ?>
+<<<<<<< HEAD
         <form method="get" class="fo-filters fo-filters--inline" action="panier.php" aria-label="Tri du panier">
             <div class="fo-filters__field">
                 <label for="pan-tri">Trier l’affichage</label>
@@ -126,6 +145,9 @@ if (!empty($lines)) {
         <form method="post" class="fo-form-card fo-form-card--wide" novalidate data-validate="panier-form" action="panier.php?tri=<?= rawurlencode($triPanier) ?>">
             <input type="hidden" name="sort_tri" value="<?= htmlspecialchars($triPanier) ?>">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string) $_SESSION['csrf_token']) ?>">
+=======
+        <form method="post" class="fo-form-card" novalidate data-validate="panier-form" style="max-width:none">
+>>>>>>> formation
             <div class="fo-table-wrap">
             <table class="table-modern">
                 <thead><tr><th>Produit</th><th>Prix unitaire</th><th>Qté</th><th>Sous-total</th></tr></thead>
@@ -134,13 +156,18 @@ if (!empty($lines)) {
                     <tr>
                         <td><strong><?= htmlspecialchars($row['p']['designation']) ?></strong><br><span class="hint"><?= htmlspecialchars($row['p']['reference']) ?></span></td>
                         <td><?= number_format((float) $row['p']['prix_unitaire'], 3, ',', ' ') ?> TND</td>
+<<<<<<< HEAD
                         <td><input type="text" name="qty[<?= (int) $row['p']['idproduit'] ?>]" data-min="0" data-max="<?= (int) $row['p']['stock'] ?>" inputmode="numeric" value="<?= (int) $row['qte'] ?>" style="width:88px"></td>
+=======
+                        <td><input type="number" name="qty[<?= (int) $row['p']['idproduit'] ?>]" min="0" max="<?= (int) $row['p']['stock'] ?>" value="<?= (int) $row['qte'] ?>" style="width:88px"></td>
+>>>>>>> formation
                         <td><strong><?= number_format($row['sub'], 3, ',', ' ') ?> TND</strong></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
             </table>
             </div>
+<<<<<<< HEAD
             <div class="fo-cart-summary">
                 Sous-total articles : <?= number_format($total, 3, ',', ' ') ?> TND<br>
                 Livraison : 0,000 TND (offerte)<br>
@@ -150,6 +177,13 @@ if (!empty($lines)) {
                 <button type="submit" class="fo-btn fo-btn--secondary">Mettre à jour le panier</button>
                 <a href="checkout.php" class="fo-btn fo-btn--primary">Commander</a>
                 <a href="catalogue.php" class="fo-link-soft">Continuer les achats</a>
+=======
+            <div class="fo-cart-summary">Total : <?= number_format($total, 3, ',', ' ') ?> TND</div>
+            <div class="fo-actions">
+                <button type="submit" class="fo-btn fo-btn--secondary">Mettre à jour le panier</button>
+                <a href="checkout.php" class="fo-btn fo-btn--primary">Commander</a>
+                <a href="catalogue.php" class="hint" style="align-self:center">Continuer les achats</a>
+>>>>>>> formation
             </div>
         </form>
     <?php endif; ?>

@@ -3,24 +3,36 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../../controller/AuthController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../../controller/ForumController.php';
+=======
+>>>>>>> formation
 $__dashUser = (new AuthController())->profile();
 if (!$__dashUser || strtolower($__dashUser['type'] ?? '') !== 'admin') {
     header('Location: ../../login.php');
     exit;
 }
 $nu = $np = $nc = 0;
+<<<<<<< HEAD
 $nFCat = $nFSuj = $nFMsg = 0;
+=======
+>>>>>>> formation
 $dateKeys = [];
 $labelsFr = [];
 $seriesOrders = [];
 $seriesRevenue = [];
 $seriesUsers = [];
+<<<<<<< HEAD
 $seriesForumMsg = [];
 $dataOrders = [];
 $dataRevenue = [];
 $dataUsers = [];
 $dataForumMsg = [];
+=======
+$dataOrders = [];
+$dataRevenue = [];
+$dataUsers = [];
+>>>>>>> formation
 try {
     require_once __DIR__ . '/../../../config.php';
     $__db = Config::getConnexion();
@@ -28,11 +40,14 @@ try {
     $np = (int) $__db->query('SELECT COUNT(*) FROM produit WHERE actif = 1')->fetchColumn();
     $nc = (int) $__db->query('SELECT COUNT(*) FROM commande')->fetchColumn();
 
+<<<<<<< HEAD
     $__fc = new ForumController();
     $nFCat = $__fc->countCategories();
     $nFSuj = $__fc->countSujets();
     $nFMsg = $__fc->countMessages();
 
+=======
+>>>>>>> formation
     $days = 14;
     $endD = new DateTimeImmutable('today');
     $startD = $endD->modify('-' . ($days - 1) . ' days');
@@ -45,7 +60,10 @@ try {
     $seriesOrders = array_fill_keys($dateKeys, 0);
     $seriesRevenue = array_fill_keys($dateKeys, 0.0);
     $seriesUsers = array_fill_keys($dateKeys, 0);
+<<<<<<< HEAD
     $seriesForumMsg = array_fill_keys($dateKeys, 0);
+=======
+>>>>>>> formation
 
     $a = $startD->format('Y-m-d');
     $b = $endD->format('Y-m-d');
@@ -72,6 +90,7 @@ try {
             $seriesUsers[$dk] = (int) $row['cnt'];
         }
     }
+<<<<<<< HEAD
     $st3 = $__db->prepare(
         'SELECT DATE(created_at) AS d, COUNT(*) AS cnt FROM `forum_message`
          WHERE DATE(created_at) BETWEEN :a AND :b GROUP BY DATE(created_at)'
@@ -83,23 +102,34 @@ try {
             $seriesForumMsg[$dk] = (int) $row['cnt'];
         }
     }
+=======
+>>>>>>> formation
 } catch (Throwable $e) {
 }
 foreach ($dateKeys as $k) {
     $dataOrders[] = (int) ($seriesOrders[$k] ?? 0);
     $dataRevenue[] = round((float) ($seriesRevenue[$k] ?? 0), 3);
     $dataUsers[] = (int) ($seriesUsers[$k] ?? 0);
+<<<<<<< HEAD
     $dataForumMsg[] = (int) ($seriesForumMsg[$k] ?? 0);
+=======
+>>>>>>> formation
 }
 $chartJson = json_encode([
     'labels' => $labelsFr,
     'orders' => $dataOrders,
     'revenue' => $dataRevenue,
     'users' => $dataUsers,
+<<<<<<< HEAD
     'forumMsg' => $dataForumMsg,
 ], JSON_UNESCAPED_UNICODE);
 if ($chartJson === false) {
     $chartJson = '{"labels":[],"orders":[],"revenue":[],"users":[],"forumMsg":[]}';
+=======
+], JSON_UNESCAPED_UNICODE);
+if ($chartJson === false) {
+    $chartJson = '{"labels":[],"orders":[],"revenue":[],"users":[]}';
+>>>>>>> formation
 }
 ?>
 <!DOCTYPE html>
@@ -170,7 +200,11 @@ if ($chartJson === false) {
             <div class="subtitle">Vue d'ensemble rapide — statistiques et actions</div>
         </div>
         <div class="actions">
+<<<<<<< HEAD
             <a class="btn btn-primary" href="../achat/vente/gestionAchats.php">Achat / vente</a>
+=======
+            <a class="btn btn-primary" href="../achat/vente/commerceHub.php">Achat / vente</a>
+>>>>>>> formation
             <a class="btn btn-secondary" href="../user/listUsers.php">Utilisateurs</a>
         </div>
     </div>
@@ -199,6 +233,7 @@ if ($chartJson === false) {
                 <p>Commandes</p>
             </div>
         </div>
+<<<<<<< HEAD
 
         <a class="stat-card stat-card--link" href="../forum/liste_categories.php" style="background: linear-gradient(135deg,#06b6d4,#0e7490); text-decoration:none;">
             <div class="icon">🗂️</div>
@@ -223,6 +258,8 @@ if ($chartJson === false) {
                 <p>Messages forum</p>
             </div>
         </a>
+=======
+>>>>>>> formation
     </section>
 
     <div style="height:18px"></div>
@@ -235,7 +272,11 @@ if ($chartJson === false) {
         <div class="card-light">
             <h4>Commerce</h4>
             <p style="margin-top:8px; color:#5b6b72">Produits, stocks, commandes et livraison.</p>
+<<<<<<< HEAD
             <p style="margin-top:10px"><a href="../achat/vente/gestionAchats.php">Ouvrir le hub achat / vente</a></p>
+=======
+            <p style="margin-top:10px"><a href="../achat/vente/commerceHub.php">Ouvrir le hub achat / vente</a></p>
+>>>>>>> formation
         </div>
         <div class="card-light">
             <h4>Analyses</h4>
@@ -258,10 +299,13 @@ if ($chartJson === false) {
                 <h4>Nouveaux utilisateurs</h4>
                 <div class="chart-wrap"><canvas id="chartUsers" aria-label="Graphique inscriptions"></canvas></div>
             </div>
+<<<<<<< HEAD
             <div class="chart-card">
                 <h4>Messages du forum par jour</h4>
                 <div class="chart-wrap"><canvas id="chartForumMsg" aria-label="Graphique messages du forum"></canvas></div>
             </div>
+=======
+>>>>>>> formation
         </div>
     </section>
 
@@ -357,6 +401,7 @@ if ($chartJson === false) {
             }
         }
     });
+<<<<<<< HEAD
 
     var forumCanvas = document.getElementById('chartForumMsg');
     if (forumCanvas) {
@@ -387,6 +432,8 @@ if ($chartJson === false) {
             }
         });
     }
+=======
+>>>>>>> formation
 })();
 </script>
 

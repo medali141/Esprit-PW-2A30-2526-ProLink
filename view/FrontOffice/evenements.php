@@ -9,6 +9,7 @@ function fo_format_date(string $d): string {
     $t = strtotime($d);
     return $t ? date('d/m/Y', $t) : $d;
 }
+<<<<<<< HEAD
 
 function fo_event_photo_src(array $ev): string {
     $candidates = ['photo_event', 'image_event', 'image', 'photo'];
@@ -29,6 +30,8 @@ function fo_event_photo_src(array $ev): string {
     }
     return '../' . ltrim($raw, '/');
 }
+=======
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -63,9 +66,12 @@ function fo_event_photo_src(array $ev): string {
             $dfin = fo_format_date((string) ($ev['date_fin'] ?? ''));
         ?>
             <article class="fo-product-card<?= $complet ? ' fo-product-card--out' : '' ?>">
+<<<<<<< HEAD
                 <div class="fo-event-media">
                     <img src="<?= htmlspecialchars(fo_event_photo_src($ev)) ?>" alt="Photo de l'événement <?= htmlspecialchars((string) ($ev['titre_event'] ?? '')) ?>" loading="lazy">
                 </div>
+=======
+>>>>>>> formation
                 <h2><?= htmlspecialchars($ev['titre_event'] ?? '') ?></h2>
                 <span class="fo-ref"><?= htmlspecialchars($ev['type_event'] ?? '') ?> · <?= htmlspecialchars($ddeb) ?> → <?= htmlspecialchars($dfin) ?></span>
                 <?php if ($short !== ''): ?>

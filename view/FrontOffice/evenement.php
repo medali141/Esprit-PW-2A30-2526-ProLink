@@ -38,6 +38,7 @@ function fo_format_date2(string $d): string {
     return $t ? date('d/m/Y', $t) : $d;
 }
 
+<<<<<<< HEAD
 function fo_event_photo_src2(array $ev): string {
     $candidates = ['photo_event', 'image_event', 'image', 'photo'];
     $raw = '';
@@ -58,6 +59,8 @@ function fo_event_photo_src2(array $ev): string {
     return '../' . ltrim($raw, '/');
 }
 
+=======
+>>>>>>> formation
 $defNom = $sessionUser['nom'] ?? '';
 $defPrenom = $sessionUser['prenom'] ?? '';
 $defEmail = $sessionUser['email'] ?? '';
@@ -101,9 +104,12 @@ $defEmail = $sessionUser['email'] ?? '';
 
         <div class="fo-event-detail">
             <div class="fo-event-detail__info fo-form-card">
+<<<<<<< HEAD
                 <div class="fo-event-media fo-event-media--detail">
                     <img src="<?= htmlspecialchars(fo_event_photo_src2($ev)) ?>" alt="Photo de l'événement <?= htmlspecialchars((string) ($ev['titre_event'] ?? '')) ?>" loading="lazy">
                 </div>
+=======
+>>>>>>> formation
                 <p class="fo-event-badges">
                     <span class="fo-event-pill"><?= htmlspecialchars($ev['type_event']) ?></span>
                     <?php if ($complet): ?>

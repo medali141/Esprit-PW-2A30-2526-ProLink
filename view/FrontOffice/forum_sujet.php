@@ -1,12 +1,19 @@
 <?php
 require_once __DIR__ . '/../../init.php';
+<<<<<<< HEAD
 requireLogin('Connectez-vous pour consulter ce sujet du forum.');
+=======
+>>>>>>> formation
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ForumController.php';
 
 $fc = new ForumController();
 $auth = new AuthController();
+<<<<<<< HEAD
 $user = $auth->profile() ?: currentUser();
+=======
+$user = $auth->profile();
+>>>>>>> formation
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $sujet = $id > 0 ? $fc->getSujet($id) : false;

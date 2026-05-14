@@ -19,7 +19,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         header('Location: ' . bo_url('forum/sujet_messages.php?id=' . $newId . '&ok=1'));
         exit;
     }
+<<<<<<< HEAD
     $err = $fc->getLastPublicError() ?: 'Remplissez tous les champs et choisissez une catégorie.';
+=======
+    $err = 'Remplissez tous les champs et choisissez une catégorie.';
+>>>>>>> formation
 }
 ?>
 <!DOCTYPE html>
@@ -40,9 +44,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </div>
     <div class="card" style="max-width:640px;margin:0 auto">
         <p style="color:#64748b;font-size:0.9rem;margin-top:0">Publié au nom de votre compte admin : <strong><?= htmlspecialchars((string) ($__forumUser['email'] ?? '')) ?></strong></p>
+<<<<<<< HEAD
         <?php if ($err): ?>
             <p style="color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin:0 0 12px"><?= htmlspecialchars($err) ?></p>
         <?php endif; ?>
+=======
+        <?php if ($err): ?><p style="color:#b91c1c"><?= htmlspecialchars($err) ?></p><?php endif; ?>
+>>>>>>> formation
         <?php if (empty($categories)): ?>
             <p style="color:#b91c1c">Créez d’abord une <a href="<?= htmlspecialchars(bo_url('forum/liste_categories.php')) ?>">catégorie</a>.</p>
         <?php else: ?>

@@ -1,6 +1,10 @@
 <?php
+<<<<<<< HEAD
 require_once __DIR__ . '/../../init.php';
 requireLogin('Connectez-vous pour consulter les projets.');
+=======
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+>>>>>>> formation
 require_once __DIR__ . '/../../controller/ProjectP.php';
 require_once __DIR__ . '/../../controller/UserP.php';
 $pp = new ProjectP();

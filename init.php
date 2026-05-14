@@ -59,12 +59,24 @@ $host = $_SERVER['HTTP_HOST'] ?? '';
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $baseUrl = $host ? $scheme . '://' . $host . $viewRoot : $viewRoot;
 
+<<<<<<< HEAD
 // --- Session helpers ---------------------------------------------------------
+=======
+// Expose small helper functions
+function requireLogin() {
+    global $baseUrl;
+    if (empty($_SESSION['user'])) {
+        header('Location: ' . ($baseUrl ?? '') . '/FrontOffice/login.php');
+        exit;
+    }
+}
+>>>>>>> formation
 
 function isLoggedIn() {
     return !empty($_SESSION['user']);
 }
 
+<<<<<<< HEAD
 function currentUser() {
     return $_SESSION['user'] ?? null;
 }
@@ -133,3 +145,9 @@ function requireRole($role, $message = null) {
 }
 
 if (!defined('APP_INIT')) define('APP_INIT', true);
+=======
+// mark as included so other components can check
+if (!defined('APP_INIT')) define('APP_INIT', true);
+
+// End of init.php
+>>>>>>> formation

@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 require_once __DIR__ . '/../../init.php';
 requireLogin('Connectez-vous pour consulter ce projet.');
 require_once __DIR__ . '/../../controller/ProjectP.php';
@@ -10,11 +11,20 @@ $up = new UserP();
 $cp = new CandidatureP();
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+=======
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+require_once __DIR__ . '/../../controller/ProjectP.php';
+require_once __DIR__ . '/../../controller/UserP.php';
+$pp = new ProjectP();
+$up = new UserP();
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+>>>>>>> formation
 $pr = $id ? $pp->get($id) : null;
 if (!$pr) {
     header('Location: projects.php');
     exit;
 }
+<<<<<<< HEAD
 $owner = $pr['owner_id'] ? $up->showUser((int) $pr['owner_id']) : null;
 $ownerName = $owner ? trim(($owner['prenom'] ?? '') . ' ' . ($owner['nom'] ?? '')) : '—';
 
@@ -53,6 +63,9 @@ $prefPrenom = $err !== '' ? (string) ($_POST['prenom'] ?? '') : (string) ($u['pr
 $prefEmail  = $err !== '' ? (string) ($_POST['email'] ?? '')  : (string) ($u['email'] ?? '');
 $prefMsg    = $err !== '' ? (string) ($_POST['message'] ?? '') : '';
 $cvWebPath  = CandidatureP::cvWebPath();
+=======
+$owner = $pr['owner_id'] ? $up->showUser((int)$pr['owner_id']) : null;
+>>>>>>> formation
 ?>
 <!doctype html>
 <html lang="fr">
@@ -63,6 +76,7 @@ $cvWebPath  = CandidatureP::cvWebPath();
     <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
     <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="../assets/storefront.css">
+<<<<<<< HEAD
     <style>
         .cand-card {
             margin-top: 18px; background:#fff; border:1px solid #e2e8f0;
@@ -104,15 +118,21 @@ $cvWebPath  = CandidatureP::cvWebPath();
         }
         .cand-summary strong { color:#0f172a; }
     </style>
+=======
+>>>>>>> formation
 </head>
 <body class="fo-store-page">
 <?php include __DIR__ . '/components/navbar.php'; ?>
 <main class="container fo-page">
     <article class="fo-form-card fo-content-card">
         <h1><?= htmlspecialchars($pr['title']) ?></h1>
+<<<<<<< HEAD
         <div class="fo-meta">
             Par <strong><?= htmlspecialchars($ownerName) ?></strong> · <?= htmlspecialchars($pr['status']) ?>
         </div>
+=======
+        <div class="fo-meta">Par <strong><?= htmlspecialchars(trim(($owner['prenom'] ?? '') . ' ' . ($owner['nom'] ?? ''))) ?></strong> · <?= htmlspecialchars($pr['status']) ?></div>
+>>>>>>> formation
         <?php if (!empty($pr['description'])): ?>
             <div class="fo-body"><?= nl2br(htmlspecialchars($pr['description'])) ?></div>
         <?php else: ?>
@@ -120,6 +140,7 @@ $cvWebPath  = CandidatureP::cvWebPath();
         <?php endif; ?>
         <p><a href="projects.php">← Retour à la liste</a></p>
     </article>
+<<<<<<< HEAD
 
     <?php if ($isOwner): ?>
         <section class="cand-card">
@@ -213,6 +234,8 @@ $cvWebPath  = CandidatureP::cvWebPath();
             <?php endif; ?>
         </section>
     <?php endif; ?>
+=======
+>>>>>>> formation
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>
 </body>

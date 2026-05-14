@@ -1,5 +1,6 @@
 <?php
 /**
+<<<<<<< HEAD
  * Minimal SMTP client (AUTH LOGIN + SSL/TLS).
  */
 class SmtpSimpleClient {
@@ -25,6 +26,43 @@ class SmtpSimpleClient {
             ],
         ]);
         $uri = ($secure === 'ssl' ? 'ssl://' : 'tcp://') . $host . ':' . $port;
+=======
+ * SMTP minimal (AUTH LOGIN + SSL/465 ou STARTTLS/587) pour Gmail sans class.smtp.php.
+ */
+class SmtpSimpleClient {
+
+    /**
+     * @return bool
+     */
+    public static function sendHtml(
+        $fromEmail,
+        $fromName,
+        $toEmail,
+        $subject,
+        $htmlBody,
+        $altBody,
+        $host,
+        $port,
+        $user,
+        $pass,
+        $secure
+    ) {
+        $secure = strtolower((string) $secure);
+        $ctx = stream_context_create([
+            'ssl' => [
+                'verify_peer'       => true,
+                'verify_peer_name'  => true,
+                'allow_self_signed' => false,
+            ],
+        ]);
+
+        if ($secure === 'ssl') {
+            $uri = 'ssl://' . $host . ':' . (int) $port;
+        } else {
+            $uri = 'tcp://' . $host . ':' . (int) $port;
+        }
+
+>>>>>>> formation
         $fp = @stream_socket_client($uri, $errno, $errstr, 25, STREAM_CLIENT_CONNECT, $ctx);
         if (!$fp) {
             return false;
@@ -117,7 +155,15 @@ class SmtpSimpleClient {
         $lines = explode("\r\n", $msg);
         $dotted = [];
         foreach ($lines as $line) {
+<<<<<<< HEAD
             $dotted[] = ($line !== '' && $line[0] === '.') ? ('.' . $line) : $line;
+=======
+            if ($line !== '' && $line[0] === '.') {
+                $dotted[] = '.' . $line;
+            } else {
+                $dotted[] = $line;
+            }
+>>>>>>> formation
         }
         $msg = implode("\r\n", $dotted);
 
@@ -131,19 +177,32 @@ class SmtpSimpleClient {
         return true;
     }
 
+<<<<<<< HEAD
     private static function cleanAddr(string $e): string {
         return trim((string) preg_replace('/[\r\n]+/', '', $e));
     }
 
     private static function encodeHeaderName(string $name): string {
         $name = trim($name);
+=======
+    private static function cleanAddr($e) {
+        return trim(preg_replace('/[\r\n]+/', '', (string) $e));
+    }
+
+    private static function encodeHeaderName($name) {
+        $name = trim((string) $name);
+>>>>>>> formation
         if ($name === '') {
             return '';
         }
         return '=?UTF-8?B?' . base64_encode($name) . '?=';
     }
 
+<<<<<<< HEAD
     private static function readLines($fp): string {
+=======
+    private static function readLines($fp) {
+>>>>>>> formation
         $buf = '';
         while (!feof($fp)) {
             $line = fgets($fp, 2048);
@@ -158,7 +217,11 @@ class SmtpSimpleClient {
         return $buf;
     }
 
+<<<<<<< HEAD
     private static function expect($fp, array $codes): bool {
+=======
+    private static function expect($fp, array $codes) {
+>>>>>>> formation
         $data = self::readLines($fp);
         if ($data === '') {
             return false;

@@ -3,6 +3,7 @@
  * Contrôleur commandes — tables `commande` et `commande_produit`.
  */
 require_once __DIR__ . '/../config.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../model/CommerceRegles.php';
 
 class CommandeController {
@@ -102,6 +103,28 @@ class CommandeController {
         return $map[$tri] ?? 'c.date_commande';
     }
 
+=======
+
+class CommandeController {
+
+    public function listAllAdmin(): array {
+        $sql = "SELECT c.*, u.prenom, u.nom, u.email
+                FROM commande c
+                INNER JOIN user u ON u.iduser = c.id_acheteur
+                ORDER BY c.date_commande DESC";
+        $db = Config::getConnexion();
+        return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listByAcheteur(int $idAcheteur): array {
+        $sql = "SELECT * FROM commande WHERE id_acheteur = :a ORDER BY date_commande DESC";
+        $db = Config::getConnexion();
+        $st = $db->prepare($sql);
+        $st->execute(['a' => $idAcheteur]);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+>>>>>>> formation
     public function getById(int $id): ?array {
         $sql = "SELECT c.*, u.prenom, u.nom, u.email
                 FROM commande c
@@ -115,8 +138,12 @@ class CommandeController {
     }
 
     public function getLignes(int $idCommande): array {
+<<<<<<< HEAD
         $photoSelect = $this->hasProduitPhotoColumn() ? 'p.photo' : 'NULL AS photo';
         $sql = "SELECT cp.*, p.reference, p.designation, p.id_vendeur, " . $photoSelect . ",
+=======
+        $sql = "SELECT cp.*, p.reference, p.designation, p.id_vendeur,
+>>>>>>> formation
                        uv.prenom AS v_prenom, uv.nom AS v_nom
                 FROM commande_produit cp
                 INNER JOIN produit p ON p.idproduit = cp.idproduit
@@ -130,6 +157,7 @@ class CommandeController {
     }
 
     /**
+<<<<<<< HEAD
      * Frise de suivi logistique pour l’espace client (étapes lisibles après commande / paiement).
      *
      * @param array<string,mixed> $cmd Ligne `commande` + champs joint acheteur si besoin
@@ -272,11 +300,16 @@ class CommandeController {
      *   payment_method?:string,
      *   card_verified?:bool
      * } $livraison
+=======
+     * @param array<int,int> $cart idproduit => quantite
+     * @param array{adresse_livraison:string,code_postal:string,ville:string,pays?:string,notes?:string} $livraison
+>>>>>>> formation
      */
     public function createFromCart(int $acheteurId, array $cart, array $livraison): int {
         if (empty($cart)) {
             throw new InvalidArgumentException('Panier vide');
         }
+<<<<<<< HEAD
         $usePoints = !empty($livraison['use_points']);
         $paymentMethod = strtolower(trim((string) ($livraison['payment_method'] ?? 'cash_on_delivery')));
         $cardVerified = !empty($livraison['card_verified']);
@@ -288,6 +321,8 @@ class CommandeController {
         $hasTel = $this->hasCommandeTelephoneColumn();
         $hasPoints = $this->hasUserPointsColumn();
         $hasPaymentMode = $this->hasCommandePaymentModeColumn();
+=======
+>>>>>>> formation
 
         $db = Config::getConnexion();
         $db->beginTransaction();
@@ -323,6 +358,7 @@ class CommandeController {
                 throw new InvalidArgumentException('Panier invalide');
             }
 
+<<<<<<< HEAD
             $discountAmount = 0.0;
             $spentPoints = 0;
             if ($hasPoints && $usePoints) {
@@ -376,6 +412,24 @@ class CommandeController {
                 $params['pm'] = $paymentMethod;
             }
             $ins->execute($params);
+=======
+            $pays = $livraison['pays'] ?? 'Tunisie';
+            $notes = $livraison['notes'] ?? null;
+
+            $ins = $db->prepare(
+                "INSERT INTO commande (id_acheteur, statut, montant_total, notes, adresse_livraison, code_postal, ville, pays)
+                 VALUES (:acheteur, 'en_attente_paiement', :total, :notes, :adr, :cp, :ville, :pays)"
+            );
+            $ins->execute([
+                'acheteur' => $acheteurId,
+                'total' => round($total, 2),
+                'notes' => $notes,
+                'adr' => $livraison['adresse_livraison'],
+                'cp' => $livraison['code_postal'],
+                'ville' => $livraison['ville'],
+                'pays' => $pays,
+            ]);
+>>>>>>> formation
             $idCommande = (int) $db->lastInsertId();
 
             $insL = $db->prepare(
@@ -394,6 +448,7 @@ class CommandeController {
                 $upd->execute(['q' => $line['qte'], 'id' => $line['id']]);
             }
 
+<<<<<<< HEAD
             if ($hasPoints) {
                 // Les points utilises sont debités a la commande.
                 // Les points gagnés sont credites uniquement a la livraison.
@@ -406,6 +461,8 @@ class CommandeController {
                 }
             }
 
+=======
+>>>>>>> formation
             $db->commit();
             return $idCommande;
         } catch (Throwable $e) {
@@ -422,6 +479,7 @@ class CommandeController {
         ?string $dateEffective,
         ?string $notes
     ): void {
+<<<<<<< HEAD
         $allowed = CommerceRegles::allowedStatuts();
         if (!in_array($statut, $allowed, true)) {
             throw new InvalidArgumentException('Statut invalide');
@@ -444,26 +502,49 @@ class CommandeController {
         if (strlen($notes) > 500) {
             throw new InvalidArgumentException('Notes : maximum 500 caractères');
         }
+=======
+        $allowed = [
+            'brouillon', 'en_attente_paiement', 'payee', 'en_preparation',
+            'expediee', 'livree', 'annulee',
+        ];
+        if (!in_array($statut, $allowed, true)) {
+            throw new InvalidArgumentException('Statut invalide');
+        }
+>>>>>>> formation
 
         $db = Config::getConnexion();
         $db->beginTransaction();
 
         try {
+<<<<<<< HEAD
             $st = $db->prepare("SELECT statut, id_acheteur, montant_total FROM commande WHERE idcommande = :id FOR UPDATE");
+=======
+            $st = $db->prepare("SELECT statut FROM commande WHERE idcommande = :id FOR UPDATE");
+>>>>>>> formation
             $st->execute(['id' => $id]);
             $old = $st->fetch(PDO::FETCH_ASSOC);
             if (!$old) {
                 throw new RuntimeException('Commande introuvable');
             }
             $oldStatut = $old['statut'];
+<<<<<<< HEAD
             if (!CommerceRegles::canTransitionStatut((string) $oldStatut, $statut)) {
                 throw new InvalidArgumentException('Transition de statut non autorisée');
             }
+=======
+>>>>>>> formation
 
             if ($statut === 'annulee' && $oldStatut !== 'annulee') {
                 $this->restoreStockForCommande($db, $id);
             }
 
+<<<<<<< HEAD
+=======
+            if ($oldStatut === 'annulee' && $statut !== 'annulee') {
+                $this->decrementStockForCommande($db, $id);
+            }
+
+>>>>>>> formation
             $up = $db->prepare(
                 "UPDATE commande SET
                     statut = :st,
@@ -475,6 +556,7 @@ class CommandeController {
             );
             $up->execute([
                 'st' => $statut,
+<<<<<<< HEAD
                 'ns' => $numeroSuivi !== '' ? $numeroSuivi : null,
                 'dp' => $datePrevue,
                 'de' => $dateEffective,
@@ -491,6 +573,15 @@ class CommandeController {
                 );
             }
 
+=======
+                'ns' => ($numeroSuivi !== null && $numeroSuivi !== '') ? $numeroSuivi : null,
+                'dp' => ($datePrevue !== null && $datePrevue !== '') ? $datePrevue : null,
+                'de' => ($dateEffective !== null && $dateEffective !== '') ? $dateEffective : null,
+                'notes' => $notes ?? '',
+                'id' => $id,
+            ]);
+
+>>>>>>> formation
             $db->commit();
         } catch (Throwable $e) {
             $db->rollBack();
@@ -508,6 +599,7 @@ class CommandeController {
         }
     }
 
+<<<<<<< HEAD
     private function creditLoyaltyPointsOnDelivery(PDO $db, int $idAcheteur, float $montantTotal): void {
         if ($idAcheteur <= 0 || !$this->hasUserPointsColumn()) {
             return;
@@ -602,6 +694,24 @@ class CommandeController {
             throw new InvalidArgumentException($error);
         }
         return $value;
+=======
+    private function decrementStockForCommande(PDO $db, int $idCommande): void {
+        $st = $db->prepare("SELECT idproduit, quantite FROM commande_produit WHERE idcommande = :id");
+        $st->execute(['id' => $idCommande]);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        $sel = $db->prepare("SELECT stock FROM produit WHERE idproduit = :id FOR UPDATE");
+        $upd = $db->prepare("UPDATE produit SET stock = stock - :q WHERE idproduit = :idp");
+        foreach ($rows as $r) {
+            $q = (int) $r['quantite'];
+            $idp = (int) $r['idproduit'];
+            $sel->execute(['id' => $idp]);
+            $stock = (int) $sel->fetchColumn();
+            if ($stock < $q) {
+                throw new RuntimeException('Stock insuffisant pour réactiver la commande');
+            }
+            $upd->execute(['q' => $q, 'idp' => $idp]);
+        }
+>>>>>>> formation
     }
 
     public function countAll(): int {
@@ -609,6 +719,7 @@ class CommandeController {
         return (int) $db->query("SELECT COUNT(*) FROM commande")->fetchColumn();
     }
 
+<<<<<<< HEAD
     /** @return array{total_commandes:int,a_payer:int,en_cours:int,livrees:int,ca_total:float,ca_mois:float,panier_moyen:float} */
     public function getCommerceKpis(): array {
         $db = Config::getConnexion();
@@ -650,6 +761,8 @@ class CommandeController {
         return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+=======
+>>>>>>> formation
     public function countProduitsActifs(): int {
         $db = Config::getConnexion();
         return (int) $db->query("SELECT COUNT(*) FROM produit WHERE actif = 1")->fetchColumn();
@@ -657,6 +770,7 @@ class CommandeController {
 
     /** Commandes contenant au moins un produit du vendeur. */
     public function listByVendeur(int $idVendeur): array {
+<<<<<<< HEAD
         return $this->listByVendeurFiltered($idVendeur, '', 'date', 'desc', '');
     }
 
@@ -854,4 +968,18 @@ class CommandeController {
         $this->hasCommandePaymentModeColumn = $exists;
         return $this->hasCommandePaymentModeColumn;
     }
+=======
+        $sql = "SELECT DISTINCT c.*, u.prenom, u.nom, u.email
+                FROM commande c
+                INNER JOIN user u ON u.iduser = c.id_acheteur
+                INNER JOIN commande_produit cp ON cp.idcommande = c.idcommande
+                INNER JOIN produit p ON p.idproduit = cp.idproduit
+                WHERE p.id_vendeur = :v
+                ORDER BY c.date_commande DESC";
+        $db = Config::getConnexion();
+        $st = $db->prepare($sql);
+        $st->execute(['v' => $idVendeur]);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    }
+>>>>>>> formation
 }

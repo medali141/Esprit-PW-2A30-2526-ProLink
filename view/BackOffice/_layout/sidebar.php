@@ -27,7 +27,11 @@ $__fo_accueil = $__vb . 'FrontOffice/home.php';
             <li><a href="<?= htmlspecialchars(bo_url('user/listUsers.php')) ?>"><span class="icon">👤</span> <span>Gestion Users</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('projets/listProjects.php')) ?>"><span class="icon">📁</span> <span>Gestion Projets</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('evenement/liste_event.php')) ?>"><span class="icon">📅</span> <span>Gestion événements</span></a></li>
+<<<<<<< HEAD
             <li><a href="<?= htmlspecialchars(bo_url('achat/vente/gestionAchats.php')) ?>"><span class="icon">🛒</span> <span>Gestion d'achats</span></a></li>
+=======
+            <li><a href="<?= htmlspecialchars(bo_url('achat/vente/commerceHub.php')) ?>"><span class="icon">🛒</span> <span>Gestion vente / achat</span></a></li>
+>>>>>>> formation
             <li><a href="<?= htmlspecialchars(bo_url('formation/liste.php')) ?>"><span class="icon">🎓</span> <span>Gestion des formations</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('forum/forum_index.php')) ?>"><span class="icon">💬</span> <span>Forum</span></a></li>
             <li><a href="<?= htmlspecialchars(bo_url('user/profile_admin.php')) ?>"><span class="icon">👤</span> <span>Mon profil (admin)</span></a></li>

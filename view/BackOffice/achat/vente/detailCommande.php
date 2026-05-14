@@ -26,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $numero_suivi = trim($_POST['numero_suivi'] ?? '');
     $date_prevue = trim($_POST['date_livraison_prevue'] ?? '');
     $date_eff = trim($_POST['date_livraison_effective'] ?? '');
+<<<<<<< HEAD
+=======
+    if ($date_eff !== '') {
+        $date_eff = str_replace('T', ' ', $date_eff);
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $date_eff)) {
+            $date_eff .= ':00';
+        }
+    }
+>>>>>>> formation
     $notes = trim($_POST['notes'] ?? '');
     try {
         $cp->updateMeta($id, $statut, $numero_suivi, $date_prevue, $date_eff, $notes);
@@ -45,6 +54,7 @@ $statuts = [
     'livree' => 'Livrée',
     'annulee' => 'Annulée',
 ];
+<<<<<<< HEAD
 $paymentLabels = [
     'card' => 'Carte bancaire',
     'cash_on_delivery' => 'Cash à la livraison',
@@ -52,6 +62,11 @@ $paymentLabels = [
 $deVal = $cmd['date_livraison_effective'] ?? '';
 if ($deVal !== '') {
     $deVal = substr((string) $deVal, 0, 10);
+=======
+$deVal = $cmd['date_livraison_effective'] ?? '';
+if ($deVal && strpos($deVal, ' ') !== false) {
+    $deVal = str_replace(' ', 'T', substr($deVal, 0, 16));
+>>>>>>> formation
 }
 $st = $cmd['statut'] ?? '';
 $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '', $st);
@@ -62,10 +77,17 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Commande #<?= $id ?></title>
+<<<<<<< HEAD
 </head>
 <body>
 <?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <link rel="stylesheet" href="../../commerce.css">
+=======
+    <link rel="stylesheet" href="../../commerce.css">
+</head>
+<body>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
+>>>>>>> formation
 <div class="content commerce-page">
     <div class="topbar">
         <div>
@@ -84,6 +106,7 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
 
         <div class="commerce-form-card" style="margin-bottom:20px">
             <h3 class="commerce-card-title">Lignes de commande</h3>
+<<<<<<< HEAD
             <p class="hint" style="margin:0 0 10px">Articles: <?= array_sum(array_map(static fn($row) => (int) ($row['quantite'] ?? 0), $lignes)) ?> · Lignes: <?= count($lignes) ?></p>
             <div class="commerce-table-wrap">
             <table class="table-modern">
@@ -93,6 +116,14 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
                     <tr>
                         <?php $photo = trim((string) ($l['photo'] ?? '')); ?>
                         <td><img src="<?= htmlspecialchars($photo !== '' ? '../../../' . ltrim($photo, '/') : '../../../assets/product-placeholder.svg') ?>" alt="Photo <?= htmlspecialchars($l['designation']) ?>" style="width:42px;height:42px;object-fit:cover;border-radius:8px;border:1px solid #dbe4ef"></td>
+=======
+            <div class="commerce-table-wrap">
+            <table class="table-modern">
+                <thead><tr><th>Produit</th><th>Vendeur</th><th>Qté</th><th>Prix u.</th><th>Total ligne</th></tr></thead>
+                <tbody>
+                <?php foreach ($lignes as $l): ?>
+                    <tr>
+>>>>>>> formation
                         <td><?= htmlspecialchars($l['designation']) ?> <span class="hint">(<?= htmlspecialchars($l['reference']) ?>)</span></td>
                         <td><?= htmlspecialchars(trim(($l['v_prenom'] ?? '') . ' ' . ($l['v_nom'] ?? ''))) ?></td>
                         <td><?= (int) $l['quantite'] ?></td>
@@ -113,10 +144,13 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
                 <?= htmlspecialchars($cmd['adresse_livraison']) ?>,
                 <?= htmlspecialchars($cmd['code_postal']) ?> <?= htmlspecialchars($cmd['ville']) ?>,
                 <?= htmlspecialchars($cmd['pays'] ?? '') ?>
+<<<<<<< HEAD
                 <br><strong>Paiement:</strong> <?= htmlspecialchars($paymentLabels[(string) ($cmd['mode_paiement'] ?? 'cash_on_delivery')] ?? (string) ($cmd['mode_paiement'] ?? 'cash_on_delivery')) ?>
                 <?php if (!empty($cmd['telephone_livraison'])): ?>
                     <br><strong>Téléphone:</strong> <?= htmlspecialchars((string) $cmd['telephone_livraison']) ?>
                 <?php endif; ?>
+=======
+>>>>>>> formation
             </div>
             <form method="post" class="commerce-detail-grid" novalidate data-validate="commande-form">
                 <div>
@@ -137,7 +171,11 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
                 </div>
                 <div>
                     <label>Date livraison effective</label>
+<<<<<<< HEAD
                     <input type="date" name="date_livraison_effective" value="<?= htmlspecialchars($deVal) ?>">
+=======
+                    <input type="datetime-local" name="date_livraison_effective" value="<?= htmlspecialchars($deVal) ?>">
+>>>>>>> formation
                 </div>
                 <div style="grid-column:1/-1">
                     <label>Notes internes</label>
@@ -150,6 +188,9 @@ $badgeClass = 'commerce-badge commerce-badge--' . preg_replace('/[^a-z0-9_]/', '
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 <script src="../../../assets/forms-validation.js?v=<?= urlencode((string) (@filemtime(__DIR__ . '/../../../assets/forms-validation.js') ?: time())) ?>"></script>
+=======
+>>>>>>> formation
 </body>
 </html>

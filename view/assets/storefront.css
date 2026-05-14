@@ -100,7 +100,10 @@ body.fo-store-page .fo-product-grid {
 }
 
 body.fo-store-page .fo-product-card {
+<<<<<<< HEAD
     position: relative;
+=======
+>>>>>>> formation
     background: var(--sf-card);
     border-radius: var(--sf-radius);
     padding: 22px 20px 20px;
@@ -218,17 +221,28 @@ body.fo-store-page .fo-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     padding: 12px 20px;
     font-size: 0.92rem;
+=======
+    padding: 12px 18px;
+    font-size: 0.9rem;
+>>>>>>> formation
     font-weight: 700;
     text-decoration: none;
     border-radius: 12px;
     border: none;
     cursor: pointer;
     font-family: inherit;
+<<<<<<< HEAD
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
     text-align: center;
     margin-top: 0;
+=======
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    margin-top: auto;
+>>>>>>> formation
 }
 
 body.fo-store-page .fo-btn--primary {
@@ -256,6 +270,7 @@ body.fo-store-page .fo-btn--secondary:hover {
     background: #fff;
 }
 
+<<<<<<< HEAD
 /** Boutons catalogue / tableau : léger ou compact */
 body.fo-store-page a.fo-btn--secondary {
     box-sizing: border-box;
@@ -528,6 +543,8 @@ body.fo-store-page .fo-form-card--wide {
     max-width: none;
 }
 
+=======
+>>>>>>> formation
 /* ——— Panier : formulaire & résumé ——— */
 body.fo-store-page .fo-form-card {
     background: var(--sf-card);
@@ -603,6 +620,7 @@ body.fo-store-page .fo-table-wrap .table-modern tbody tr:last-child td {
     border-bottom: none;
 }
 
+<<<<<<< HEAD
 body.fo-store-page .fo-table-wrap input[type='number'],
 body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty {
     border-radius: 10px;
@@ -627,6 +645,13 @@ body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty:focus {
     outline: none;
     border-color: rgba(37, 99, 235, 0.45);
     box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+=======
+body.fo-store-page .fo-table-wrap input[type='number'] {
+    border-radius: 10px;
+    border: 1px solid var(--sf-border);
+    padding: 8px 10px;
+    font-weight: 600;
+>>>>>>> formation
 }
 
 /* ——— Badges statut commande ——— */
@@ -755,7 +780,10 @@ html.dark-mode body.fo-store-page .fo-product-card--out .fo-stock-pill {
 }
 
 html.dark-mode body.fo-store-page .fo-form-card,
+<<<<<<< HEAD
 html.dark-mode body.fo-store-page .fo-filters,
+=======
+>>>>>>> formation
 html.dark-mode body.fo-store-page .fo-table-wrap,
 html.dark-mode body.fo-store-page .fo-empty {
     background: #151b26 !important;
@@ -769,6 +797,7 @@ html.dark-mode body.fo-store-page .fo-cart-summary {
     color: #f1f5f9 !important;
 }
 
+<<<<<<< HEAD
 html.dark-mode body.fo-store-page .fo-filters__field input[type='search'],
 html.dark-mode body.fo-store-page .fo-filters__field input[type='text'],
 html.dark-mode body.fo-store-page .fo-filters__field select {
@@ -820,6 +849,8 @@ html.dark-mode body.fo-store-page .fo-banner--ok .fo-banner__link {
     color: #6ee7b7 !important;
 }
 
+=======
+>>>>>>> formation
 html.dark-mode body.fo-store-page .fo-table-wrap .table-modern thead th {
     background: rgba(30, 41, 59, 0.9) !important;
     color: #e2e8f0 !important;
@@ -835,8 +866,12 @@ html.dark-mode body.fo-store-page .fo-table-wrap .table-modern tbody tr:nth-chil
     background: rgba(15, 23, 42, 0.5) !important;
 }
 
+<<<<<<< HEAD
 html.dark-mode body.fo-store-page .fo-table-wrap input[type='number'],
 html.dark-mode body.fo-store-page .fo-table-wrap input[type='text'].fo-input--qty {
+=======
+html.dark-mode body.fo-store-page .fo-table-wrap input[type='number'] {
+>>>>>>> formation
     background: #1e293b !important;
     border-color: rgba(148, 163, 184, 0.25) !important;
     color: #f1f5f9 !important;

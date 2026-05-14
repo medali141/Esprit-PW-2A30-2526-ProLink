@@ -1,4 +1,8 @@
 <?php
+<<<<<<< HEAD
+=======
+// projects/detailProject.php — admin-only placeholder for project detail
+>>>>>>> formation
 require_once __DIR__ . '/../../../controller/AuthController.php';
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 $auth = new AuthController();
@@ -7,6 +11,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     header('Location: ../login.php');
     exit;
 }
+<<<<<<< HEAD
 require_once __DIR__ . '/../../../controller/ProjectP.php';
 require_once __DIR__ . '/../../../controller/UserP.php';
 require_once __DIR__ . '/../../../controller/CandidatureP.php';
@@ -47,12 +52,15 @@ if ($p && $_SERVER['REQUEST_METHOD'] === 'POST') {
 $candidatures = $p ? $cp->listForProject($id) : [];
 $counts = $p ? $cp->countByStatus($id) : [];
 $cvWebPath = CandidatureP::cvWebPath();
+=======
+>>>>>>> formation
 ?>
 <!doctype html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
     <title>Détail projet — BackOffice</title>
+<<<<<<< HEAD
     <style>
         .cand-table { width:100%; border-collapse: separate; border-spacing: 0; margin-top: 12px; }
         .cand-table th, .cand-table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; vertical-align: top; text-align:left; font-size: 0.9rem; }
@@ -94,6 +102,8 @@ $cvWebPath = CandidatureP::cvWebPath();
         .eval-saved-comment { color:#334155; white-space:pre-wrap; font-size:0.85rem; margin: 4px 0 0; }
         .eval-toggle-bo { background:transparent;border:none;color:#0369a1;cursor:pointer;font-weight:600;font-size:0.8rem; padding:0; }
     </style>
+=======
+>>>>>>> formation
 </head>
 <body>
 <?php include __DIR__ . '/../_layout/sidebar.php'; ?>
@@ -101,6 +111,7 @@ $cvWebPath = CandidatureP::cvWebPath();
     <div class="container">
         <div class="topbar">
             <div class="page-title">Détail projet</div>
+<<<<<<< HEAD
             <div class="actions">
                 <a href="listProjects.php" class="btn btn-secondary">← Liste</a>
             </div>
@@ -268,5 +279,24 @@ $cvWebPath = CandidatureP::cvWebPath();
     });
 })();
 </script>
+=======
+        </div>
+        <div class="card">
+            <?php
+            require_once __DIR__ . '/../../../controller/ProjectP.php';
+            $pp = new ProjectP();
+            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+            $p = $pp->get($id);
+            if (!$p) { echo '<div class="alert alert-danger">Projet introuvable.</div>'; }
+            else {
+                echo '<h3>' . htmlspecialchars($p['title']) . '</h3>';
+                echo '<p>' . nl2br(htmlspecialchars($p['description'])) . '</p>';
+                echo '<p><strong>Statut:</strong> ' . htmlspecialchars($p['status']) . '</p>';
+            }
+            ?>
+        </div>
+    </div>
+</div>
+>>>>>>> formation
 </body>
 </html>

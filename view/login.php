@@ -1,12 +1,18 @@
 <?php
+<<<<<<< HEAD
 require_once __DIR__ . '/../init.php';
+=======
+>>>>>>> formation
 require_once __DIR__ . '/../controller/AuthController.php';
 require_once __DIR__ . '/../lib/MailOtpService.php';
 
 error_reporting(E_ALL);
 $error = '';
 $success = '';
+<<<<<<< HEAD
 $authFlash = flashGet('auth');
+=======
+>>>>>>> formation
 // Handle POST login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -57,11 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
 
+<<<<<<< HEAD
             // Non-admin: finalize session and redirect.
+=======
+            // Non-admin: finalize session and redirect as before
+>>>>>>> formation
             if (session_status() !== PHP_SESSION_ACTIVE) {
                 session_start();
             }
             $_SESSION['user'] = $user;
+<<<<<<< HEAD
             $_SESSION['__just_logged_in'] = true;
 
             // 1) Honor an intended URL captured by requireLogin() before redirecting here.
@@ -76,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // 2) Backward-compat: explicit ?next= for forum deep-links.
+=======
+
+>>>>>>> formation
             $next = (string) ($_GET['next'] ?? $_POST['next'] ?? '');
             if ($next !== '' && strpos($next, '..') === false && preg_match('#^FrontOffice/forum/#', $next)) {
                 header('Location: ' . $next);
@@ -197,11 +211,14 @@ if (isset($_GET['next'])) {
     <div class="login-box">
         <h2>Connexion</h2>
 
+<<<<<<< HEAD
         <?php if ($authFlash): ?>
             <div style="background:#fff4e5; border:1px solid #f0b27a; color:#8a4b00; padding:8px 10px; border-radius:6px; margin-bottom:10px; font-size:14px;">
                 <?= htmlspecialchars($authFlash) ?>
             </div>
         <?php endif; ?>
+=======
+>>>>>>> formation
         <?php if ($error): ?>
             <div style="color: #b00020; margin-bottom:10px;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>

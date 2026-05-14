@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 require_once __DIR__ . '/../../init.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -29,6 +30,14 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
         $stockSignals[$pid] = $nv;
     }
 }
+=======
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+require_once __DIR__ . '/../../controller/ProduitController.php';
+$pp = new ProduitController();
+$produits = $pp->listCatalogueActifs();
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -45,6 +54,7 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
 <main class="container fo-page">
     <header class="fo-hero">
         <h1>Catalogue produits</h1>
+<<<<<<< HEAD
         <p class="fo-lead">Ajoutez au panier puis validez la commande (livraison en Tunisie par défaut). Prix affichés en dinar tunisien (TND). Les pastilles de pilotage stock proviennent de la gestion d’achats.</p>
     </header>
     <p class="fo-catalog-supply-banner" role="note">
@@ -100,11 +110,19 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
     <?php if ($q !== '' || $idcategorie > 0): ?>
         <p class="fo-result-hint"><?= count($produits) ?> produit(s) trouvé(s)</p>
     <?php endif; ?>
+=======
+        <p class="fo-lead">Ajoutez au panier puis validez la commande (livraison en Tunisie par défaut). Prix affichés en dinar tunisien (TND).</p>
+    </header>
+    <?php if (isset($_GET['added'])): ?>
+        <p class="fo-banner fo-banner--ok fade-in" role="status">Produit ajouté au panier.</p>
+    <?php endif; ?>
+>>>>>>> formation
     <div class="fo-product-grid">
         <?php foreach ($produits as $p):
             $stock = (int) $p['stock'];
             $out = $stock <= 0;
             $low = $stock > 0 && $stock <= 5;
+<<<<<<< HEAD
             $pid = (int) $p['idproduit'];
             $niveauSig = $stockSignals[$pid] ?? null;
             $detailRelativeUrl = 'produitDetails.php?id=' . $pid;
@@ -122,6 +140,10 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
                 <?php if (!empty($p['categorie_libelle'])): ?>
                     <span class="fo-cat-pill"><?= htmlspecialchars((string) $p['categorie_libelle']) ?></span>
                 <?php endif; ?>
+=======
+        ?>
+            <article class="fo-product-card<?= $out ? ' fo-product-card--out' : '' ?>">
+>>>>>>> formation
                 <h2><?= htmlspecialchars($p['designation']) ?></h2>
                 <span class="fo-ref"><?= htmlspecialchars($p['reference']) ?></span>
                 <?php if (!empty($p['description'])): ?>
@@ -136,6 +158,7 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
                         · <?= htmlspecialchars(trim(($p['vendeur_prenom'] ?? '') . ' ' . ($p['vendeur_nom'] ?? ''))) ?>
                     <?php endif; ?>
                 </div>
+<<<<<<< HEAD
                 <div class="fo-product-actions">
                     <a href="<?= htmlspecialchars($detailRelativeUrl) ?>" class="fo-btn fo-btn--secondary fo-btn--product-spec" style="text-decoration:none">Caractéristiques produit</a>
                 </div>
@@ -146,6 +169,10 @@ foreach ($stockCtl->getReapproDashboard(90) as $row) {
                         <input type="hidden" name="qte" value="1">
                         <button type="submit" class="fo-btn fo-btn--primary fo-btn--block">Ajouter au panier</button>
                     </form>
+=======
+                <?php if (!$out): ?>
+                    <a class="fo-btn fo-btn--primary" href="cart_add.php?id=<?= (int) $p['idproduit'] ?>&qte=1">Ajouter au panier</a>
+>>>>>>> formation
                 <?php endif; ?>
             </article>
         <?php endforeach; ?>

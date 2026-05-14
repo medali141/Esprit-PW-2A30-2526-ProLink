@@ -1,8 +1,15 @@
 <?php
+<<<<<<< HEAD
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../../../controller/AuthController.php';
+=======
+require_once __DIR__ . '/../../../../controller/AuthController.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+>>>>>>> formation
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
@@ -18,6 +25,7 @@ if (!$prod) {
     exit;
 }
 $vendeurs = $pp->listVendeursForSelect();
+<<<<<<< HEAD
 $categories = $pp->listCategories();
 $error = '';
 
@@ -43,6 +51,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } catch (Throwable $e) {
             $error = $e->getMessage();
+=======
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $reference = trim($_POST['reference'] ?? '');
+    $designation = trim($_POST['designation'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $prix = str_replace(',', '.', trim($_POST['prix_unitaire'] ?? '0'));
+    $stock = (int) ($_POST['stock'] ?? 0);
+    $id_vendeur = (int) ($_POST['id_vendeur'] ?? 0);
+    $actif = isset($_POST['actif']) ? 1 : 0;
+
+    if ($reference === '' || $designation === '' || $id_vendeur <= 0) {
+        $error = 'Champs obligatoires manquants.';
+    } elseif (!is_numeric($prix) || (float) $prix < 0) {
+        $error = 'Prix invalide.';
+    } else {
+        try {
+            $pp->update($id, [
+                'reference' => $reference,
+                'designation' => $designation,
+                'description' => $description !== '' ? $description : null,
+                'prix_unitaire' => (float) $prix,
+                'stock' => $stock,
+                'id_vendeur' => $id_vendeur,
+                'actif' => $actif,
+            ]);
+            header('Location: listProduits.php');
+            exit;
+        } catch (Exception $e) {
+            $error = 'Erreur à l’enregistrement (référence dupliquée ?).';
+>>>>>>> formation
         }
     }
     $prod = array_merge($prod, [
@@ -51,10 +91,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'description' => $_POST['description'] ?? $prod['description'],
         'prix_unitaire' => $_POST['prix_unitaire'] ?? $prod['prix_unitaire'],
         'stock' => $stock,
+<<<<<<< HEAD
         'id_vendeur' => (int) ($_POST['id_vendeur'] ?? $prod['id_vendeur']),
         'idcategorie' => (int) ($_POST['idcategorie'] ?? $prod['idcategorie']),
         'actif' => isset($_POST['actif']) ? 1 : 0,
         'photo' => $photo,
+=======
+        'id_vendeur' => $id_vendeur,
+        'actif' => $actif,
+>>>>>>> formation
     ]);
 }
 ?>
@@ -64,10 +109,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Modifier produit</title>
+<<<<<<< HEAD
 </head>
 <body>
 <?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <link rel="stylesheet" href="../../commerce.css">
+=======
+    <link rel="stylesheet" href="../../commerce.css">
+</head>
+<body>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
+>>>>>>> formation
 <div class="content commerce-page">
     <div class="topbar">
         <div class="page-title">Modifier produit #<?= $id ?></div>
@@ -80,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($error): ?>
                 <div class="commerce-alert commerce-alert--err"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
+<<<<<<< HEAD
             <form method="post" enctype="multipart/form-data" novalidate data-validate="produit-form">
                 <label class="field-first">Référence *</label>
                 <input type="text" name="reference" value="<?= htmlspecialchars($prod['reference']) ?>">
@@ -112,6 +165,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
                 <label>Vendeur *</label>
                 <select name="id_vendeur">
+=======
+            <form method="post" novalidate data-validate="produit-form">
+                <label class="field-first">Référence *</label>
+                <input type="text" name="reference" required value="<?= htmlspecialchars($prod['reference']) ?>">
+                <label>Désignation *</label>
+                <input type="text" name="designation" required value="<?= htmlspecialchars($prod['designation']) ?>">
+                <label>Description</label>
+                <textarea name="description" rows="3"><?= htmlspecialchars((string) ($prod['description'] ?? '')) ?></textarea>
+                <label>Prix unitaire (TND) *</label>
+                <input type="text" name="prix_unitaire" required value="<?= htmlspecialchars((string) $prod['prix_unitaire']) ?>">
+                <label>Stock *</label>
+                <input type="number" name="stock" min="0" required value="<?= (int) $prod['stock'] ?>">
+                <label>Vendeur *</label>
+                <select name="id_vendeur" required>
+>>>>>>> formation
                     <?php foreach ($vendeurs as $v): ?>
                         <option value="<?= (int) $v['iduser'] ?>" <?= (int) $prod['id_vendeur'] === (int) $v['iduser'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($v['prenom'] . ' ' . $v['nom'] . ' — ' . ($v['type'] ?? '') . ' (' . ($v['email'] ?? '') . ')') ?>
@@ -129,6 +197,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 <script src="../../../assets/forms-validation.js"></script>
+=======
+>>>>>>> formation
 </body>
 </html>

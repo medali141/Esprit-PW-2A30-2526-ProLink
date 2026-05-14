@@ -7,6 +7,7 @@ if (!defined('APP_INIT')) {
 $__nav_user = $_SESSION['user'] ?? null;
 $__nav_type = strtolower($__nav_user['type'] ?? '');
 $__cart = (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) ? array_sum($_SESSION['cart']) : 0;
+<<<<<<< HEAD
 
 // --- Notifications utilisateur (cloche dans la navbar) ---------------------
 $__nav_notifs = [];
@@ -24,6 +25,8 @@ if ($__nav_user) {
 }
 $__projectRoot = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
 $__projectRoot = ''; // built below from $baseUrl which already includes /<project>/view
+=======
+>>>>>>> formation
 ?>
 <script>try{if(localStorage.getItem('prolink-theme')==='dark')document.documentElement.classList.add('dark-mode');}catch(e){}</script>
 
@@ -53,6 +56,7 @@ $__projectRoot = ''; // built below from $baseUrl which already includes /<proje
 
      <div class="auth">
         <button type="button" class="theme-toggle js-theme-toggle" aria-label="Activer le mode sombre" aria-pressed="false">🌙</button>
+<<<<<<< HEAD
 
         <?php if ($__nav_user): ?>
             <div class="pl-notif" data-notif-root>
@@ -98,6 +102,9 @@ $__projectRoot = ''; // built below from $baseUrl which already includes /<proje
                     <a href="<?= $baseUrl ?>/FrontOffice/notifications.php" class="pl-notif-all">Voir toutes les notifications →</a>
                 </div>
             </div>
+=======
+        <?php if ($__nav_user): ?>
+>>>>>>> formation
             <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php" class="btn login">Bonjour, <?= htmlspecialchars($__nav_user['prenom'] ?? $__nav_user['nom'] ?? 'Utilisateur') ?></a>
             <a href="<?= $baseUrl ?>/FrontOffice/profile/profile.php?action=logout" class="btn register">Se déconnecter</a>
         <?php else: ?>
@@ -107,6 +114,7 @@ $__projectRoot = ''; // built below from $baseUrl which already includes /<proje
     </div>
 </nav>
 
+<<<<<<< HEAD
 <?php if ($__nav_user && $__nav_welcome): ?>
     <div class="pl-toast" id="plToast" role="status" aria-live="polite">
         <div class="pl-toast-icon">👋</div>
@@ -123,6 +131,8 @@ $__projectRoot = ''; // built below from $baseUrl which already includes /<proje
     </div>
 <?php endif; ?>
 
+=======
+>>>>>>> formation
 <style>
 .navbar {
     display: flex;
@@ -194,6 +204,7 @@ html.dark-mode .register {
     background: #38bdf8 !important;
     color: #0f1724 !important;
 }
+<<<<<<< HEAD
 
 /* ---- Notifications ---- */
 .pl-notif { position: relative; }
@@ -320,3 +331,7 @@ html.dark-mode .pl-toast-body a { color: #7dd3fc; }
     }
 })();
 </script>
+=======
+</style>
+<script src="<?= $baseUrl ?>/assets/theme.js" defer></script>
+>>>>>>> formation

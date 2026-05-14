@@ -1,12 +1,18 @@
 <?php
+<<<<<<< HEAD
 require_once __DIR__ . '/../../init.php';
+=======
+>>>>>>> formation
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 require_once __DIR__ . '/../../controller/AuthController.php';
 require_once __DIR__ . '/../../controller/ProduitController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../controller/AchatsStockOffresController.php';
 require_once __DIR__ . '/../../model/CommerceRegles.php';
+=======
+>>>>>>> formation
 
 $auth = new AuthController();
 $u = $auth->profile();
@@ -20,6 +26,7 @@ if (strtolower($u['type'] ?? '') !== 'entrepreneur') {
 }
 
 $pp = new ProduitController();
+<<<<<<< HEAD
 $q = trim((string) ($_GET['q'] ?? ''));
 $tri = (string) ($_GET['tri'] ?? 'date');
 $triAllowed = ['date', 'id', 'reference', 'designation', 'prix', 'stock', 'actif', 'categorie'];
@@ -51,6 +58,9 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
         $stockSignalsMp[$pid] = $nv;
     }
 }
+=======
+$list = $pp->listByVendeur((int) $u['iduser']);
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -67,6 +77,7 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
 <main class="container fo-page">
     <header class="fo-hero">
         <h1>Mes produits</h1>
+<<<<<<< HEAD
         <p class="fo-lead">Catalogue vendeur — les ventes passent par le panier client. Les pastilles reflètent le même pilotage stock que sur la boutique.</p>
     </header>
     <p class="fo-catalog-supply-banner" role="note" style="margin-bottom:18px">
@@ -127,6 +138,14 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
         <p class="fo-result-hint"><?= $totalRows ?> ligne(s)</p>
     <?php endif; ?>
     <?php if (empty($rows)): ?>
+=======
+        <p class="fo-lead">Gérez votre catalogue. Les achats clients passent par le panier ProLink.</p>
+    </header>
+    <div class="fo-toolbar">
+        <a href="vendeurProduit.php" class="fo-btn fo-btn--primary" style="text-decoration:none;width:fit-content">+ Nouveau produit</a>
+    </div>
+    <?php if (empty($list)): ?>
+>>>>>>> formation
         <div class="fo-empty">
             <p class="hint" style="margin:0 0 12px">Aucun produit pour l’instant.</p>
             <a href="vendeurProduit.php">Créer un produit</a>
@@ -134,6 +153,7 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
     <?php else: ?>
         <div class="fo-table-wrap">
         <table class="table-modern">
+<<<<<<< HEAD
             <thead><tr><th>Photo</th><th>Réf.</th><th>Désignation</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Pilotage</th><th>Catalogue</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($rows as $p):
@@ -157,22 +177,37 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
                             <span class="hint" style="font-size:12px">—</span>
                         <?php endif; ?>
                     </td>
+=======
+            <thead><tr><th>Réf.</th><th>Désignation</th><th>Prix</th><th>Stock</th><th>Catalogue</th><th></th></tr></thead>
+            <tbody>
+            <?php foreach ($list as $p): ?>
+                <tr>
+                    <td><strong><?= htmlspecialchars($p['reference']) ?></strong></td>
+                    <td><?= htmlspecialchars($p['designation']) ?></td>
+                    <td><?= number_format((float) $p['prix_unitaire'], 3, ',', ' ') ?> TND</td>
+                    <td><?= (int) $p['stock'] ?></td>
+>>>>>>> formation
                     <td><?php if ((int) $p['actif']): ?>
                         <span class="fo-badge fo-badge--payee">Visible</span>
                     <?php else: ?>
                         <span class="fo-badge fo-badge--brouillon">Masqué</span>
                     <?php endif; ?></td>
+<<<<<<< HEAD
                     <td>
                         <div style="display:flex;flex-wrap:wrap;gap:6px">
                             <a href="produitDetails.php?id=<?= (int) $p['idproduit'] ?>" class="fo-btn fo-btn--secondary fo-btn--product-spec" style="text-decoration:none;padding:8px 12px;font-size:0.85rem">Caractéristiques</a>
                             <a href="vendeurProduit.php?id=<?= (int) $p['idproduit'] ?>" class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:8px 12px;font-size:0.85rem">Modifier</a>
                         </div>
                     </td>
+=======
+                    <td><a href="vendeurProduit.php?id=<?= (int) $p['idproduit'] ?>" class="fo-btn fo-btn--secondary" style="text-decoration:none;padding:8px 12px;font-size:0.85rem">Modifier</a></td>
+>>>>>>> formation
                 </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
         </div>
+<<<<<<< HEAD
         <?php if ($totalPages > 1): ?>
             <div class="fo-actions" style="margin-top:12px">
                 <?php if ($page > 1): ?>
@@ -184,6 +219,8 @@ foreach ($stockCtlMp->getReapproDashboard(90) as $row) {
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+=======
+>>>>>>> formation
     <?php endif; ?>
 </main>
 <?php include __DIR__ . '/components/footer.php'; ?>

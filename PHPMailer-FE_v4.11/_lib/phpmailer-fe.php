@@ -49,6 +49,11 @@ Last updated: March 11 2015 00:25 EST
  */
 if(!function_exists('ereg_replace'))    { function ereg_replace($pattern, $replacement, $string) { return preg_replace('/'.$pattern.'/', $replacement, $string); } }
 if(!function_exists('eregi_replace'))   { function eregi_replace($pattern, $replacement, $string) { return preg_replace('/'.$pattern.'/i', $replacement, $string); } }
+<<<<<<< HEAD
+=======
+if(!function_exists('ereg'))            { function ereg($pattern, $string) { return preg_match('/'.$pattern.'/', $string); } }
+if(!function_exists('eregi'))           { function eregi($pattern, $string, &$regs = null) { return preg_match('/'.$pattern.'/i', $string, $regs); } }
+>>>>>>> formation
 
 /**
  * Defined Term, PHPMailer-FE Version number (for debugging mostly)
@@ -657,7 +662,11 @@ if (isset($bannedEmails) && count($bannedEmails) > 0) {
  */
 if (isset($sort) && $sort == "alphabetic") {
   uksort($_POST, "strnatcasecmp");
+<<<<<<< HEAD
 } elseif ((isset($sort) && isset($list)) && (ereg('^order:.*,.*', $sort)) && ($list = explode(',', ereg_replace('^order:', '', $sort)))) {
+=======
+} elseif ((isset($sort) && isset($list)) && (preg_match('/^order:.*,.*$/', $sort)) && ($list = explode(',', preg_replace('/^order:/', '', $sort)))) {
+>>>>>>> formation
   $sort = $list;
 }
 
@@ -727,7 +736,11 @@ if (isset($required)) {
   for ($i=0;$i<count($required);$i++) {
     $string = trim(strtolower($required[$i]));
     // check if exists
+<<<<<<< HEAD
     if( !(${$string}) && $_FILES[$string][tmp_name] == '' ) {
+=======
+    if( !(${$string}) && $_FILES[$string]['tmp_name'] == '' ) {
+>>>>>>> formation
       // if the missing_fields_redirect option is on: redirect them
       if ($missing_fields_redirect) {
         echo "<meta http-equiv=\"refresh\" content=\"0;url=" . $missing_fields_redirect . '">';
@@ -770,7 +783,11 @@ if (isset($ZIP_CODE) || isset($zip_code)) {
   if (isset($ZIP_CODE)) {
     $zip_code = trim($ZIP_CODE);
   }
+<<<<<<< HEAD
   if (!ereg("(^[0-9]{5})-([0-9]{4}$)", trim($zip_code)) && (!ereg("^[a-zA-Z][0-9][a-zA-Z][[:space:]][0-9][a-zA-Z][0-9]$", trim($zip_code))) && (!ereg("(^[0-9]{5})", trim($zip_code)))) {
+=======
+  if (!preg_match('/(^[0-9]{5})-([0-9]{4}$)/', trim($zip_code)) && (!preg_match('/^[a-zA-Z][0-9][a-zA-Z][[:space:]][0-9][a-zA-Z][0-9]$/', trim($zip_code))) && (!preg_match('/(^[0-9]{5})/', trim($zip_code)))) {
+>>>>>>> formation
     print_error("<li>your <b>zip/postal code</b> is invalid</li>");
   }
 }
@@ -783,7 +800,11 @@ if (isset($PHONE_NO) || isset($phone_no)) {
   if (isset($PHONE_NO)) {
     $phone_no = trim($PHONE_NO);
   }
+<<<<<<< HEAD
   if (!ereg("(^(.*)[0-9]{3})(.*)([0-9]{3})(.*)([0-9]{4}$)", $phone_no)) {
+=======
+  if (!preg_match('/(^(.*)[0-9]{3})(.*)([0-9]{3})(.*)([0-9]{4}$)/', $phone_no)) {
+>>>>>>> formation
     print_error("<li>your <b>phone number</b> is invalid</li>");
   }
 }
@@ -796,7 +817,11 @@ if (isset($FAX_NO) || isset($fax_no)) {
   if (isset($FAX_NO)) {
     $fax_no = trim($FAX_NO);
   }
+<<<<<<< HEAD
   if (!ereg("(^(.*)[0-9]{3})(.*)([0-9]{3})(.*)([0-9]{4}$)", $fax_no)) {
+=======
+  if (!preg_match('/(^(.*)[0-9]{3})(.*)([0-9]{3})(.*)([0-9]{4}$)/', $fax_no)) {
+>>>>>>> formation
     print_error("<li>your <b>fax number</b> is invalid</li>");
   }
 }
@@ -1095,7 +1120,11 @@ function _writeLine($subject,$line) {
  * Many thanks to "equimax" on the Forum for the core of the code
  *
  * @param string $file
+<<<<<<< HEAD
  * @param array $allowedFileTypes
+=======
+ * @param mixed $allowedFileTypes
+>>>>>>> formation
  * @param integer $no_files
  * @return boolean
  */
@@ -1107,6 +1136,7 @@ function fileUpload($file,$allowedFileTypes,$no_files) {
   $attachment_temp[$no_files] = $file["tmp_name"];
   $attachment_type[$no_files] = $file["type"];
   $attachment_ext = explode('.', $attachment_name[$no_files]);
+<<<<<<< HEAD
   $attachment_ext = $attachment_ext[count($attachment_ext)-1];
   if (trim($attachment_temp[$no_files]) != '' && stristr($allowedFileTypes, $attachment_ext) !== false) {
     if ($attachment_name[$no_files]) {
@@ -1120,6 +1150,28 @@ function fileUpload($file,$allowedFileTypes,$no_files) {
       $attachment_chunk[$no_files] = base64_encode($attachment_chunk[$no_files]);
       $attachment_chunk[$no_files] = chunk_split($attachment_chunk[$no_files]);
       fclose($fp);
+=======
+  $attachment_ext = strtolower($attachment_ext[count($attachment_ext)-1]);
+  $content = '';
+  $allowed = false;
+  if (is_array($allowedFileTypes)) {
+    $allowed = in_array($attachment_ext, array_map('strtolower', $allowedFileTypes), true);
+  } else {
+    $allowed = stristr($allowedFileTypes, $attachment_ext) !== false;
+  }
+  if (trim($attachment_temp[$no_files]) != '' && $allowed) {
+    if ($attachment_name[$no_files]) {
+      if ($attachment_size[$no_files] > 0) {
+        if (!$attachment_type[$no_files]) {
+          $attachment_type[$no_files] = "application/unknown";
+        }
+        $content .= "Attached File: ".$attachment_name[$no_files]."\n";
+        $fp = fopen($attachment_temp[$no_files], "r");
+        $attachment_chunk[$no_files] = fread($fp, filesize($attachment_temp[$no_files]));
+        $attachment_chunk[$no_files] = base64_encode($attachment_chunk[$no_files]);
+        $attachment_chunk[$no_files] = chunk_split($attachment_chunk[$no_files]);
+        fclose($fp);
+>>>>>>> formation
       }
     }
   }
@@ -1129,6 +1181,7 @@ function fileUpload($file,$allowedFileTypes,$no_files) {
 /**
  * Error processing function
  * @param string $reason
+<<<<<<< HEAD
  * @param int $type
  * @return void
  */
@@ -1137,6 +1190,18 @@ function print_error($reason,$type = 0) {
   $replyEmailOnFail = $_POST['replyEmailOnFail'];
   if ($redirectOnFail == '') {
     build_body($title, $bgcolor, $text_color, $link_color, $vlink_color, $alink_color, $style_sheet);
+=======
+ * @param string|int $type
+ * @return void
+ */
+function print_error($reason,$type = 0) {
+  global $title, $bgcolor, $text_color, $link_color, $vlink_color, $alink_color, $style_sheet, $background;
+  global $missing_field_redirect, $cc, $bcc, $subjectEmailOnFail, $recipient, $email, $print_blank_fields;
+  $redirectOnFail   = $_POST['redirectOnFail'];
+  $replyEmailOnFail = $_POST['replyEmailOnFail'];
+  if ($redirectOnFail == '') {
+    build_body($title, $bgcolor, $text_color, $link_color, $vlink_color, $alink_color, $style_sheet, $background);
+>>>>>>> formation
     // for missing required data
     if ($type == "missing") {
       if ($missing_field_redirect) {
@@ -1253,7 +1318,11 @@ function check_referer($referers) {
     }
 
     for ($x=0; $x < count($referers); $x++) {
+<<<<<<< HEAD
        if (eregi ($referers[$x], $referer)) {
+=======
+       if (preg_match('/' . str_replace('/', '\\/', $referers[$x]) . '/i', $referer)) {
+>>>>>>> formation
          $found = true;
        }
     }
@@ -1274,9 +1343,18 @@ function check_referer($referers) {
  * Function to: sort, exclude keys, and format content string
  * @param array $array
  * @param array $sort
+<<<<<<< HEAD
  * @return string
  */
 function parse_form($array, $sort = "") {
+=======
+ * @param array $array
+ * @param mixed $sort
+ * @return string
+ */
+function parse_form($array, $sort = "") {
+  global $print_blank_fields;
+>>>>>>> formation
   // reserved keyword array
   $reserved_keys = array('alink_color','allowedFileTypes','bcc','bgcolor','cc','cs_config_country_field','cs_config_state_field','cs_config_country_default','cs_config_state_default','countryDefault','env_report','fixedFromEmail','fixedFromName','form_notice','Helo','Host','IP','link_color','Mailer','MAX_FILE_SIZE','missing_fields_redirect','path_to_file','Password','Port','print_blank_fields','recipient','redirect','redirectOnBan','redirectOnFail','referer','replyEmailOnFail','replyEmailOnSuccess','require','required','reserved_key_words','reset','reset_x','reset_y','return_link_url','return_link_title','send','SMTPKeepAlive','sort','stateDefault','style_sheet','subject','submit','submit_x','submit_y','text_color','Timeout','title','useAsAutoResponder','useEnvRpt','Username','vlink_color','WorxTuringTest');
   if (isset($_POST['reserved_key_words'])) {
@@ -1399,7 +1477,11 @@ function parse_form($array, $sort = "") {
  * @param string $email           (from email)
  * @param string $realname        (from name)
  * @param string/array $recipient (to)
+<<<<<<< HEAD
  * @return void
+=======
+ * @return bool
+>>>>>>> formation
  */
 function mail_it($content, $subject, $email, $realname, $recipient, $inbound=true) {
   global $attachment_chunk, $attachment_name, $attachment_type, $attachment_temp;
@@ -1575,6 +1657,10 @@ function mail_it($content, $subject, $email, $realname, $recipient, $inbound=tru
   if ($valSent) {
     return true;
   }
+<<<<<<< HEAD
+=======
+  return false;
+>>>>>>> formation
 }
 
 /**
@@ -1588,7 +1674,11 @@ function mail_it($content, $subject, $email, $realname, $recipient, $inbound=tru
  * @param string $style_sheet
  * @return void
  */
+<<<<<<< HEAD
 function build_body($title, $bgcolor, $text_color, $link_color, $vlink_color, $alink_color, $style_sheet) {
+=======
+function build_body($title, $bgcolor, $text_color, $link_color, $vlink_color, $alink_color, $style_sheet, $background = '') {
+>>>>>>> formation
   if ($style_sheet) {
     echo "<link rel=\"stylesheet\" href=\"$style_sheet\" Type=\"text/css\">\n";
   }
@@ -1619,7 +1709,11 @@ function build_body($title, $bgcolor, $text_color, $link_color, $vlink_color, $a
 /**
  * Function to decode URL including UTF8 elements
  * @param string $str
+<<<<<<< HEAD
  * @return void
+=======
+ * @return string|array
+>>>>>>> formation
  */
 function utf8_urldecode($str) {
   if (!is_array($str)) {
@@ -1694,7 +1788,11 @@ function checkBannedInput($key,$value,$fileBanlist) {
 
 /**
  * Function to do the DNS MX record check for Windows based servers
+<<<<<<< HEAD
  * @param string $hostname
+=======
+ * @param string $hostName
+>>>>>>> formation
  * @param string $recType
  * @return boolean
  * (returns true if hostname MX record exists
@@ -1703,7 +1801,11 @@ function checkworxdnsrr($hostName, $recType = 'MX') {
   exec("nslookup -type=$recType $hostName", $result);
   // if line starts with the hostname then function succeeded.
   foreach ($result as $line) {
+<<<<<<< HEAD
     if(eregi("^$hostName",$line)) {
+=======
+    if (preg_match('/^' . preg_quote($hostName, '/') . '/i', $line)) {
+>>>>>>> formation
       return true;
     }
   }
@@ -1713,7 +1815,11 @@ function checkworxdnsrr($hostName, $recType = 'MX') {
 
 /**
  * Function to validate an email address (format and MX record)
+<<<<<<< HEAD
  * @param string $email
+=======
+ * @param string $emailAddy
+>>>>>>> formation
  * @return boolean
  * (returns true if email address is properly formatted and MX record exists
  */

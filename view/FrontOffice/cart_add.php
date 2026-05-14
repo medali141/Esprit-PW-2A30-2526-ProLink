@@ -4,6 +4,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 require_once __DIR__ . '/../../controller/ProduitController.php';
 
+<<<<<<< HEAD
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: catalogue.php');
     exit;
@@ -15,6 +16,10 @@ if (empty($_SESSION['csrf_token']) || !hash_equals((string) $_SESSION['csrf_toke
 
 $id = (int) ($_POST['id'] ?? 0);
 $qte = max(1, (int) ($_POST['qte'] ?? 1));
+=======
+$id = (int) ($_GET['id'] ?? 0);
+$qte = max(1, (int) ($_GET['qte'] ?? 1));
+>>>>>>> formation
 
 if ($id > 0) {
     $pp = new ProduitController();

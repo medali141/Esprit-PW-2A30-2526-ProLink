@@ -10,6 +10,7 @@ if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
     exit;
 }
 require_once __DIR__ . '/../../../../controller/ProduitController.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../../../../model/CommerceRegles.php';
 $pp = new ProduitController();
 $q = trim((string) ($_GET['q'] ?? ''));
@@ -69,6 +70,10 @@ if ($tri !== 'date') {
 if ($ordre !== 'desc') {
     $activeFilters[] = ['k' => 'Ordre', 'v' => 'Croissant'];
 }
+=======
+$pp = new ProduitController();
+$list = $pp->listAllAdmin();
+>>>>>>> formation
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -76,10 +81,17 @@ if ($ordre !== 'desc') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Produits — Commerce</title>
+<<<<<<< HEAD
 </head>
 <body>
 <?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
 <link rel="stylesheet" href="../../commerce.css">
+=======
+    <link rel="stylesheet" href="../../commerce.css">
+</head>
+<body>
+<?php require_once __DIR__ . '/../../_layout/sidebar.php'; ?>
+>>>>>>> formation
 <div class="content commerce-page">
     <div class="container">
         <div class="topbar">
@@ -88,6 +100,7 @@ if ($ordre !== 'desc') {
                 <p class="hint" style="margin:6px 0 0">Prix en TND · visibilité catalogue</p>
             </div>
             <div class="actions">
+<<<<<<< HEAD
                 <a href="gestionAchats.php" class="btn btn-secondary">← Achats</a>
                 <a href="addProduit.php" class="btn btn-primary">+ Produit</a>
             </div>
@@ -146,15 +159,27 @@ if ($ordre !== 'desc') {
         <?php if ($q !== '' || $actif !== '' || $idcategorie > 0): ?>
             <p class="commerce-result-hint"><?= $totalRows ?> résultat(s)</p>
         <?php endif; ?>
+=======
+                <input class="search-input" placeholder="Rechercher…" id="searchInput" aria-label="Filtrer le tableau">
+                <a href="commerceHub.php" class="btn btn-secondary">← Hub</a>
+                <a href="addProduit.php" class="btn btn-primary">+ Produit</a>
+            </div>
+        </div>
+>>>>>>> formation
         <div class="commerce-table-wrap">
         <table class="table-modern" id="dataTable">
             <thead>
             <tr>
                 <th>ID</th>
+<<<<<<< HEAD
                 <th>Photo</th>
                 <th>Réf.</th>
                 <th>Désignation</th>
                 <th>Catégorie</th>
+=======
+                <th>Réf.</th>
+                <th>Désignation</th>
+>>>>>>> formation
                 <th>Prix</th>
                 <th>Stock</th>
                 <th>Vendeur</th>
@@ -163,17 +188,26 @@ if ($ordre !== 'desc') {
             </tr>
             </thead>
             <tbody>
+<<<<<<< HEAD
             <?php foreach ($rows as $p) {
+=======
+            <?php foreach ($list as $p) {
+>>>>>>> formation
                 $stock = (int) $p['stock'];
                 $low = $stock > 0 && $stock <= 5;
             ?>
                 <tr>
                     <td><?= (int) $p['idproduit'] ?></td>
+<<<<<<< HEAD
                     <?php $photo = trim((string) ($p['photo'] ?? '')); ?>
                     <td><img src="<?= htmlspecialchars($photo !== '' ? '../../../' . ltrim($photo, '/') : '../../../assets/product-placeholder.svg') ?>" alt="Photo <?= htmlspecialchars($p['designation']) ?>" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #dbe4ef"></td>
                     <td><strong><?= htmlspecialchars($p['reference']) ?></strong></td>
                     <td><?= htmlspecialchars($p['designation']) ?></td>
                     <td><span class="commerce-cat-pill"><?= htmlspecialchars((string) ($p['categorie_libelle'] ?? '—')) ?></span></td>
+=======
+                    <td><strong><?= htmlspecialchars($p['reference']) ?></strong></td>
+                    <td><?= htmlspecialchars($p['designation']) ?></td>
+>>>>>>> formation
                     <td><?= number_format((float) $p['prix_unitaire'], 3, ',', ' ') ?> TND</td>
                     <td><span class="commerce-stock-pill<?= $low ? ' commerce-stock-pill--low' : '' ?>"><?= $stock ?></span></td>
                     <td><?= htmlspecialchars(trim(($p['vendeur_prenom'] ?? '') . ' ' . ($p['vendeur_nom'] ?? ''))) ?></td>
@@ -195,6 +229,7 @@ if ($ordre !== 'desc') {
             </tbody>
         </table>
         </div>
+<<<<<<< HEAD
         <?php if ($totalPages > 1): ?>
             <div class="commerce-filters__actions" style="margin-top:12px">
                 <?php if ($page > 1): ?>
@@ -217,6 +252,17 @@ if ($ordre !== 'desc') {
         selects[i].addEventListener('change', function () { form.submit(); });
     }
 })();
+=======
+    </div>
+</div>
+<script>
+document.getElementById('searchInput').addEventListener('input', function(e){
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#dataTable tbody tr').forEach(function(r){
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+>>>>>>> formation
 </script>
 </body>
 </html>

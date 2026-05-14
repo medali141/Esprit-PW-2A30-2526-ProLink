@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../lib/ForumImageHelper.php';
+<<<<<<< HEAD
 require_once __DIR__ . '/../lib/ProfanityFilter.php';
+=======
+>>>>>>> formation
 
 /**
  * Back-office : catégories, sujets et messages du forum.
@@ -16,6 +19,7 @@ class ForumController
     {
         return $this->lastPublicError;
     }
+<<<<<<< HEAD
     /**
      * Liste les catégories. Sans argument : tri par défaut (ordre asc, id asc),
      * utilisé partout pour la rétro-compatibilité. Avec $sort/$order on autorise
@@ -39,6 +43,13 @@ class ForumController
         $col   = $allowed[$sort] ?? '`ordre`';
         $order = strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
         $st = $db->query("SELECT * FROM `forum_categorie` ORDER BY {$col} {$order}, `id_categorie` ASC");
+=======
+    /** @return list<array<string, mixed>> */
+    public function listCategories(): array
+    {
+        $db = Config::getConnexion();
+        $st = $db->query('SELECT * FROM `forum_categorie` ORDER BY `ordre` ASC, `id_categorie` ASC');
+>>>>>>> formation
         return $st ? $st->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
@@ -57,6 +68,7 @@ class ForumController
 
     public function addCategory(string $titre, string $description, int $ordre): bool
     {
+<<<<<<< HEAD
         $this->lastPublicError = '';
         $titre = trim($titre);
         if ($titre === '') {
@@ -66,6 +78,10 @@ class ForumController
         $err = ProfanityFilter::checkAll(['Titre' => $titre, 'Description' => $description]);
         if ($err !== null) {
             $this->lastPublicError = $err;
+=======
+        $titre = trim($titre);
+        if ($titre === '') {
+>>>>>>> formation
             return false;
         }
         $db = Config::getConnexion();
@@ -75,18 +91,24 @@ class ForumController
 
     public function updateCategory(int $id, string $titre, string $description, int $ordre): bool
     {
+<<<<<<< HEAD
         $this->lastPublicError = '';
+=======
+>>>>>>> formation
         if ($id < 1) {
             return false;
         }
         $titre = trim($titre);
         if ($titre === '') {
+<<<<<<< HEAD
             $this->lastPublicError = 'Titre requis.';
             return false;
         }
         $err = ProfanityFilter::checkAll(['Titre' => $titre, 'Description' => $description]);
         if ($err !== null) {
             $this->lastPublicError = $err;
+=======
+>>>>>>> formation
             return false;
         }
         $db = Config::getConnexion();
@@ -181,6 +203,7 @@ class ForumController
             $this->lastPublicError = 'Écrivez un message d’au moins 2 caractères ou ajoutez une photo.';
             return false;
         }
+<<<<<<< HEAD
         $profanity = ProfanityFilter::checkAll(['Titre' => $titre, 'Message' => $contenu]);
         if ($profanity !== null) {
             if ($path !== null) {
@@ -189,6 +212,8 @@ class ForumController
             $this->lastPublicError = $profanity;
             return false;
         }
+=======
+>>>>>>> formation
         $db = Config::getConnexion();
         try {
             $db->beginTransaction();
@@ -357,6 +382,7 @@ class ForumController
         if (strlen($contenu) < 2 && $path === null) {
             return 'Message trop court, ou ajoutez une photo.';
         }
+<<<<<<< HEAD
         $profanity = ProfanityFilter::firstMatch($contenu);
         if ($profanity !== null) {
             if ($path !== null) {
@@ -364,6 +390,8 @@ class ForumController
             }
             return 'Votre message contient un terme interdit (« ' . $profanity . ' »). Reformulez s\'il vous plaît.';
         }
+=======
+>>>>>>> formation
         $s = $this->getSujet($idSujet);
         if (!$s) {
             if ($path !== null) {

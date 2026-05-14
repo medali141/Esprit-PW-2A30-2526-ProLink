@@ -5,13 +5,20 @@ if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 $auth = new AuthController();
 $user = $auth->profile();
 if (!$user || strtolower($user['type'] ?? '') !== 'admin') {
+<<<<<<< HEAD
     header('Location: ../login.php');
     exit;
+=======
+    header('Location: ../login.php'); exit;
+>>>>>>> formation
 }
 require_once __DIR__ . '/../../../controller/FormationP.php';
 $fp = new FormationP();
 $list = $fp->listAll();
+<<<<<<< HEAD
 $added = isset($_GET['added']);
+=======
+>>>>>>> formation
 ?>
 <!doctype html>
 <html lang="fr">
@@ -20,6 +27,7 @@ $added = isset($_GET['added']);
     <title>Formations — BackOffice</title>
     <link rel="stylesheet" href="<?= htmlspecialchars(view_web_base()) ?>assets/style.css">
     <link rel="stylesheet" href="<?= htmlspecialchars(bo_url('_layout/sidebar.css')) ?>">
+<<<<<<< HEAD
     <link rel="stylesheet" href="formation.css">
 </head>
 <body>
@@ -87,6 +95,36 @@ $added = isset($_GET['added']);
                     <?php endforeach; ?>
                     </tbody>
                 </table>
+=======
+</head>
+<body>
+<?php include __DIR__ . '/../_layout/sidebar.php'; ?>
+<div class="content">
+    <div class="container">
+        <div class="topbar">
+            <div class="page-title">Formations</div>
+            <div class="actions"><a href="ajouter.php" class="btn btn-primary">+ Ajouter</a></div>
+        </div>
+
+        <div class="card">
+            <?php if (empty($list)): ?>
+                <p>Aucune formation trouvée.</p>
+            <?php else: ?>
+                <table class="table-modern"><thead><tr><th>ID</th><th>Titre</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+                <?php foreach ($list as $r): ?>
+                    <tr>
+                        <td><?= (int)$r['id_formation'] ?></td>
+                        <td><?= htmlspecialchars($r['titre']) ?></td>
+                        <td><?= htmlspecialchars($r['date_debut'] ?? '') ?></td>
+                        <td>
+                            <a class="btn btn-secondary" href="modifier.php?id=<?= (int)$r['id_formation'] ?>">Modifier</a>
+                            <a class="btn btn-secondary" href="inscriptions.php?id=<?= (int)$r['id_formation'] ?>">Inscriptions</a>
+                            <a class="btn btn-danger" href="supprimer.php?id=<?= (int)$r['id_formation'] ?>">Supprimer</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody></table>
+>>>>>>> formation
             <?php endif; ?>
         </div>
     </div>

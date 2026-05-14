@@ -1,5 +1,9 @@
 /**
+<<<<<<< HEAD
  * Styles back-office commerce (achats / ventes)
+=======
+ * Design module Gestion achats / ventes (back-office)
+>>>>>>> formation
  * Charger après sidebar.css — wrapper .commerce-page sur le contenu.
  */
 
@@ -55,6 +59,7 @@
     gap: 22px;
 }
 
+<<<<<<< HEAD
 .commerce-kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -96,6 +101,8 @@
     height: 220px !important;
 }
 
+=======
+>>>>>>> formation
 .commerce-hub-card {
     position: relative;
     border-radius: 18px;
@@ -133,9 +140,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     font-size: 1.15rem;
     font-weight: 800;
     letter-spacing: 0.02em;
+=======
+    font-size: 1.5rem;
+>>>>>>> formation
     margin-bottom: 14px;
     background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.12));
     border: 1px solid rgba(6, 182, 212, 0.2);
@@ -439,16 +450,22 @@ html.dark-mode .commerce-hub-card h2 {
 html.dark-mode .commerce-hub-card .hub-hint {
     color: #94a3b8;
 }
+<<<<<<< HEAD
 html.dark-mode .commerce-page .hint {
     color: #94a3b8;
 }
+=======
+>>>>>>> formation
 html.dark-mode .commerce-table-wrap {
     background: #151b26;
     border-color: rgba(148, 163, 184, 0.12);
 }
+<<<<<<< HEAD
 html.dark-mode .commerce-page .commerce-table-wrap .table-modern tbody tr:hover {
     background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(139, 92, 246, 0.1));
 }
+=======
+>>>>>>> formation
 html.dark-mode .commerce-form-card {
     background: #151b26;
     border-color: rgba(148, 163, 184, 0.12);
@@ -463,6 +480,7 @@ html.dark-mode .commerce-form-card label {
 html.dark-mode .commerce-form-card .form-lead {
     color: #94a3b8;
 }
+<<<<<<< HEAD
 html.dark-mode .commerce-form-card input,
 html.dark-mode .commerce-form-card select,
 html.dark-mode .commerce-form-card textarea {
@@ -480,6 +498,8 @@ html.dark-mode .commerce-form-card textarea:focus {
     border-color: rgba(56, 189, 248, 0.48);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
 }
+=======
+>>>>>>> formation
 html.dark-mode .commerce-addr-block {
     background: rgba(30, 41, 59, 0.6);
     border-color: rgba(148, 163, 184, 0.15);
@@ -500,6 +520,7 @@ html.dark-mode .commerce-form-card .commerce-detail-grid textarea {
     border-color: rgba(148, 163, 184, 0.2);
     color: #f1f5f9;
 }
+<<<<<<< HEAD
 
 /* ——— Recherche / tri / filtres métier (listes) ——— */
 .commerce-filters {
@@ -1416,3 +1437,5 @@ html.dark-mode .pl-pdf-export-root {
     border-color: rgba(148, 163, 184, 0.15);
     background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.75) 100%);
 }
+=======
+>>>>>>> formation

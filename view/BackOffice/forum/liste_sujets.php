@@ -81,11 +81,14 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     <meta charset="UTF-8">
     <title>Forum — sujets</title>
     <link rel="stylesheet" href="<?= htmlspecialchars(bo_url('commerce.css')) ?>">
+<<<<<<< HEAD
     <style>
         .fs-search { display:flex; gap:10px; align-items:center; max-width:1100px; margin: 0 auto 14px; }
         .fs-search input { flex: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
         .fs-search .fs-count { color:#64748b; font-size:0.85rem; white-space:nowrap; }
     </style>
+=======
+>>>>>>> formation
 </head>
 <body>
 <?php require_once __DIR__ . '/../_layout/sidebar.php'; ?>
@@ -117,12 +120,17 @@ $sortMark = static function (string $col) use ($sort, $dir) {
             <input type="hidden" name="dir" value="<?= htmlspecialchars($dir) ?>">
         </form>
     </div>
+<<<<<<< HEAD
     <div class="fs-search">
         <input type="text" id="fsSearch" placeholder="Rechercher un sujet (titre, catégorie, auteur, date)..." autocomplete="off">
         <span class="fs-count" id="fsCount"><?= count($liste) ?> ligne<?= count($liste) > 1 ? 's' : '' ?></span>
     </div>
     <div class="card" style="max-width:1100px;margin:0 auto;overflow-x:auto">
         <table id="fsTable" class="table-modern" style="width:100%;border-collapse:collapse;font-size:0.9rem">
+=======
+    <div class="card" style="max-width:1100px;margin:0 auto;overflow-x:auto">
+        <table class="table-modern" style="width:100%;border-collapse:collapse;font-size:0.9rem">
+>>>>>>> formation
             <thead>
             <tr>
                 <th><a href="<?= htmlspecialchars($sortUrl('id_sujet')) ?>">#<?= $sortMark('id_sujet') ?></a></th>
@@ -159,6 +167,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
         <?php endif; ?>
     </div>
 </div>
+<<<<<<< HEAD
 
 <script>
 (function () {
@@ -189,5 +198,7 @@ $sortMark = static function (string $col) use ($sort, $dir) {
     input.addEventListener('input', filter);
 })();
 </script>
+=======
+>>>>>>> formation
 </body>
 </html>
